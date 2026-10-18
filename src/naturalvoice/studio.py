@@ -14,7 +14,7 @@ import sys
 import threading
 import time
 import uuid
-from typing import Literal
+from typing import Callable, Literal
 import zipfile
 from collections import OrderedDict
 from dataclasses import dataclass, field
@@ -1152,20 +1152,19 @@ def _resample(x: np.ndarray, sr: int) -> np.ndarray:
     return signal.resample_poly(x, sr // g, SR // g).astype(np.float32)
 
 
-def render_project(
-    project: dict, opts: RenderOptions, out_dir: Path, progress=None, cancel: threading.Event | None = None
-) -> dict:
-    """Render a validated project into out_dir. Returns a result dict with public file names."""
-    t0 = time.time()
-    out_dir.mkdir(parents=True, exist_ok=True)
-    prog = progress or (lambda step, f: None)
+def _render_project_lines(
+    project: dict,
+    opts: RenderOptions,
+    prog: Callable[[str, float], None],
+    cancel: threading.Event | None,
+) -> tuple[list[tuple[int, np.ndarray, list[dict]]], list[dict], list[dict]]:
+    """Render individual lines with the existing fitting and per-line error policy."""
     lines = project["lines"]
     dictionary = project.get("dictionary") or {}
+    timed = project.get("mode") == "timed"
     rendered: list[tuple[int, np.ndarray, list[dict]]] = []
     errors: list[dict] = []
-    warnings = lint_project(project)
     line_fits: list[dict] = []
-    timed = project.get("mode") == "timed"
     if timed and not any(ln.get("start") is not None for ln in lines):
         raise StudioError("Timed mode needs start times. Import an .srt/.vtt file or give lines a start time.")
     for i, ln in enumerate(lines):
@@ -1201,18 +1200,20 @@ def render_project(
         raise Cancelled()
     if not rendered:
         raise StudioError("No line could be rendered." + (f" First error: {errors[0]['error']}" if errors else ""))
-    head = TARGETS["acx"]["head"] if opts.target == "acx" else opts.lead_in
-    tail = TARGETS["acx"]["tail"] if opts.target == "acx" else 0.5
-    pauses = [float(lines[idx]["pause"]) for idx, _, _ in rendered[:-1]]
-    fit = None
-    if timed:
-        head = 0.0
-    elif opts.target_duration:
-        prog("Fitting to time", 0.8)
-        rendered, pauses, fit = fit_project(
-            rendered, lines, pauses, head, tail, float(opts.target_duration), dictionary, opts.polish, cancel
-        )
-    prog("Mixing", 0.86)
+    return rendered, errors, line_fits
+
+
+def _place_project_lines(
+    project: dict,
+    opts: RenderOptions,
+    rendered: list[tuple[int, np.ndarray, list[dict]]],
+    pauses: list[float],
+    head: float,
+    tail: float,
+) -> tuple[list[tuple[int, int, np.ndarray]], list[dict], list[dict], list[dict], int]:
+    """Place rendered audio and caption phrases without changing the samples."""
+    lines = project["lines"]
+    timed = project.get("mode") == "timed"
     pos = int(head * SR)
     placed, timeline, phrases_abs = [], [], []
     overlaps: list[dict] = []
@@ -1289,6 +1290,17 @@ def render_project(
                 }
             )
         total = max(video_len, speech_end)
+    return placed, timeline, phrases_abs, overlaps, total
+
+
+def _mix_project_tracks(
+    lines: list[dict],
+    opts: RenderOptions,
+    placed: list[tuple[int, int, np.ndarray]],
+    total: int,
+    prog: Callable[[str, float], None],
+) -> tuple[np.ndarray, dict[str, np.ndarray], np.ndarray | None, np.ndarray | None]:
+    """Build speaker stems and optional beds at the internal sample rate."""
     stems: dict[str, np.ndarray] = {}
     voice_bus = np.zeros(total, np.float32)
     for idx, start, a in placed:
@@ -1317,10 +1329,11 @@ def render_project(
     if opts.video is not None and opts.video_mode == "duck":
         prog("Ducking original audio", 0.89)
         original = original_bed(opts.video, total, voice_bus, opts)
-    sr = int(opts.sample_rate)
-    mix = voice_bus + (music if music is not None else 0) + (original if original is not None else 0)
-    mix = _resample(mix, sr)
-    prog("Mastering loudness", 0.9)
+    return voice_bus, stems, music, original
+
+
+def _master_project_audio(mix: np.ndarray, sr: int, opts: RenderOptions) -> tuple[np.ndarray, float, dict]:
+    """Master the mix and retain the optional room-tone compliance report."""
     mastered, gain, report = master(mix, sr, opts.target)
     tone_on = opts.room_tone if opts.room_tone is not None else opts.target == "acx"
     if tone_on and opts.target != "raw":
@@ -1341,6 +1354,40 @@ def render_project(
                     else " ACX wants 44.1 kHz MP3 (192 kbps+ CBR) for upload."
                 )
             )
+    return mastered, gain, report
+
+
+def render_project(
+    project: dict, opts: RenderOptions, out_dir: Path, progress=None, cancel: threading.Event | None = None
+) -> dict:
+    """Render a validated project into out_dir. Returns a result dict with public file names."""
+    t0 = time.time()
+    out_dir.mkdir(parents=True, exist_ok=True)
+    prog = progress or (lambda step, f: None)
+    lines = project["lines"]
+    dictionary = project.get("dictionary") or {}
+    warnings = lint_project(project)
+    timed = project.get("mode") == "timed"
+    rendered, errors, line_fits = _render_project_lines(project, opts, prog, cancel)
+    head = TARGETS["acx"]["head"] if opts.target == "acx" else opts.lead_in
+    tail = TARGETS["acx"]["tail"] if opts.target == "acx" else 0.5
+    pauses = [float(lines[idx]["pause"]) for idx, _, _ in rendered[:-1]]
+    fit = None
+    if timed:
+        head = 0.0
+    elif opts.target_duration:
+        prog("Fitting to time", 0.8)
+        rendered, pauses, fit = fit_project(
+            rendered, lines, pauses, head, tail, float(opts.target_duration), dictionary, opts.polish, cancel
+        )
+    prog("Mixing", 0.86)
+    placed, timeline, phrases_abs, overlaps, total = _place_project_lines(project, opts, rendered, pauses, head, tail)
+    voice_bus, stems, music, original = _mix_project_tracks(lines, opts, placed, total, prog)
+    sr = int(opts.sample_rate)
+    mix = voice_bus + (music if music is not None else 0) + (original if original is not None else 0)
+    mix = _resample(mix, sr)
+    prog("Mastering loudness", 0.9)
+    mastered, gain, report = _master_project_audio(mix, sr, opts)
     if fit is not None:
         fit["achieved"] = round(len(mastered) / sr, 2)
         fit["met"] = abs(fit["achieved"] - fit["target"]) <= max(0.1, 0.01 * fit["target"])
