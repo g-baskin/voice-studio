@@ -20,6 +20,29 @@
         "Skill: changelog-release-notes-stinger loaded; its Hivemind-specific automation does not apply here. Used honest unreleased changelog categories only."
       ]
     },
+    "ci": {
+      "checkedAt": "2026-10-18T20:23:58.612Z",
+      "commit": "028696f",
+      "uncommittedChanges": false,
+      "result": "pass",
+      "summary": "Reviewed with owner's explicit CI opt-out: workflow remains disabled; no active CI coverage claimed. Dormant workflow hardening checks passed. Full quality checks remain local, not part of the dormant shell-only lint step.",
+      "findings": [],
+      "accepted": [
+        "CI is disabled and automatic build/lint/tests are not required, per owner's explicit 'dont use ci - turn it off' instruction. AGENTS.md:11 keeps checks local; do not re-enable without approval."
+      ],
+      "evidence": [
+        "Scope: sole tracked CI workflow, its called setup scripts, GitHub activation state/history and documented owner exception; no settings or code changed.",
+        "Profile: Python/uv voice app with browser JS/macOS launcher, local audio/projects and optional provider APIs; no hosted application deployment in this workflow.",
+        "Read .github/workflows/ci.yml:1-44, package.json, AGENTS.md and tracked workflow inventory; build/pytest/ShellCheck specified, while complete quality checks remain local.",
+        "GitHub workflows API confirmed CI disabled_manually and Dependabot Updates active. No workflow was triggered or enabled.",
+        "Read-only Python/YAML assertions passed: main push/PR triggers, 40-character action pins, contents:read, no retained credentials, one bounded Ubuntu job, no run-step expression interpolation.",
+        "Official action tag API lookups matched both pinned SHAs: actions/checkout v7.0.1 and astral-sh/setup-uv v10.3.0.",
+        "shellcheck scripts/*.sh: standalone run passed, exit 0.",
+        "gh run list --workflow 388678787 --all: four historical successes on main/dev pushes and Dependabot PRs; these predate current changes, not proof of current execution.",
+        "Not checked: new hosted run, fresh dependency install/build/test execution, action implementation audit or dynamic Dependabot internals; no installs or project-output writes.",
+        "Skills: none loaded for this review, as requested. Owner opt-out carried into accepted; only checklist record written."
+      ]
+    },
     "commit-gate": {
       "checkedAt": "2026-10-18T20:01:05.070Z",
       "commit": "9f0eac7",
