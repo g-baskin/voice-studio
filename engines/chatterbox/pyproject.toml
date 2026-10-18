@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Isolated Chatterbox-Turbo ONNX worker for Natural Voice cloning"
 requires-python = ">=3.12,<3.13"
 dependencies = [
-    "onnxruntime==1.23.2",
+    "onnxruntime==1.31.0",
     "numpy>=2,<3",
     "tokenizers>=0.20,<1",
 ]
