@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/assets/banner.png" alt="Voice Studio: a stair-stepped, echoing robotic waveform melts into a smooth, natural one. Make AI voices sound human." width="100%">
+</p>
+
 # Voice Studio
 
 **A voice production suite that runs on your own computer.** Fix robotic AI voices, write and render voice-overs
@@ -99,6 +103,9 @@ the licenses of the models you use before commercial use.
 - Everything you create is stored in `data/` (git-ignored). Back it up if it matters.
 
 ## Development
+
+The logo and banner are generated: `uv run python scripts/build_brand.py` writes the SVGs and
+`PLAYWRIGHT_MODULE=/path/to/playwright node scripts/render_brand.cjs` renders the PNG icons and banner.
 
 ```sh
 uv run pytest -q                        # ~110 tests, a few minutes (uses the real models)
