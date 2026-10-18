@@ -21,8 +21,9 @@ def client(monkeypatch, tmp_path):
 
 # ---------------------------------------------------------------- parsing
 def test_speaker_tags_and_cast():
-    res = st.parse_script("NARRATOR: Hello there.\n[Guest] Hi!\nAnd more from the guest.\n\nnarrator: Bye.",
-                          {"narrator": "bm_george"})
+    res = st.parse_script(
+        "NARRATOR: Hello there.\n[Guest] Hi!\nAnd more from the guest.\n\nnarrator: Bye.", {"narrator": "bm_george"}
+    )
     lines = res["lines"]
     assert [ln["speaker"] for ln in lines] == ["NARRATOR", "Guest", "Guest", "narrator"]
     assert lines[0]["voice"] == lines[3]["voice"] == "bm_george"
@@ -54,9 +55,11 @@ def test_dictionary_whole_word_case_insensitive():
 
 # ---------------------------------------------------------------- captions
 def test_captions_from_rendered_timings():
-    phrases = [{"start": 0.5, "end": 1.4, "text": "Hello there,", "speaker": "A"},
-               {"start": 1.6, "end": 2.5, "text": "friend.", "speaker": "A"},
-               {"start": 3.0, "end": 12.0, "text": " ".join(["word"] * 40) + ".", "speaker": "B"}]
+    phrases = [
+        {"start": 0.5, "end": 1.4, "text": "Hello there,", "speaker": "A"},
+        {"start": 1.6, "end": 2.5, "text": "friend.", "speaker": "A"},
+        {"start": 3.0, "end": 12.0, "text": " ".join(["word"] * 40) + ".", "speaker": "B"},
+    ]
     cues = st.caption_cues(phrases)
     assert cues[0] == {"start": 0.5, "end": 2.5, "text": "Hello there, friend.", "speaker": "A"}
     long = cues[1:]
@@ -72,11 +75,11 @@ def test_captions_from_rendered_timings():
 def test_ducking_lowers_music_under_speech():
     sr = 24000
     voice = np.zeros(sr * 6, np.float32)
-    voice[2 * sr:4 * sr] = 0.2 * np.sin(2 * np.pi * 200 * np.arange(2 * sr) / sr)
+    voice[2 * sr : 4 * sr] = 0.2 * np.sin(2 * np.pi * 200 * np.arange(2 * sr) / sr)
     g = st.duck_gain(voice, sr, depth_db=12)
-    under = 20 * np.log10(g[int(2.8 * sr):int(3.6 * sr)].mean())
-    before = 20 * np.log10(g[int(0.5 * sr):int(1.0 * sr)].mean())
-    after = 20 * np.log10(g[int(5.5 * sr):].mean())
+    under = 20 * np.log10(g[int(2.8 * sr) : int(3.6 * sr)].mean())
+    before = 20 * np.log10(g[int(0.5 * sr) : int(1.0 * sr)].mean())
+    after = 20 * np.log10(g[int(5.5 * sr) :].mean())
     assert under < -10 and before > -0.5 and after > -1.5
 
 
@@ -92,10 +95,21 @@ def test_mastering_hits_targets_on_synthetic():
 
 # ---------------------------------------------------------------- real render (Kokoro)
 def _project():
-    return {"title": "Test", "dictionary": {"Kokoro": "koh koh roh"}, "lines": [
-        {"text": "Welcome to the show. [pause 0.5s] Kokoro speaks today.", "voice": "af_heart", "speaker": "Host"},
-        {"text": "Thanks for having me.", "voice": "am_michael", "speaker": "Guest", "delivery": "warm", "pitch": 1},
-        {"text": "Let's begin.", "voice": "af_heart", "speaker": "Host", "delivery": "energetic"}]}
+    return {
+        "title": "Test",
+        "dictionary": {"Kokoro": "koh koh roh"},
+        "lines": [
+            {"text": "Welcome to the show. [pause 0.5s] Kokoro speaks today.", "voice": "af_heart", "speaker": "Host"},
+            {
+                "text": "Thanks for having me.",
+                "voice": "am_michael",
+                "speaker": "Guest",
+                "delivery": "warm",
+                "pitch": 1,
+            },
+            {"text": "Let's begin.", "voice": "af_heart", "speaker": "Host", "delivery": "energetic"},
+        ],
+    }
 
 
 def _wait(c, job, timeout=300):
@@ -112,9 +126,13 @@ def test_render_via_api_loudness_stems_captions(client, tmp_path):
     music = io.BytesIO()
     sr = 24000
     sf.write(music, (0.3 * np.sin(2 * np.pi * 330 * np.arange(sr * 3) / sr)).astype(np.float32), sr, format="WAV")
-    mid = client.post("/api/studio/music", files={"file": ("bed.wav", music.getvalue(), "audio/wav")}).json()["music_id"]
-    r = client.post("/api/studio/render", json={"project": _project(), "target": "podcast", "stems": True,
-                                                "music_id": mid, "music_level_db": -30})
+    mid = client.post("/api/studio/music", files={"file": ("bed.wav", music.getvalue(), "audio/wav")}).json()[
+        "music_id"
+    ]
+    r = client.post(
+        "/api/studio/render",
+        json={"project": _project(), "target": "podcast", "stems": True, "music_id": mid, "music_level_db": -30},
+    )
     assert r.status_code == 200, r.text
     s = _wait(client, r.json()["job"])
     assert s["status"] == "done", s
@@ -161,12 +179,14 @@ def test_preview_cached(client):
 
 # ---------------------------------------------------------------- validation & projects
 def test_validation(client):
-    bad = [{"lines": [{"text": "x", "voice": "../etc"}]},
-           {"lines": [{"text": "x", "speed": 5}]},
-           {"lines": [{"text": "x", "pitch": "NaN"}]},
-           {"lines": [{"text": "x"}] * 501},
-           {"lines": [{"text": "x" * 5000}] * 11},
-           {"dictionary": {"bad[": "x"}}]
+    bad = [
+        {"lines": [{"text": "x", "voice": "../etc"}]},
+        {"lines": [{"text": "x", "speed": 5}]},
+        {"lines": [{"text": "x", "pitch": "NaN"}]},
+        {"lines": [{"text": "x"}] * 501},
+        {"lines": [{"text": "x" * 5000}] * 11},
+        {"dictionary": {"bad[": "x"}},
+    ]
     for proj in bad:
         assert client.post("/api/studio/render", json={"project": proj}).status_code == 422
     assert client.post("/api/studio/render", json={"project": {"lines": []}}).status_code == 400
@@ -206,8 +226,10 @@ def test_429_when_busy(client):
 
 # ---------------------------------------------------------------- fit to time, takes, ACX room tone
 def _lines2():
-    return [st.new_line("Fresh coffee, every morning.", "af_heart", "A"),
-            st.new_line("Visit us today.", "am_michael", "B")]
+    return [
+        st.new_line("Fresh coffee, every morning.", "af_heart", "A"),
+        st.new_line("Visit us today.", "am_michael", "B"),
+    ]
 
 
 def test_fit_to_time(tmp_path):
@@ -278,7 +300,10 @@ Second cue.
 
 def test_parse_srt_vtt_and_bad_input():
     r = st.parse_subtitles(SRT)
-    assert [(ln["start"], ln["end"], ln["text"]) for ln in r["lines"]] == [(0.5, 2.0, "Hello there."), (2.5, 4.0, "Welcome back.")]
+    assert [(ln["start"], ln["end"], ln["text"]) for ln in r["lines"]] == [
+        (0.5, 2.0, "Hello there."),
+        (2.5, 4.0, "Welcome back."),
+    ]
     assert r["lines"][1]["speaker"] == "HOST"
     assert any("no timing" in w for w in r["warnings"]) and any("before it starts" in w for w in r["warnings"])
     v = st.parse_subtitles(VTT)["lines"]
@@ -298,9 +323,14 @@ def test_subtitle_upload_api(client):
 
 
 def _timed_project():
-    a, b = st.new_line("Good morning.", "af_heart", "A"), st.new_line("This line is far too long for its tiny slot, it will overrun.", "am_michael", "B")
+    a, b = (
+        st.new_line("Good morning.", "af_heart", "A"),
+        st.new_line("This line is far too long for its tiny slot, it will overrun.", "am_michael", "B"),
+    )
     c = st.new_line("Bye.", "af_heart", "A")
-    a.update(start=0.5, end=2.0); b.update(start=2.5, end=3.5); c.update(start=4.0, end=5.5)
+    a.update(start=0.5, end=2.0)
+    b.update(start=2.5, end=3.5)
+    c.update(start=4.0, end=5.5)
     return {"title": "timed", "mode": "timed", "dictionary": {}, "lines": [a, b, c]}
 
 
@@ -320,6 +350,7 @@ def test_timed_placement_and_overruns(tmp_path):
 def _tiny_video(path, seconds=6, audio=True):
     import subprocess
     from naturalvoice import audio as aio
+
     cmd = [aio._ffmpeg(), "-y", "-loglevel", "error", "-f", "lavfi", "-i", f"color=c=green:s=64x64:d={seconds}:r=10"]
     if audio:
         cmd += ["-f", "lavfi", "-i", f"sine=frequency=300:duration={seconds}"]
@@ -335,8 +366,16 @@ def test_video_dub_mux(client, tmp_path):
     assert up.json()["has_audio"] and abs(up.json()["seconds"] - 6) < 0.2
     proj = _timed_project()
     proj["lines"] = proj["lines"][:1]
-    r = client.post("/api/studio/render", json={"project": proj, "target": "podcast", "video_id": up.json()["video_id"],
-                                                "video_mode": "duck", "sample_rate": 48000})
+    r = client.post(
+        "/api/studio/render",
+        json={
+            "project": proj,
+            "target": "podcast",
+            "video_id": up.json()["video_id"],
+            "video_mode": "duck",
+            "sample_rate": 48000,
+        },
+    )
     s = _wait(client, r.json()["job"])
     assert s["status"] == "done", s
     name = next(f["name"] for f in s["result"]["files"] if f["kind"] == "video")
@@ -347,6 +386,7 @@ def test_video_dub_mux(client, tmp_path):
     assert streams["video"] and streams["audio"]
     import subprocess
     from naturalvoice import audio as aio
+
     info = subprocess.run([aio._ffmpeg(), "-hide_banner", "-i", str(out)], capture_output=True, text=True).stderr
     assert "mov_text" in info and "h264" in info
     a, _ = aio.load(out)
@@ -361,9 +401,22 @@ def test_video_dub_mux(client, tmp_path):
 # ---------------------------------------------------------------- CLI
 def test_cli_render(tmp_path, capsys):
     from naturalvoice import cli
+
     p = tmp_path / "proj.json"
-    p.write_text(json.dumps({"id": "x", "project": {"title": "Cli", "lines": [
-        {"text": "Hello.", "voice": "af_heart", "speaker": "A"}, {"text": "Hi.", "voice": "am_michael", "speaker": "B"}]}}))
+    p.write_text(
+        json.dumps(
+            {
+                "id": "x",
+                "project": {
+                    "title": "Cli",
+                    "lines": [
+                        {"text": "Hello.", "voice": "af_heart", "speaker": "A"},
+                        {"text": "Hi.", "voice": "am_michael", "speaker": "B"},
+                    ],
+                },
+            }
+        )
+    )
     rc = cli.main(["render", str(p), "-o", str(tmp_path / "out"), "--target", "broadcast", "--stems"])
     out = json.loads(capsys.readouterr().out)
     assert rc == 0 and out["target_met"] and abs(out["lufs"] + 23) <= 1 and out["true_peak_db"] <= -1
@@ -375,10 +428,13 @@ def test_cli_render(tmp_path, capsys):
 
 def test_cli_dub(tmp_path, capsys):
     from naturalvoice import cli
+
     s = tmp_path / "cues.srt"
     s.write_text("1\n00:00:00,500 --> 00:00:01,800\nHello there.\n\n2\n00:00:02,000 --> 00:00:03,000\nBye.\n")
     vid = _tiny_video(tmp_path / "v.mp4", seconds=4)
-    rc = cli.main(["dub", str(s), "--voice", "bf_emma", "--video", str(vid), "--video-audio", "duck", "-o", str(tmp_path / "d")])
+    rc = cli.main(
+        ["dub", str(s), "--voice", "bf_emma", "--video", str(vid), "--video-audio", "duck", "-o", str(tmp_path / "d")]
+    )
     out = json.loads(capsys.readouterr().out)
     assert rc == 0 and "cues-dub.mp4" in out["files"] and abs(out["duration"] - 4) < 0.05
     assert st.probe_streams(tmp_path / "d" / "cues-dub.mp4")["video"]
@@ -422,7 +478,7 @@ def test_note_parser_emotions_stock_vs_clone():
 
 def test_clone_tags_pass_through_without_warning():
     segs, warn = st.parse_inline("Well [chuckle] okay.", frozenset({"chuckle"}))
-    assert warn == [] and "".join(v for k, v in segs if k == "text") == "Well [chuckle] okay."
+    assert warn == [] and "".join(segment[1] for segment in segs if segment[0] == "text") == "Well [chuckle] okay."
     _, warn = st.parse_inline("Well [chuckle] okay.")
     assert warn  # stock voices: still warned
 

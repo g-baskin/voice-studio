@@ -4,23 +4,42 @@ from fastapi.testclient import TestClient
 from naturalvoice import rewrite as rw, server
 
 
-@pytest.mark.parametrize("n,words", [(0, "zero"), (13, "thirteen"), (21, "twenty-one"), (100, "one hundred"),
-                                     (1234, "one thousand two hundred thirty-four"),
-                                     (2500000, "two million five hundred thousand")])
+@pytest.mark.parametrize(
+    "n,words",
+    [
+        (0, "zero"),
+        (13, "thirteen"),
+        (21, "twenty-one"),
+        (100, "one hundred"),
+        (1234, "one thousand two hundred thirty-four"),
+        (2500000, "two million five hundred thousand"),
+    ],
+)
 def test_int_words(n, words):
     assert rw.int_to_words(n) == words
 
 
 def test_ordinals_and_years():
-    assert rw.ordinal_words(1) == "first" and rw.ordinal_words(22) == "twenty-second" and rw.ordinal_words(40) == "fortieth"
+    assert (
+        rw.ordinal_words(1) == "first"
+        and rw.ordinal_words(22) == "twenty-second"
+        and rw.ordinal_words(40) == "fortieth"
+    )
     assert rw.year_words(1990) == "nineteen ninety" and rw.year_words(1905) == "nineteen oh five"
     assert rw.year_words(2024) == "twenty twenty-four" and rw.year_words(2005) == "two thousand five"
 
 
 def test_rule_rewrite_spells_things_out():
     out = rw.rule_rewrite("Dr. Lee paid $5.50 on the 3rd, 25% off, for 1,200 items at 9:30 am & more.")["text"]
-    for want in ("Doctor Lee", "five dollars and fifty cents", "third", "twenty-five percent",
-                 "one thousand two hundred items", "nine thirty a m", "and more"):
+    for want in (
+        "Doctor Lee",
+        "five dollars and fifty cents",
+        "third",
+        "twenty-five percent",
+        "one thousand two hundred items",
+        "nine thirty a m",
+        "and more",
+    ):
         assert want in out.lower() or want.lower() in out.lower(), (want, out)
     assert not any(c.isdigit() for c in out) and "$" not in out and "%" not in out
 

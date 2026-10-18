@@ -1,4 +1,5 @@
 """Command line: voicestudio clean | speak | analyze | voices | serve"""
+
 from __future__ import annotations
 
 import argparse
@@ -17,8 +18,17 @@ def _settings_args(p: argparse.ArgumentParser) -> None:
 def _settings(a):
     from .humanize import get_settings
 
-    return get_settings(a.preset, ai_clean=a.ai_clean, dereverb=a.dereverb, demetal=a.demetal, deharsh=a.deharsh, warmth=a.warmth,
-                        denoise=a.denoise, room_tone=a.room_tone, loudness=a.loudness)
+    return get_settings(
+        a.preset,
+        ai_clean=a.ai_clean,
+        dereverb=a.dereverb,
+        demetal=a.demetal,
+        deharsh=a.deharsh,
+        warmth=a.warmth,
+        denoise=a.denoise,
+        room_tone=a.room_tone,
+        loudness=a.loudness,
+    )
 
 
 def clean_file(src: str, dst: str, settings, progress=None) -> dict:
@@ -36,7 +46,9 @@ def clean_file(src: str, dst: str, settings, progress=None) -> dict:
 
 
 def main(argv=None) -> int:
-    ap = argparse.ArgumentParser(prog="voicestudio", description="Make AI voices sound human: no metallic tone, no echo.")
+    ap = argparse.ArgumentParser(
+        prog="voicestudio", description="Make AI voices sound human: no metallic tone, no echo."
+    )
     sub = ap.add_subparsers(dest="cmd", required=True)
 
     c = sub.add_parser("clean", help="clean an existing audio or video file")
@@ -103,8 +115,9 @@ def main(argv=None) -> int:
     if a.cmd == "clean":
         src = Path(a.input)
         dst = a.output or str(src.with_name(f"{src.stem}.natural{src.suffix}"))
-        res = clean_file(str(src), dst, _settings(a),
-                         progress=lambda name, f: print(f"[{int(f * 100):3d}%] {name}", file=sys.stderr))
+        res = clean_file(
+            str(src), dst, _settings(a), progress=lambda name, f: print(f"[{int(f * 100):3d}%] {name}", file=sys.stderr)
+        )
         print(json.dumps(res, indent=2))
     elif a.cmd == "speak":
         from . import audio, tts
@@ -121,7 +134,7 @@ def main(argv=None) -> int:
     elif a.cmd == "voices":
         from . import voices as vlib
 
-        cat = [v for v in vlib.catalog() if v.get('starred') or not a.starred]
+        cat = [v for v in vlib.catalog() if v.get("starred") or not a.starred]
         if a.json:
             print(json.dumps(cat, indent=2))
         else:
@@ -130,13 +143,15 @@ def main(argv=None) -> int:
     elif a.cmd == "bench":
         from . import bench
 
-        r = bench.run(a.out, quick=a.quick, log=lambda m: print(m, file=sys.stderr))
-        print(bench.render(r))
+        results = bench.run(a.out, quick=a.quick, log=lambda m: print(m, file=sys.stderr))
+        print(bench.render(results))
     elif a.cmd == "serve":
         import uvicorn
 
         if a.open:
-            import threading, webbrowser
+            import threading
+            import webbrowser
+
             threading.Timer(1.5, lambda: webbrowser.open(f"http://{a.host}:{a.port}")).start()
         uvicorn.run("naturalvoice.server:app", host=a.host, port=a.port)
     return 0

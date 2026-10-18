@@ -20,6 +20,23 @@
         "Skill: changelog-release-notes-stinger loaded; its Hivemind-specific automation does not apply here. Used honest unreleased changelog categories only."
       ]
     },
+    "commit-gate": {
+      "checkedAt": "2026-10-18T20:01:05.070Z",
+      "commit": "9f0eac7",
+      "uncommittedChanges": true,
+      "result": "pass",
+      "summary": "Approved project commit workflow revalidated: standalone command validation and standalone git diff --check both exited 0. Required local checks/tests/build and review are documented; not an automatic Git hook.",
+      "findings": [],
+      "evidence": [
+        "Scope: re-check only approved .gg/commands/commit.md and AGENTS.md workflow documentation; no broader audit.",
+        "Read .gg/commands/commit.md and current Git status; only approved workflow docs and checklist record are pending.",
+        "Standalone .venv/bin/python -B validation exited 0: check script, pytest dependency, build backend and AGENTS.md pointer exist.",
+        "Same validation confirmed required checks/tests/build/review, failure stops, explicit staging, no --no-verify, foreground pushes and disabled CI.",
+        "Standalone git diff --check exited 0; no chained commands could mask its failure.",
+        "Not checked: automatic hook enforcement or end-to-end workflow execution at this re-check. Later /commit request is handled separately.",
+        "Skills: none newly loaded. This re-check changed only the checklist record; no commit/push performed as part of the re-check."
+      ]
+    },
     "docs": {
       "checkedAt": "2026-10-18T17:18:07.795Z",
       "commit": "4e17b0f",
@@ -35,6 +52,25 @@
         "git check-ignore verified .env is ignored and .env.example is not; git diff --check passed.",
         "Not checked: fresh installation, server/browser launch, full pytest, external services, deployment or legal compliance; documentation-only fix.",
         "Skills: none loaded."
+      ]
+    },
+    "git-github": {
+      "checkedAt": "2026-10-18T18:49:37.757Z",
+      "commit": "fed022a",
+      "uncommittedChanges": false,
+      "result": "pass",
+      "summary": "Main remains protected by required PRs and force-push/deletion blocks, including admins. CI workflow and required status checks disabled at owner's request; settings independently verified.",
+      "findings": [],
+      "accepted": [
+        "Owner explicitly requested CI disabled; main no longer requires build-test or other status checks before merging."
+      ],
+      "evidence": [
+        "Scope: re-check existing main-protection finding after owner requested disabling CI; no new audit.",
+        "gh workflow disable 388678787 succeeded; removed only main's required_status_checks using GitHub API.",
+        "Independent Python assertions against gh API passed: CI disabled_manually, required checks absent, PR requirement/admin enforcement retained, force pushes and deletion blocked.",
+        "Recent CI runs all completed; no running CI cancellation needed. Dependabot Updates remains active.",
+        "Not checked: runtime tests, remote-only history, ignore/blob re-audit or deliberate blocked pushes/merges; repository files unchanged apart from this checklist record.",
+        "Skills: no additional skill loaded; change limited to explicitly requested CI shutdown and preventing a disabled-check merge blocker."
       ]
     },
     "naming": {
@@ -54,6 +90,66 @@
         "Read-only Python check passed: 27 unique terms, 7 local links resolve, instruction pointer and accepted ADR sections/provenance present. git diff --check passed.",
         "Not checked: runtime/browser tests, exhaustive identifier renaming, or new architecture evaluation; documentation-only changes, no commits or pushes.",
         "Skills: shared-language method and adr-writing-stinger MADR guide applied; existing decision recorded without inventing historical deliberations."
+      ]
+    },
+    "quality-tools": {
+      "checkedAt": "2026-10-18T19:27:42.448Z",
+      "commit": "6945015",
+      "uncommittedChanges": true,
+      "result": "pass",
+      "summary": "All three recorded tooling gaps fixed: local lint, formatting and incremental type checks pass for Python, JavaScript and shell. Tests pass 140/140; CI remains disabled. Inline HTML scripts and strict typing are excluded.",
+      "findings": [],
+      "evidence": [
+        "Scope: re-check the three approved tooling findings; added pinned Python/JS tools, local scripts, type declarations, formatter configuration and documented coverage.",
+        "npm run check passed: Ruff + ESLint + ShellCheck, Ruff format + Prettier + shfmt, DOM declaration drift check, mypy and three TypeScript checkJs environments.",
+        "mypy checked 39 Python files, including existing function bodies; browser/service-worker/Node JS checked separately. Third-party missing types remain permissive; JS is non-strict.",
+        "uv run --locked pytest -ra: 140 passed, including a new missing-cloning-worker-pipe regression test. Existing assertions retained or strengthened.",
+        "uv build --offline: sdist and wheel built successfully; all 13 tracked JS/CJS files passed node --check.",
+        "Compared three lint-cleaned Studio regexes against previous versions on 40 tag/bracket samples each: identical results. git diff --check passed.",
+        "Pinned tools verified via PyPI/npm metadata before installation. uv.lock comparison found no changes to existing dependency versions; npm lock uses registry.npmjs.org.",
+        "README/AGENTS document setup and local checks; node_modules/tool caches ignored; added npm Dependabot coverage. Formatted existing Python/JS/shell files.",
+        "Not checked: live browser automation (Playwright absent), inline HTML scripts, strict-mode migration or cross-platform checks. No commits/pushes; unrelated checklist records preserved.",
+        "No new skill loaded; existing bulletproof dependency controls applied. GitHub API confirms CI remains disabled_manually."
+      ]
+    },
+    "secrets": {
+      "checkedAt": "2026-10-18T19:00:45.006Z",
+      "commit": "6945015",
+      "uncommittedChanges": false,
+      "result": "pass",
+      "summary": "No real secrets found in 101 tracked files or 9 locally reachable commits. One scanner candidate is a mocked test fixture. Ignore rules and tested key handling passed; remote-only history and ignored credentials were not scanned.",
+      "findings": [],
+      "evidence": [
+        "Scope: tracked files, locally reachable Git history, env exclusions, and LLM/TTS credential sources/storage/response handling; limited secrets review.",
+        "Profile: public Python/FastAPI local voice app with browser UI, local audio/scripts and optional provider keys; no hosted deployment reviewed.",
+        "Gitleaks 8.30.1 git --log-opts='--all --full-history': 9 commits; one generic-api-key candidate at tests/test_llm.py:13. Scanner exit 1, not a clean scan.",
+        "Gitleaks stdin: 101 tracked files, same candidate; default rules, suppressions disabled, redacted reports processed in memory. No report files written.",
+        "One distinct candidate dropped: historical value equals current fake-marked fixture; FakeClient/mock paths inspected. No confirmed credential leak.",
+        "Ignore probes passed: .env, .env.local, .env.production, src/.env, data/llm.json and temporary key file. .env.example trackable with empty key placeholders.",
+        "Read llm.py, llm_api.py, TTS env/provider use, browser key submission, .env.example and test_llm.py: env keys or ignored 0600 JSON storage; masked status and sanitized SDK errors.",
+        "PYTHONDONTWRITEBYTECODE=1 .venv/bin/pytest -p no:cacheprovider -q tests/test_llm.py: 15 passed; temporary fixtures verify permissions/status/errors without project cache writes.",
+        "Not checked: remote-only branches, unreachable objects, ignored credentials, deployed logs/artifacts, compressed interiors or exhaustive endpoint security. No external key validation.",
+        "Skill: bulletproof reused from this session in report-only mode; verification/audit-protocol references read. No code edits, installations, commits or pushes."
+      ]
+    },
+    "tests": {
+      "checkedAt": "2026-10-18T19:43:07.713Z",
+      "commit": "6945015",
+      "uncommittedChanges": true,
+      "result": "pass",
+      "summary": "Current local suite passes 140/140 with no skips, exercising real DSP, models, HTTP/CLI paths, persistence and exports. Reviewed assertions support core local workflows; live browser/provider and exhaustive coverage remain unverified.",
+      "findings": [],
+      "evidence": [
+        "Scope: current working-tree tests, major local workflows and mock boundaries; report-only review, preserving existing uncommitted quality-tool changes.",
+        "Profile: Python/FastAPI local voice app with browser UI/macOS launcher, local audio/projects/voices and optional paid providers; CI intentionally disabled.",
+        "Ran .venv/bin/python -B -m pytest -p no:cacheprovider -ra with bytecode disabled: 140 passed, 0 skipped, 716.24 seconds; confirmed final log.",
+        "Run isolated TMPDIR, NATURALVOICE_DATA, NUMBA_CACHE_DIR, XDG_CACHE_HOME and MPLCONFIGDIR outside project; no pytest cache or project output generation requested.",
+        "Read test_core.py: real DSP/ONNX/ffmpeg cleanup, video/audio outputs, score comparisons, offline TTS, Node syntax and template interaction assertions.",
+        "Read test_studio.py: actual rendering, loudness/stems/captions, project CRUD, invalid saved data, busy responses, timed dubbing and CLI output files.",
+        "Read test_clone.py/test_voicelab.py: real clone/conversion/language renders, consent/input validation, real voice blending/matching and persisted saved/starred voices.",
+        "Read test_workflow.py/test_llm.py/test_scriptgen.py: focused DSP doubles complemented by real core tests; external LLM calls mocked while parsing/storage/error behavior runs.",
+        "Not checked: live Playwright browser runs (not installed), paid providers, cross-platform behavior, mutation testing or quantitative coverage. No claim of exhaustive path coverage.",
+        "Skill: tdd loaded and applied in report-only mode to seams, assertions and mock boundaries; no test edits, red/green changes, installs, commits or pushes."
       ]
     }
   }

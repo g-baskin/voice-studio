@@ -6,6 +6,7 @@ Everything here works inside Kokoro's style space: a voice is a style array of s
 * match:    speaker-embedding search that moves a style toward a reference recording's timbre
 None of this is a generative voice model or a true clone.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -14,6 +15,7 @@ import re
 import threading
 import time
 from pathlib import Path
+from typing import TypedDict
 
 import numpy as np
 
@@ -22,12 +24,16 @@ from . import voices as vlib
 SR = 24000
 EMB_SR = 16000
 SPEAKER_MODEL = "3dspeaker_campplus_en_voxceleb_16k.onnx"
-SPEAKER_URL = ("https://github.com/k2-fsa/sherpa-onnx/releases/download/speaker-recongition-models/"
-               "3dspeaker_speech_campplus_sv_en_voxceleb_16k.onnx")
+SPEAKER_URL = (
+    "https://github.com/k2-fsa/sherpa-onnx/releases/download/speaker-recongition-models/"
+    "3dspeaker_speech_campplus_sv_en_voxceleb_16k.onnx"
+)
 # Fixed line used for stock-voice measurements and for every match-search render.
-MEASURE_LINE = ("The morning light settled over the quiet harbour, and everyone stopped to listen. "
-                "A small boat drifted past the old stone wall while the gulls circled overhead. "
-                "Then the bells rang out across the water, loud and clear, for the very last time.")
+MEASURE_LINE = (
+    "The morning light settled over the quiet harbour, and everyone stopped to listen. "
+    "A small boat drifted past the old stone wall while the gulls circled overhead. "
+    "Then the bells rang out across the water, loud and clear, for the very last time."
+)
 SAMPLE_LINES = {
     "en-us": "Hi there. This is how I sound when I read your script out loud.",
     "en-gb": "Hello there. This is how I sound when I read your script out loud.",
@@ -49,6 +55,7 @@ def data_dir() -> Path:
 
 
 # ---------------------------------------------------------------- rendering + measuring
+
 
 def render(style: np.ndarray, lang: str, text: str, speed: float = 1.0) -> np.ndarray:
     from .tts import _kokoro
@@ -77,8 +84,8 @@ def pitch_hz(x: np.ndarray, sr: int = SR) -> float:
     thr = 0.1 * np.max(np.abs(x))
     f0 = []
     for s in range(0, len(x) - frame, hop):
-        w = x[s:s + frame] - x[s:s + frame].mean()
-        if np.sqrt(np.mean(w ** 2)) < thr * 0.3:
+        w = x[s : s + frame] - x[s : s + frame].mean()
+        if np.sqrt(np.mean(w**2)) < thr * 0.3:
             continue
         ac = np.fft.irfft(np.abs(np.fft.rfft(w, 2 * frame)) ** 2)[:frame]
         if ac[0] <= 0:
@@ -106,6 +113,7 @@ def brightness_hz(x: np.ndarray, sr: int = SR) -> float:
 
 # ---------------------------------------------------------------- speaker embeddings
 
+
 def _mel_banks(n_fft=512, n_mels=80, sr=EMB_SR, lo=20.0):
     mel = lambda f: 1127.0 * np.log(1 + np.asarray(f) / 700.0)  # noqa: E731  (Kaldi mel scale)
     hi = sr / 2
@@ -113,9 +121,9 @@ def _mel_banks(n_fft=512, n_mels=80, sr=EMB_SR, lo=20.0):
     fm = mel(np.arange(n_fft // 2) * sr / n_fft)
     banks = np.zeros((n_mels, n_fft // 2 + 1), dtype=np.float64)
     for m in range(n_mels):
-        l, c, r = pts[m], pts[m + 1], pts[m + 2]
-        up, down = (fm - l) / (c - l), (r - fm) / (r - c)
-        banks[m, :n_fft // 2] = np.maximum(0, np.minimum(up, down))
+        left, center, right = pts[m], pts[m + 1], pts[m + 2]
+        up, down = (fm - left) / (center - left), (right - fm) / (right - center)
+        banks[m, : n_fft // 2] = np.maximum(0, np.minimum(up, down))
     return banks
 
 
@@ -153,7 +161,9 @@ def _speaker_session():
 
         path = MODEL_DIR / SPEAKER_MODEL
         if not path.exists():
-            raise RuntimeError(f"Speaker model missing. Download {SPEAKER_URL} into the models folder as {SPEAKER_MODEL}.")
+            raise RuntimeError(
+                f"Speaker model missing. Download {SPEAKER_URL} into the models folder as {SPEAKER_MODEL}."
+            )
         opts = ort.SessionOptions()
         opts.intra_op_num_threads = 2
         _SESSION = ort.InferenceSession(str(path), opts, providers=["CPUExecutionProvider"])
@@ -170,7 +180,7 @@ def trim_silence(x: np.ndarray, sr: int, floor: float = 0.02) -> np.ndarray:
     if m < 2:
         return x
     fr = x[: m * n].reshape(m, n)
-    e = np.sqrt(np.mean(fr ** 2, axis=1))
+    e = np.sqrt(np.mean(fr**2, axis=1))
     keep = e > floor * (e.max() + 1e-12)
     return fr[keep].reshape(-1) if keep.sum() >= 10 else x
 
@@ -188,6 +198,7 @@ def cosine(a: np.ndarray, b: np.ndarray) -> float:
 
 
 # ---------------------------------------------------------------- stock measurements (cached)
+
 
 def _stock_names() -> list[str]:
     from .tts import _kokoro
@@ -218,8 +229,10 @@ def _load_npz(path: Path, fingerprint: str | None = None) -> dict[str, dict]:
         z = np.load(path, allow_pickle=False)
         if fingerprint is not None and str(z["fingerprint"]) != fingerprint:
             return {}
-        return {str(n): {"emb": z["emb"][i], "pitch": float(z["pitch"][i]), "brightness": float(z["bright"][i])}
-                for i, n in enumerate(z["names"])}
+        return {
+            str(n): {"emb": z["emb"][i], "pitch": float(z["pitch"][i]), "brightness": float(z["bright"][i])}
+            for i, n in enumerate(z["names"])
+        }
     except (OSError, ValueError, KeyError):
         return {}
 
@@ -227,14 +240,20 @@ def _load_npz(path: Path, fingerprint: str | None = None) -> dict[str, dict]:
 def save_features(path: Path, feats: dict[str, dict], fingerprint: str = "") -> None:
     ks = sorted(feats)
     tmp = path.with_name(path.stem + ".tmp.npz")
-    np.savez(tmp, names=np.array(ks), emb=np.stack([feats[k]["emb"] for k in ks]).astype(np.float32),
-             pitch=np.array([feats[k]["pitch"] for k in ks]), bright=np.array([feats[k]["brightness"] for k in ks]),
-             fingerprint=np.array(fingerprint))
+    np.savez(
+        tmp,
+        names=np.array(ks),
+        emb=np.stack([feats[k]["emb"] for k in ks]).astype(np.float32),
+        pitch=np.array([feats[k]["pitch"] for k in ks]),
+        bright=np.array([feats[k]["brightness"] for k in ks]),
+        fingerprint=np.array(fingerprint),
+    )
     tmp.replace(path)
 
 
-def stock_features(names: list[str] | None = None, progress=None, cancel=None,
-                   cached_only: bool = False) -> dict[str, dict]:
+def stock_features(
+    names: list[str] | None = None, progress=None, cancel=None, cached_only: bool = False
+) -> dict[str, dict]:
     """Per-stock-voice {emb, pitch, brightness} from a render of MEASURE_LINE, cached in DATA_DIR/cache."""
     path = data_dir() / "cache" / f"stock_features_v{FEATURE_VERSION}.npz"
     with _lock:
@@ -263,6 +282,7 @@ def stock_features(names: list[str] | None = None, progress=None, cancel=None,
 
 # ---------------------------------------------------------------- blend + controls
 
+
 def normalise_weights(weights) -> np.ndarray:
     w = np.asarray(weights, dtype=np.float64)
     if w.ndim != 1 or not np.isfinite(w).all() or (w < 0).any() or w.sum() <= 0:
@@ -278,13 +298,27 @@ def blend(styles: list[np.ndarray], weights) -> np.ndarray:
 
 
 _AXES: dict[str, np.ndarray] | None = None
+
+
 # Controls kept after measurement (docs/voicelab.md lists the numbers). Strength 1.0 moves one
 # axis length, i.e. the full average female-vs-male difference for 'gender'.
-CONTROLS = {
-    "gender": {"label": "Masculine ↔ Feminine",
-               "help": "Moves along the average difference between Kokoro's female and male voices. "
-                       "Right raises pitch and lightens the tone; left lowers and darkens it.",
-               "min": -1.0, "max": 1.0, "scale": 0.5},
+class ControlSpec(TypedDict):
+    label: str
+    help: str
+    min: float
+    max: float
+    scale: float
+
+
+CONTROLS: dict[str, ControlSpec] = {
+    "gender": {
+        "label": "Masculine ↔ Feminine",
+        "help": "Moves along the average difference between Kokoro's female and male voices. "
+        "Right raises pitch and lightens the tone; left lowers and darkens it.",
+        "min": -1.0,
+        "max": 1.0,
+        "scale": 0.5,
+    },
 }
 
 
@@ -329,7 +363,7 @@ def validate_recipe(recipe: dict) -> dict:
     var = recipe.get("variation") or {}
     if len(ids) < 2 and not var.get("amount"):
         raise ValueError("Pick between 2 and 5 voices to blend.")
-    w = normalise_weights(ws)
+    weights = normalise_weights(ws)
     stock = set(_stock_names())
     for i in ids:
         if i not in stock:
@@ -355,9 +389,9 @@ def validate_recipe(recipe: dict) -> dict:
         seed, amount = int(var.get("seed", 0)), float(var.get("amount", 0))
     except (TypeError, ValueError):
         raise ValueError("Variation must be numbers.") from None
-    if not np.isfinite(amount) or not 0 <= amount <= 0.5 or not 0 <= seed < 2 ** 32:
+    if not np.isfinite(amount) or not 0 <= amount <= 0.5 or not 0 <= seed < 2**32:
         raise ValueError("Variation must be between 0 and 0.5.")
-    out = {"voices": [{"id": i, "weight": round(float(x), 4)} for i, x in zip(ids, w)], "controls": controls}
+    out = {"voices": [{"id": i, "weight": round(float(x), 4)} for i, x in zip(ids, weights)], "controls": controls}
     if amount:
         out["variation"] = {"seed": seed, "amount": amount}
     return out
@@ -383,6 +417,7 @@ def voice_lang(voice_id: str) -> str:
 
 
 # ---------------------------------------------------------------- library + previews
+
 
 def library() -> list[dict]:
     out = []
@@ -443,9 +478,23 @@ def character_features() -> dict[str, dict]:
 
 
 ACCENTS = {  # keyword -> Kokoro language prefix
-    "american": "a", "us": "a", "usa": "a", "british": "b", "english": "b", "uk": "b", "london": "b",
-    "spanish": "e", "french": "f", "hindi": "h", "indian": "h", "italian": "i", "portuguese": "p",
-    "brazilian": "p", "japanese": "j", "chinese": "z", "mandarin": "z",
+    "american": "a",
+    "us": "a",
+    "usa": "a",
+    "british": "b",
+    "english": "b",
+    "uk": "b",
+    "london": "b",
+    "spanish": "e",
+    "french": "f",
+    "hindi": "h",
+    "indian": "h",
+    "italian": "i",
+    "portuguese": "p",
+    "brazilian": "p",
+    "japanese": "j",
+    "chinese": "z",
+    "mandarin": "z",
 }
 LOW = {"deep", "low", "bass", "baritone", "gravelly", "older", "old", "mature", "elderly", "authoritative", "dark"}
 HIGH = {"high", "light", "bright", "young", "youthful", "teen", "childlike", "airy", "thin"}
@@ -455,16 +504,26 @@ FEMALE = {"female", "woman", "women", "girl", "lady", "feminine", "she", "her"}
 MALE = {"male", "man", "men", "guy", "boy", "masculine", "he", "him", "gentleman"}
 
 
-def describe(prompt: str = "", gender: str = "", accent: str = "", age: str = "", energy: str = "",
-             count: int = 3, seed: int | None = None) -> dict:
+def describe(
+    prompt: str = "",
+    gender: str = "",
+    accent: str = "",
+    age: str = "",
+    energy: str = "",
+    count: int = 3,
+    seed: int | None = None,
+) -> dict:
     """Keyword-based voice design: pick matching stock voices using tags and measured pitch/brightness."""
     if len(prompt) > MAX_TEXT:
         raise ValueError(f"Description too long ({MAX_TEXT} characters max).")
     words = set(re.findall(r"[a-z]+", prompt.lower()))
     notes = []
     g = gender if gender in {"female", "male"} else ("female" if words & FEMALE else "male" if words & MALE else "")
-    lang = accent if accent in vlib.LANGS else next((ACCENTS[w] for w in re.findall(r"[a-z]+", prompt.lower())
-                                                     if w in ACCENTS), "")
+    lang = (
+        accent
+        if accent in vlib.LANGS
+        else next((ACCENTS[w] for w in re.findall(r"[a-z]+", prompt.lower()) if w in ACCENTS), "")
+    )
     pitch_dir = -1 if (words & LOW or age == "older") else 1 if (words & HIGH or age == "young") else 0
     tone_dir = -1 if (words & WARM or energy == "calm") else 1 if (words & CRISP or energy == "energetic") else 0
     names = _stock_names()
@@ -478,8 +537,10 @@ def describe(prompt: str = "", gender: str = "", accent: str = "", age: str = ""
     feats = character_features()
     score = np.zeros(len(pool))
     if (pitch_dir or tone_dir) and not all(n in feats for n in pool):
-        notes.append("Pitch and tone words only steer English voices (the measured ones); "
-                     "these options are picked by gender and language.")
+        notes.append(
+            "Pitch and tone words only steer English voices (the measured ones); "
+            "these options are picked by gender and language."
+        )
     elif pitch_dir or tone_dir:
         p = np.array([feats[n]["pitch"] for n in pool])
         b = np.array([feats[n]["brightness"] for n in pool])
@@ -493,33 +554,60 @@ def describe(prompt: str = "", gender: str = "", accent: str = "", age: str = ""
         k = min(len(top), int(rng.integers(2, 4)))
         pick = list(rng.choice(top, size=k, replace=False)) if len(top) >= 2 else top
         w = rng.dirichlet(np.ones(len(pick)) * 2)
-        recipe = {"voices": [{"id": str(n), "weight": round(float(x), 3)} for n, x in zip(pick, w)],
-                  "controls": {}, "variation": {"seed": int(rng.integers(0, 2 ** 31)), "amount": 0.12}}
+        recipe: dict = {
+            "voices": [{"id": str(n), "weight": round(float(x), 3)} for n, x in zip(pick, w)],
+            "controls": {},
+            "variation": {"seed": int(rng.integers(0, 2**31)), "amount": 0.12},
+        }
         if g:
             recipe["controls"]["gender"] = 0.2 if g == "female" else -0.2
-        options.append({"recipe": validate_recipe(recipe),
-                        "summary": "Blend of " + ", ".join(vlib.stock_info(str(n))["name"] for n in pick)})
-    understood = [x for x in [g, vlib.LANG_NAMES.get(lang, ""), {-1: "lower pitch", 1: "higher pitch"}.get(pitch_dir),
-                              {-1: "warmer tone", 1: "brighter tone"}.get(tone_dir)] if x]
+        options.append(
+            {
+                "recipe": validate_recipe(recipe),
+                "summary": "Blend of " + ", ".join(vlib.stock_info(str(n))["name"] for n in pick),
+            }
+        )
+    understood = [
+        x
+        for x in [
+            g,
+            vlib.LANG_NAMES.get(lang, ""),
+            {-1: "lower pitch", 1: "higher pitch"}.get(pitch_dir),
+            {-1: "warmer tone", 1: "brighter tone"}.get(tone_dir),
+        ]
+        if x
+    ]
     return {"options": options, "understood": understood, "notes": notes}
 
 
 # ---------------------------------------------------------------- match a recording
 
+
 class Cancelled(Exception):
     pass
 
 
-def match(ref: np.ndarray, ref_sr: int, budget_s: float = 180, candidates: list[str] | None = None,
-          top_k: int = 3, progress=None, cancel=None, seed: int = 0) -> dict:
+def match(
+    ref: np.ndarray,
+    ref_sr: int,
+    budget_s: float = 180,
+    candidates: list[str] | None = None,
+    top_k: int = 3,
+    progress=None,
+    cancel=None,
+    seed: int = 0,
+) -> dict:
     """Search Kokoro style space for a voice whose rendering sounds like `ref` (cosine on CAM++ embeddings)."""
     t0 = time.time()
     say = progress or (lambda **kw: None)
     ref_emb = embed(ref, ref_sr)
     names = candidates or [n for n in _stock_names() if n[0] in "ab"]
     say(step="Comparing with stock voices", progress=0.02)
-    feats = stock_features(names, progress=lambda i, n: say(step=f"Measuring stock voices {i}/{n}",
-                                                                      progress=0.02 + 0.18 * i / n), cancel=cancel)
+    feats = stock_features(
+        names,
+        progress=lambda i, n: say(step=f"Measuring stock voices {i}/{n}", progress=0.02 + 0.18 * i / n),
+        cancel=cancel,
+    )
     if cancel is not None and cancel.is_set():
         raise Cancelled
     scores = sorted(((cosine(ref_emb, feats[n]["emb"]), n) for n in feats), reverse=True)
@@ -552,8 +640,18 @@ def match(ref: np.ndarray, ref_sr: int, budget_s: float = 180, candidates: list[
         else:
             sigma = max(0.03, sigma * 0.93)
         frac = min(1.0, (time.time() - search_t0) / max(remaining, 1e-6))
-        say(step=f"Refining: {tries} tries, {kept} improvements", progress=round(0.2 + 0.78 * frac, 3),
-            similarity=round(best_sim, 4))
-    return {"style": best, "start_style": start_style, "before": round(start_sim, 4), "after": round(best_sim, 4),
-            "best_stock": [{"id": n, "similarity": round(s, 4)} for s, n in top],
-            "tries": tries, "kept": kept, "seconds": round(time.time() - t0, 1)}
+        say(
+            step=f"Refining: {tries} tries, {kept} improvements",
+            progress=round(0.2 + 0.78 * frac, 3),
+            similarity=round(best_sim, 4),
+        )
+    return {
+        "style": best,
+        "start_style": start_style,
+        "before": round(start_sim, 4),
+        "after": round(best_sim, 4),
+        "best_stock": [{"id": n, "similarity": round(s, 4)} for s, n in top],
+        "tries": tries,
+        "kept": kept,
+        "seconds": round(time.time() - t0, 1),
+    }

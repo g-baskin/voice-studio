@@ -18,6 +18,7 @@ Scores (arrow = which way is better)
 * metal v average height of persistent narrow spectral peaks, dB.
 * rtf  v  processing time / audio length (below 1 = faster than real time).
 """
+
 from __future__ import annotations
 
 import json
@@ -33,21 +34,32 @@ from scipy import signal
 from . import analyze, audio, humanize as hz, quality
 
 SENTENCES = [
-    ("af_heart", "Hi there! Thanks for stopping by. Today I want to show you something that will save you hours every week."),
-    ("am_michael", "Our new app is simple, fast, and honestly, kind of fun to use. Try it free for thirty days, no card needed."),
-    ("bf_emma", "When the weather turns, you'll want a coat that keeps up. This one is light, warm, and built to last."),
+    (
+        "af_heart",
+        "Hi there! Thanks for stopping by. Today I want to show you something that will save you hours every week.",
+    ),
+    (
+        "am_michael",
+        "Our new app is simple, fast, and honestly, kind of fun to use. Try it free for thirty days, no card needed.",
+    ),
+    (
+        "bf_emma",
+        "When the weather turns, you'll want a coat that keeps up. This one is light, warm, and built to last.",
+    ),
 ]
 
 
 # --------------------------------------------------------------------------- damage
+
 
 def _room(x, sr, rt60, dims, seed=1):
     """Image-source + ray-traced room (pyroomacoustics), talker ~1.5-3 m from the mic."""
     import pyroomacoustics as pra
 
     e_abs, max_order = pra.inverse_sabine(rt60, dims)
-    room = pra.ShoeBox(dims, fs=sr, materials=pra.Material(e_abs), max_order=min(max_order, 17),
-                       use_rand_ism=True, max_rand_disp=0.05)
+    room = pra.ShoeBox(
+        dims, fs=sr, materials=pra.Material(e_abs), max_order=min(max_order, 17), use_rand_ism=True, max_rand_disp=0.05
+    )
     rng = np.random.default_rng(seed)
     src = [dims[0] * 0.3, dims[1] * 0.4 + rng.uniform(-0.2, 0.2), 1.6]
     mic = [dims[0] * 0.3 + min(2.5, dims[0] * 0.4), dims[1] * 0.55, 1.4]
@@ -57,7 +69,7 @@ def _room(x, sr, rt60, dims, seed=1):
     y = room.mic_array.signals[0]
     # remove propagation delay so it lines up with the reference
     d = int(np.argmax(np.abs(room.rir[0][0])))
-    return y[d: d + len(x)]
+    return y[d : d + len(x)]
 
 
 def _reverb(x, sr, rt60, wet_db, seed=1):
@@ -68,7 +80,7 @@ def _reverb(x, sr, rt60, wet_db, seed=1):
     tail[: int(0.004 * sr)] = 0
     b, a = signal.butter(1, 6000 / (sr / 2))
     tail = signal.lfilter(b, a, tail)
-    tail *= np.sqrt(10 ** (wet_db / 10) / np.sum(tail ** 2))
+    tail *= np.sqrt(10 ** (wet_db / 10) / np.sum(tail**2))
     tail[0] += 1.0
     return signal.fftconvolve(x, tail)[: len(x)]
 
@@ -102,7 +114,9 @@ def _codec(x, sr, kbps=32):
         a, b, c = Path(td) / "a.wav", Path(td) / "b.mp3", Path(td) / "c.wav"
         audio.save(a, x.astype(np.float32), sr)
         subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(a), "-b:a", f"{kbps}k", str(b)], check=True)
-        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(b), "-ar", str(sr), "-ac", "1", str(c)], check=True)
+        subprocess.run(
+            ["ffmpeg", "-y", "-loglevel", "error", "-i", str(b), "-ar", str(sr), "-ac", "1", str(c)], check=True
+        )
         y, _ = audio.load(c)
     y = y[:, 0]
     # MP3 adds a fixed encoder delay; align by cross-correlation
@@ -119,20 +133,23 @@ DAMAGE: dict[str, Callable[[np.ndarray, int], np.ndarray]] = {
     "metallic (phase loss)": lambda x, sr: _griffin_lim(x, sr),
     "ringing resonances": lambda x, sr: _resonances(x, sr),
     "low-bitrate codec": lambda x, sr: _codec(x, sr, 32),
-    "typical AI ad (all)": lambda x, sr: _codec(_room(_resonances(_griffin_lim(x, sr, 32), sr, gain_db=6),
-                                                     sr, 0.6, [6.0, 5.0, 3.0]), sr, 48),
+    "typical AI ad (all)": lambda x, sr: _codec(
+        _room(_resonances(_griffin_lim(x, sr, 32), sr, gain_db=6), sr, 0.6, [6.0, 5.0, 3.0]), sr, 48
+    ),
 }
 
 
 # --------------------------------------------------------------------------- methods
+
 
 def methods() -> dict[str, Callable[[np.ndarray, int], np.ndarray]]:
     from . import enhance
 
     m = {
         "untouched": lambda x, sr: x,
-        "classic (before AI)": lambda x, sr: hz.humanize(x, sr, hz.get_settings("standard", ai_clean=0.0, dereverb=0.8,
-                                                                                  room_tone=0.0)),
+        "classic (before AI)": lambda x, sr: hz.humanize(
+            x, sr, hz.get_settings("standard", ai_clean=0.0, dereverb=0.8, room_tone=0.0)
+        ),
     }
     if enhance.available():
         m["AI cleanup only"] = lambda x, sr: hz.normalize(enhance.ai_clean(x, sr, 1.0), sr, -16)
@@ -143,17 +160,18 @@ def methods() -> dict[str, Callable[[np.ndarray, int], np.ndarray]]:
 
 # --------------------------------------------------------------------------- scoring
 
+
 def _frames_db(x, sr):
     win = int(0.02 * sr)
     f = np.lib.stride_tricks.sliding_window_view(x, win)[:: win // 2]
-    return 10 * np.log10(np.mean(f ** 2, axis=1) + 1e-12)
+    return 10 * np.log10(np.mean(f**2, axis=1) + 1e-12)
 
 
 def score(ref: np.ndarray, y: np.ndarray, sr: int, full: bool = True) -> dict:
     from pystoi import stoi
 
     y = y[: len(ref)]
-    y = y * np.sqrt(np.mean(ref ** 2) / (np.mean(y ** 2) + 1e-12))  # level-match
+    y = y * np.sqrt(np.mean(ref**2) / (np.mean(y**2) + 1e-12))  # level-match
     er = _frames_db(ref, sr)
     gaps = er < er.max() - 50
     speech = er > er.max() - 25
@@ -166,8 +184,12 @@ def score(ref: np.ndarray, y: np.ndarray, sr: int, full: bool = True) -> dict:
     if full:
         d = quality.dnsmos(y, sr)
         p = quality.pesq_wb(ref, y, sr)
-        out.update(OVRL=round(d["OVRL"], 2), SIG=round(d["SIG"], 2), BAK=round(d["BAK"], 2),
-                   PESQ=round(p, 2) if p is not None else None)
+        out.update(
+            OVRL=round(d["OVRL"], 2),
+            SIG=round(d["SIG"], 2),
+            BAK=round(d["BAK"], 2),
+            PESQ=round(p, 2) if p is not None else None,
+        )
     return out
 
 
@@ -176,6 +198,7 @@ COLUMNS = ["OVRL", "SIG", "BAK", "PESQ", "STOI", "echo", "metal"]
 
 
 # --------------------------------------------------------------------------- runner
+
 
 def references(out_dir: Path, voices: int = 3) -> list[tuple[str, np.ndarray, int]]:
     from . import tts
@@ -206,8 +229,9 @@ def run(out_dir: str | Path = "bench", quick: bool = False, save_audio: bool = T
                 t0 = time.perf_counter()
                 y = fn(bad, sr)
                 rtf = (time.perf_counter() - t0) / (len(bad) / sr)
-                rows.append({"damage": name, "voice": voice, "method": mname,
-                             "rtf": round(rtf, 3), **score(ref, y, sr)})
+                rows.append(
+                    {"damage": name, "voice": voice, "method": mname, "rtf": round(rtf, 3), **score(ref, y, sr)}
+                )
                 if save_audio and voice == refs[0][0]:
                     slug = name.split(" (")[0].replace(" ", "-")
                     audio.save(out / "audio" / slug / f"{mname.split(' (')[0].replace(' ', '-')}.wav", y, sr)
@@ -224,7 +248,7 @@ def _mean(vals):
 
 def summarize(rows: list[dict], method_names: list[str]) -> dict:
     damages = list(dict.fromkeys(r["damage"] for r in rows))
-    table = {}
+    table: dict[str, dict[str, dict[str, float | None]]] = {}
     for d in damages:
         table[d] = {}
         for m in method_names:
@@ -245,14 +269,19 @@ def _fmt(v):
 def render(r: dict) -> str:
     methods_ = r["methods"]
     base = r["overall"].get("untouched", {})
-    lines = ["# Voice Studio benchmark", "",
-             "Standard measures: **OVRL / SIG / BAK** = Microsoft DNSMOS predicted listener ratings (1-5), "
-             "**PESQ** = ITU-T P.862.2 wideband (1-4.6), **STOI** = intelligibility (0-1). "
-             "Own measures: **echo** = level in pauses (dB, lower is better), **metal** = persistent ringing peaks "
-             "(dB, lower is better). Averaged over the voices tested. Best value per row in bold.", "",
-             "## Overall (all damaged cases)", "",
-             "| Method | " + " | ".join(COLUMNS) + " | speed (x real time) |",
-             "|---|" + "---|" * (len(COLUMNS) + 1)]
+    lines = [
+        "# Voice Studio benchmark",
+        "",
+        "Standard measures: **OVRL / SIG / BAK** = Microsoft DNSMOS predicted listener ratings (1-5), "
+        "**PESQ** = ITU-T P.862.2 wideband (1-4.6), **STOI** = intelligibility (0-1). "
+        "Own measures: **echo** = level in pauses (dB, lower is better), **metal** = persistent ringing peaks "
+        "(dB, lower is better). Averaged over the voices tested. Best value per row in bold.",
+        "",
+        "## Overall (all damaged cases)",
+        "",
+        "| Method | " + " | ".join(COLUMNS) + " | speed (x real time) |",
+        "|---|" + "---|" * (len(COLUMNS) + 1),
+    ]
     for m in methods_:
         o = r["overall"][m]
         cells = []

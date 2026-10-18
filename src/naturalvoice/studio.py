@@ -3,6 +3,7 @@
 Everything here is honest about what the engine can do. Kokoro has no emotion control, so a
 "delivery preset" is a named combination of speed, pitch, pause length, gain and a light EQ.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -13,6 +14,7 @@ import sys
 import threading
 import time
 import uuid
+from typing import Literal
 import zipfile
 from collections import OrderedDict
 from dataclasses import dataclass, field
@@ -38,21 +40,69 @@ ACX_ROOM_TONE_DB = -65.0
 # --------------------------------------------------------------------------- delivery presets
 # speed/pitch/pause multipliers and gain are applied on top of the line's own settings.
 DELIVERY: dict[str, dict] = {
-    "neutral": {"label": "Neutral", "does": "No change: the voice as the model reads it.",
-                "speed": 1.0, "pitch": 0.0, "pause": 1.0, "gain": 0.0, "eq": []},
-    "warm": {"label": "Warm", "does": "5% slower, half a semitone lower, more low-mid body, softer top.",
-             "speed": 0.95, "pitch": -0.5, "pause": 1.1, "gain": 0.0,
-             "eq": [("lowshelf", 220, 2.5), ("highshelf", 8000, -1.5)]},
-    "energetic": {"label": "Energetic", "does": "10% faster, slightly higher, shorter pauses, presence lift.",
-                  "speed": 1.1, "pitch": 0.5, "pause": 0.75, "gain": 1.0, "eq": [("peak", 3000, 2.0)]},
-    "calm": {"label": "Calm", "does": "10% slower, 30% longer pauses, a little quieter and darker.",
-             "speed": 0.9, "pitch": 0.0, "pause": 1.3, "gain": -1.0, "eq": [("highshelf", 6000, -2.0)]},
-    "serious": {"label": "Serious", "does": "5% slower, one semitone lower, longer pauses, low-end weight.",
-                "speed": 0.95, "pitch": -1.0, "pause": 1.15, "gain": 0.0, "eq": [("lowshelf", 150, 1.5)]},
-    "excited": {"label": "Excited", "does": "15% faster, one semitone higher, short pauses, louder and brighter.",
-                "speed": 1.15, "pitch": 1.0, "pause": 0.65, "gain": 1.5, "eq": [("peak", 3500, 2.5)]},
-    "soft": {"label": "Soft", "does": "8% slower, 3 dB quieter, longer pauses, rolled-off top.",
-             "speed": 0.92, "pitch": 0.0, "pause": 1.2, "gain": -3.0, "eq": [("highshelf", 5000, -3.0)]},
+    "neutral": {
+        "label": "Neutral",
+        "does": "No change: the voice as the model reads it.",
+        "speed": 1.0,
+        "pitch": 0.0,
+        "pause": 1.0,
+        "gain": 0.0,
+        "eq": [],
+    },
+    "warm": {
+        "label": "Warm",
+        "does": "5% slower, half a semitone lower, more low-mid body, softer top.",
+        "speed": 0.95,
+        "pitch": -0.5,
+        "pause": 1.1,
+        "gain": 0.0,
+        "eq": [("lowshelf", 220, 2.5), ("highshelf", 8000, -1.5)],
+    },
+    "energetic": {
+        "label": "Energetic",
+        "does": "10% faster, slightly higher, shorter pauses, presence lift.",
+        "speed": 1.1,
+        "pitch": 0.5,
+        "pause": 0.75,
+        "gain": 1.0,
+        "eq": [("peak", 3000, 2.0)],
+    },
+    "calm": {
+        "label": "Calm",
+        "does": "10% slower, 30% longer pauses, a little quieter and darker.",
+        "speed": 0.9,
+        "pitch": 0.0,
+        "pause": 1.3,
+        "gain": -1.0,
+        "eq": [("highshelf", 6000, -2.0)],
+    },
+    "serious": {
+        "label": "Serious",
+        "does": "5% slower, one semitone lower, longer pauses, low-end weight.",
+        "speed": 0.95,
+        "pitch": -1.0,
+        "pause": 1.15,
+        "gain": 0.0,
+        "eq": [("lowshelf", 150, 1.5)],
+    },
+    "excited": {
+        "label": "Excited",
+        "does": "15% faster, one semitone higher, short pauses, louder and brighter.",
+        "speed": 1.15,
+        "pitch": 1.0,
+        "pause": 0.65,
+        "gain": 1.5,
+        "eq": [("peak", 3500, 2.5)],
+    },
+    "soft": {
+        "label": "Soft",
+        "does": "8% slower, 3 dB quieter, longer pauses, rolled-off top.",
+        "speed": 0.92,
+        "pitch": 0.0,
+        "pause": 1.2,
+        "gain": -3.0,
+        "eq": [("highshelf", 5000, -3.0)],
+    },
 }
 
 # Delivery targets. ACX spec: RMS -23..-18 dBFS, peak <= -3 dBFS, noise floor <= -60 dBFS,
@@ -92,9 +142,12 @@ def clone_emotion_tags() -> list[str]:
         return list(CLONE_EMOTION_TAGS_FALLBACK)
 
 
-def parse_inline(text: str, passthrough: set[str] | frozenset = frozenset()) -> tuple[list[tuple[str, object]], list[str]]:
+type InlineSegment = tuple[Literal["text"], str] | tuple[Literal["pause"], float]
+
+
+def parse_inline(text: str, passthrough: set[str] | frozenset = frozenset()) -> tuple[list[InlineSegment], list[str]]:
     """Split line text into [('text', str) | ('pause', seconds)] plus warnings."""
-    out: list[tuple[str, object]] = []
+    out: list[InlineSegment] = []
     warnings: list[str] = []
     pos = 0
     for m in TAG.finditer(text):
@@ -105,7 +158,7 @@ def parse_inline(text: str, passthrough: set[str] | frozenset = frozenset()) -> 
             if not 0.1 <= sec <= 10:
                 warnings.append(f"[{body}] is outside 0.1-10 s; used {min(max(sec, 0.1), 10):g} s.")
                 sec = min(max(sec, 0.1), 10.0)
-            kind = ("pause", sec)
+            kind: tuple[Literal["pause"], float] = ("pause", sec)
         elif body.lower() == "break":
             kind = ("pause", BREAK_SECONDS)
         elif body.lower() in passthrough:
@@ -113,8 +166,8 @@ def parse_inline(text: str, passthrough: set[str] | frozenset = frozenset()) -> 
         else:
             warnings.append(f"Unknown tag [{body}] is read as text. Known tags: [pause 1.5s], [break].")
             continue
-        if text[pos:m.start()].strip():
-            out.append(("text", text[pos:m.start()]))
+        if text[pos : m.start()].strip():
+            out.append(("text", text[pos : m.start()]))
         out.append(kind)
         pos = m.end()
     if text[pos:].strip():
@@ -138,6 +191,7 @@ def mark_dictionary(text: str, dictionary: dict[str, str]) -> tuple[str, list[tu
     def sub(m):
         hits.append((m.group(0), lookup[m.group(0).lower()]))
         return f"\u27e6{len(hits) - 1}\u27e7"
+
     return rx.sub(sub, text), hits
 
 
@@ -147,8 +201,10 @@ def display_text(marked: str, hits) -> str:
 
 def spoken_text(marked: str, hits) -> str:
     """Text for engines without phoneme input: respellings applied, phoneme entries left as the word."""
-    return MARK.sub(lambda m: hits[int(m.group(1))][0] if is_phoneme_entry(hits[int(m.group(1))][1])
-                    else hits[int(m.group(1))][1], marked)
+    return MARK.sub(
+        lambda m: hits[int(m.group(1))][0] if is_phoneme_entry(hits[int(m.group(1))][1]) else hits[int(m.group(1))][1],
+        marked,
+    )
 
 
 SUB_TIME = re.compile(r"(?:(\d{1,2}):)?(\d{1,2}):(\d{2})[,.](\d{1,3})")
@@ -193,7 +249,7 @@ def parse_subtitles(text: str, voice: str = "af_heart") -> dict:
         if end <= start:
             warnings.append(f"Block {bi}: ends before it starts; skipped.")
             continue
-        body = " ".join(r.strip() for r in rows[ti + 1:])
+        body = " ".join(r.strip() for r in rows[ti + 1 :])
         speaker = ""
         vm = re.match(r"^<v(?:\.[^ >]*)?\s+([^>]{1,40})>", body)
         if vm:
@@ -209,7 +265,9 @@ def parse_subtitles(text: str, voice: str = "af_heart") -> dict:
         ln.update(start=round(start, 3), end=round(end, 3), pause=0.0)
         lines.append(ln)
     if not lines:
-        raise StudioError("No subtitle cues found. Use an .srt or .vtt file with lines like 00:00:01,000 --> 00:00:03,000.")
+        raise StudioError(
+            "No subtitle cues found. Use an .srt or .vtt file with lines like 00:00:01,000 --> 00:00:03,000."
+        )
     if len(lines) > MAX_LINES:
         raise StudioError(f"The file has {len(lines)} cues; {MAX_LINES} max.")
     if sum(len(ln["text"]) for ln in lines) > MAX_CHARS:
@@ -252,16 +310,29 @@ def parse_script(text: str, cast: dict[str, str] | None = None, default_voice: s
         lines.append(new_line(body, speakers[key], speaker))
     if len(lines) > MAX_LINES:
         raise StudioError(f"Script has {len(lines)} lines; {MAX_LINES} max.")
-    names = {}
+    names: dict[str, str] = {}
     for ln in lines:
         names.setdefault(ln["speaker"].lower(), ln["speaker"])
     return {"lines": lines, "cast": [{"speaker": names[k], "voice": v} for k, v in speakers.items()]}
 
 
 def new_line(text: str = "", voice: str = "af_heart", speaker: str = "") -> dict:
-    return {"id": uuid.uuid4().hex[:12], "text": text, "voice": voice, "speaker": speaker, "speed": 1.0,
-            "pitch": 0.0, "volume": 0.0, "pause": 0.4, "delivery": "neutral", "take": 0, "takes": [0], "target": None,
-            "start": None, "end": None}
+    return {
+        "id": uuid.uuid4().hex[:12],
+        "text": text,
+        "voice": voice,
+        "speaker": speaker,
+        "speed": 1.0,
+        "pitch": 0.0,
+        "volume": 0.0,
+        "pause": 0.4,
+        "delivery": "neutral",
+        "take": 0,
+        "takes": [0],
+        "target": None,
+        "start": None,
+        "end": None,
+    }
 
 
 def lint_project(project: dict) -> list[str]:
@@ -269,7 +340,7 @@ def lint_project(project: dict) -> list[str]:
     out = []
     ctags = None
     for i, ln in enumerate(project.get("lines", []), 1):
-        pt = frozenset()
+        pt: frozenset[str] = frozenset()
         if str(ln.get("voice", "")).startswith("clone:"):
             ctags = clone_emotion_tags() if ctags is None else ctags
             pt = frozenset(ctags)
@@ -302,6 +373,7 @@ def validate_style(st_: dict) -> dict:
         if not np.isfinite(v) or not lo <= v <= hi:
             raise StudioError(f"Style {k} must be between {lo} and {hi}.")
         return round(v, 3)
+
     eq = []
     for band in (st_.get("eq") or [])[:4]:
         if not isinstance(band, (list, tuple)) or len(band) != 3 or band[0] not in EQ_KINDS:
@@ -310,9 +382,15 @@ def validate_style(st_: dict) -> dict:
         if not (60 <= f <= 12000 and -6 <= g <= 6):
             raise StudioError("Style EQ: 60-12000 Hz, -6..+6 dB.")
         eq.append([band[0], round(f), round(g, 1)])
-    out = {"name": name, "speed": num("speed", 0.5, 2.0, 1.0), "pitch": num("pitch", -4, 4, 0.0),
-           "gain": num("gain", -24, 12, 0.0), "pause": num("pause", 0.3, 3.0, 1.0),
-           "pause_after": num("pause_after", 0.0, 10.0, 0.4), "eq": eq}
+    out = {
+        "name": name,
+        "speed": num("speed", 0.5, 2.0, 1.0),
+        "pitch": num("pitch", -4, 4, 0.0),
+        "gain": num("gain", -24, 12, 0.0),
+        "pause": num("pause", 0.3, 3.0, 1.0),
+        "pause_after": num("pause_after", 0.0, 10.0, 0.4),
+        "eq": eq,
+    }
     sid = st_.get("id")
     if sid is not None:
         if not isinstance(sid, str) or not PROJECT_ID.match(sid):
@@ -325,18 +403,31 @@ def delivery_of(line: dict) -> dict:
     """The delivery recipe for a line: a built-in preset, or the line's custom style (stored by value)."""
     if line.get("delivery") == "custom" and isinstance(line.get("style"), dict):
         s_ = line["style"]
-        return {"label": s_.get("name", "Custom"), "speed": s_["speed"], "pitch": s_["pitch"], "pause": s_["pause"],
-                "gain": s_["gain"], "eq": [tuple(b) for b in s_.get("eq", [])]}
+        return {
+            "label": s_.get("name", "Custom"),
+            "speed": s_["speed"],
+            "pitch": s_["pitch"],
+            "pause": s_["pause"],
+            "gain": s_["gain"],
+            "eq": [tuple(b) for b in s_.get("eq", [])],
+        }
     return DELIVERY.get(line.get("delivery", "neutral"), DELIVERY["neutral"])
 
 
 def style_from_line(line: dict, name: str) -> dict:
     """Capture a line's effective settings (its delivery folded with its own speed/pitch/volume) as a style."""
     d = delivery_of(line)
-    return validate_style({"name": name, "speed": float(np.clip(line["speed"] * d["speed"], 0.5, 2)),
-                           "pitch": float(np.clip(line["pitch"] + d["pitch"], -4, 4)),
-                           "gain": float(np.clip(line["volume"] + d["gain"], -24, 12)), "pause": d["pause"],
-                           "pause_after": line["pause"], "eq": [list(b) for b in d["eq"]]})
+    return validate_style(
+        {
+            "name": name,
+            "speed": float(np.clip(line["speed"] * d["speed"], 0.5, 2)),
+            "pitch": float(np.clip(line["pitch"] + d["pitch"], -4, 4)),
+            "gain": float(np.clip(line["volume"] + d["gain"], -24, 12)),
+            "pause": d["pause"],
+            "pause_after": line["pause"],
+            "eq": [list(b) for b in d["eq"]],
+        }
+    )
 
 
 def styles_path() -> Path:
@@ -378,7 +469,11 @@ NOTE_RULES: list[tuple[str, dict, str]] = [
     (r"\brelaxed\b|\blaid[- ]back\b", {"speed": 0.95, "pause": 1.1}, "relaxed: a bit slower, longer pauses"),
     (r"\b(much|really|very) fast(er)?\b", {"speed": 1.15}, "much faster"),
     (r"\bfast(er)?\b|\bquick(er|ly)?\b(?! pause)|\bspeed up\b|\bpacy\b", {"speed": 1.08}, "faster"),
-    (r"\brush(ed|ing)?\b|\burgent(ly)?\b|\bhurr(y|ied)\b", {"speed": 1.12, "pause": 0.8}, "rushed: faster, shorter pauses"),
+    (
+        r"\brush(ed|ing)?\b|\burgent(ly)?\b|\bhurr(y|ied)\b",
+        {"speed": 1.12, "pause": 0.8},
+        "rushed: faster, shorter pauses",
+    ),
     (r"\bhigher\b|\bbrighter\b|\blighter\b", {"pitch": 1.0}, "higher pitch"),
     (r"\blower\b|\bdeeper\b|\bdarker\b", {"pitch": -1.0}, "lower pitch"),
     (r"\bwhisper[- ]?soft\b|\bbarely audible\b", {"volume": -6.0}, "much quieter"),
@@ -402,9 +497,48 @@ NOTE_EMOTIONS: list[tuple[str, str, str, dict, str]] = [
     (r"\bserious(ly)?\b|\bgrave\b|\bstern\b|\bsombre\b|\bsomber\b", "", "serious", {}, "serious"),
     (r"\bsad(ly)?\b|\bmelanchol\w*", "", "soft", {"speed": 0.93, "pitch": -0.5}, "sad"),
 ]
-NOTE_STOP = {"a", "an", "the", "and", "but", "with", "at", "end", "of", "to", "it", "bit", "slightly", "little",
-             "more", "less", "very", "really", "much", "just", "touch", "in", "on", "start", "down", "up", "be",
-             "please", "line", "this", "voice", "read", "tone", "like", "sound", "make", "keep", "not", "too", "so"}
+NOTE_STOP = {
+    "a",
+    "an",
+    "the",
+    "and",
+    "but",
+    "with",
+    "at",
+    "end",
+    "of",
+    "to",
+    "it",
+    "bit",
+    "slightly",
+    "little",
+    "more",
+    "less",
+    "very",
+    "really",
+    "much",
+    "just",
+    "touch",
+    "in",
+    "on",
+    "start",
+    "down",
+    "up",
+    "be",
+    "please",
+    "line",
+    "this",
+    "voice",
+    "read",
+    "tone",
+    "like",
+    "sound",
+    "make",
+    "keep",
+    "not",
+    "too",
+    "so",
+}
 
 
 def parse_note(note: str, line: dict, clone_tags: list[str] | None = None) -> dict:
@@ -429,6 +563,7 @@ def parse_note(note: str, line: dict, clone_tags: list[str] | None = None) -> di
             found = found or m
             used_spans.append(m.span())
         return found
+
     for rx, eff, say in NOTE_RULES:
         if hit(rx):
             k = 0.5 if mild else 1.0
@@ -453,20 +588,26 @@ def parse_note(note: str, line: dict, clone_tags: list[str] | None = None) -> di
             delivery = preset
             speed *= eff.get("speed", 1)
             pitch += eff.get("pitch", 0)
-            understood.append(f"{say}: {DELIVERY[preset]['label']} delivery" +
-                              (f", {eff.get('speed', 1):g}x speed" if "speed" in eff else "") +
-                              (f", {eff['pitch']:+g} st" if "pitch" in eff else ""))
+            understood.append(
+                f"{say}: {DELIVERY[preset]['label']} delivery"
+                + (f", {eff.get('speed', 1):g}x speed" if "speed" in eff else "")
+                + (f", {eff['pitch']:+g} st" if "pitch" in eff else "")
+            )
         else:
             understood.append(f"{say}: ignored (already using {DELIVERY[delivery]['label']})")
     used = set()
     for a, b in used_spans:
         used.update(re.findall(r"[a-z']+", low[a:b]))
     unused = [w for w in dict.fromkeys(re.findall(r"[a-z']+", low)) if w not in used and w not in NOTE_STOP]
-    new = {"speed": round(float(np.clip(line.get("speed", 1) * speed, 0.5, 2.0)), 2),
-           "pitch": round(float(np.clip(line.get("pitch", 0) + pitch, -4, 4)) * 2) / 2,
-           "volume": round(float(np.clip(line.get("volume", 0) + vol, -24, 12)) * 2) / 2,
-           "pause": round(float(np.clip(pause_after if pause_after is not None else line.get("pause", 0.4) * pmul, 0, 10)), 2),
-           "delivery": delivery or line.get("delivery", "neutral")}
+    new = {
+        "speed": round(float(np.clip(line.get("speed", 1) * speed, 0.5, 2.0)), 2),
+        "pitch": round(float(np.clip(line.get("pitch", 0) + pitch, -4, 4)) * 2) / 2,
+        "volume": round(float(np.clip(line.get("volume", 0) + vol, -24, 12)) * 2) / 2,
+        "pause": round(
+            float(np.clip(pause_after if pause_after is not None else line.get("pause", 0.4) * pmul, 0, 10)), 2
+        ),
+        "delivery": delivery or line.get("delivery", "neutral"),
+    }
     text = line.get("text", "")
     if tags:
         have = {m.group(1).strip().lower() for m in TAG.finditer(text)}
@@ -503,9 +644,21 @@ def _pitch(x: np.ndarray, semitones: float) -> np.ndarray:
 
 def line_key(line: dict, dictionary: dict, polish: bool) -> str:
     used = {k: v for k, v in (dictionary or {}).items() if k.lower() in line["text"].lower()}
-    blob = json.dumps([line["text"], line["voice"], line["speed"], line["pitch"], line["volume"],
-                       line["delivery"], used, polish, int(line.get("take") or 0),
-                       line.get("style") if line.get("delivery") == "custom" else None], sort_keys=True)
+    blob = json.dumps(
+        [
+            line["text"],
+            line["voice"],
+            line["speed"],
+            line["pitch"],
+            line["volume"],
+            line["delivery"],
+            used,
+            polish,
+            int(line.get("take") or 0),
+            line.get("style") if line.get("delivery") == "custom" else None,
+        ],
+        sort_keys=True,
+    )
     return hashlib.sha256(blob.encode()).hexdigest()
 
 
@@ -517,7 +670,7 @@ def _kokoro_phrase(k, marked: str, hits, voice, speed: float, lang: str) -> np.n
         return np.asarray(audio, dtype=np.float32)
     parts, pos = [], 0
     for m in MARK.finditer(marked):
-        before = marked[pos:m.start()]
+        before = marked[pos : m.start()]
         if before.strip():
             parts.append(k.tokenizer.phonemize(spoken_text(before, hits), lang))
         orig, val = hits[int(m.group(1))]
@@ -570,8 +723,13 @@ def render_line(line: dict, dictionary: dict | None = None, polish: bool = False
             if sr != SR:
                 a = signal.resample_poly(a, SR, sr).astype(np.float32)
             a = np.asarray(a, np.float32).reshape(-1)
-            phrases.append({"start": (cursor + int(0.15 * SR)) / SR, "end": (cursor + max(len(a) - int(0.3 * SR), 1)) / SR,
-                            "text": " ".join(TAG.sub(" ", display_text(marked, hits)).split())})  # tags are sounds, not words
+            phrases.append(
+                {
+                    "start": (cursor + int(0.15 * SR)) / SR,
+                    "end": (cursor + max(len(a) - int(0.3 * SR), 1)) / SR,
+                    "text": " ".join(TAG.sub(" ", display_text(marked, hits)).split()),
+                }
+            )  # tags are sounds, not words
             pieces.append(a)
             cursor += len(a)
             continue
@@ -607,19 +765,26 @@ def time_stretch(x: np.ndarray, factor: float) -> np.ndarray:
         return x
     from pedalboard import time_stretch as ts
 
-    return ts(x[None, :].astype(np.float32), SR, stretch_factor=float(factor), high_quality=True,
-              preserve_formants=True)[0].astype(np.float32)
+    return ts(
+        x[None, :].astype(np.float32), SR, stretch_factor=float(factor), high_quality=True, preserve_formants=True
+    )[0].astype(np.float32)
 
 
 def _scale_phrases(ph: list[dict], ratio: float) -> list[dict]:
     return [{**p, "start": p["start"] * ratio, "end": p["end"] * ratio} for p in ph]
 
 
-def fit_line(line: dict, seconds: float, dictionary: dict, polish: bool, base=None) -> tuple[np.ndarray, list[dict], dict]:
+def fit_line(
+    line: dict, seconds: float, dictionary: dict, polish: bool, base=None
+) -> tuple[np.ndarray, list[dict], dict]:
     """Render a line to a target length: speed first (safe range), then a fine time-stretch."""
     a, ph = base or render_line(line, dictionary, polish)
     need = len(a) / (seconds * SR)  # >1 means it must get faster
-    info = {"target": round(seconds, 2), "needed_factor": round(need, 3), "warning": None}
+    info: dict[str, float | str | None] = {
+        "target": round(seconds, 2),
+        "needed_factor": round(need, 3),
+        "warning": None,
+    }
     f = float(np.clip(need, *SAFE_SPEED))
     if abs(f - 1) > 0.01:
         a, ph = render_line({**line, "speed": float(np.clip(line["speed"] * f, 0.5, 2.0))}, dictionary, polish)
@@ -632,8 +797,10 @@ def fit_line(line: dict, seconds: float, dictionary: dict, polish: bool, base=No
         ph = _scale_phrases(ph, len(a) / n0)
     info.update(speed_factor=round(f, 3), stretch=round(r, 3), achieved=round(len(a) / SR, 2))
     if not SAFE_SPEED[0] <= need <= SAFE_SPEED[1]:
-        info["warning"] = (f"Needs {need:.2f}x tempo to fit {seconds:g} s; capped at the safe "
-                           f"{SAFE_SPEED[0]}-{SAFE_SPEED[1]}x range. Edit the text or the target.")
+        info["warning"] = (
+            f"Needs {need:.2f}x tempo to fit {seconds:g} s; capped at the safe "
+            f"{SAFE_SPEED[0]}-{SAFE_SPEED[1]}x range. Edit the text or the target."
+        )
     return a, ph, info
 
 
@@ -644,7 +811,7 @@ def room_tone(n: int, sr: int, rms_dbfs: float = ACX_ROOM_TONE_DB, seed: int = 1
     b, a = signal.butter(1, 600 / (sr / 2), btype="low")
     x = signal.lfilter(b, a, x)[sr:]
     x = signal.lfilter(*signal.butter(2, 60 / (sr / 2), btype="high"), x)
-    x *= 10 ** (rms_dbfs / 20) / (np.sqrt(np.mean(x ** 2)) + 1e-12)
+    x *= 10 ** (rms_dbfs / 20) / (np.sqrt(np.mean(x**2)) + 1e-12)
     return x.astype(np.float32)
 
 
@@ -676,16 +843,21 @@ def noise_floor_db(x: np.ndarray, sr: int) -> float:
     w = int(0.5 * sr)
     if len(x) < w:
         return rms_db(x)
-    e = np.convolve(np.asarray(x, np.float64) ** 2, np.ones(w) / w, mode="valid")[::max(1, w // 10)]
+    e = np.convolve(np.asarray(x, np.float64) ** 2, np.ones(w) / w, mode="valid")[:: max(1, w // 10)]
     return float(10 * np.log10(np.min(e) + 1e-20))
 
 
 def measure(x: np.ndarray, sr: int) -> dict:
     def r(v):
         return round(v, 2) if np.isfinite(v) else None
-    return {"lufs": r(lufs(x, sr)), "true_peak_db": r(true_peak_db(x, sr)), "rms_db": r(rms_db(x)),
-            "sample_peak_db": r(float(20 * np.log10(np.max(np.abs(x)) + 1e-12))) if len(x) else None,
-            "noise_floor_db": r(noise_floor_db(x, sr))}
+
+    return {
+        "lufs": r(lufs(x, sr)),
+        "true_peak_db": r(true_peak_db(x, sr)),
+        "rms_db": r(rms_db(x)),
+        "sample_peak_db": r(float(20 * np.log10(np.max(np.abs(x)) + 1e-12))) if len(x) else None,
+        "noise_floor_db": r(noise_floor_db(x, sr)),
+    }
 
 
 def master(x: np.ndarray, sr: int, target: str) -> tuple[np.ndarray, float, dict]:
@@ -694,8 +866,17 @@ def master(x: np.ndarray, sr: int, target: str) -> tuple[np.ndarray, float, dict
     x = np.asarray(x, np.float32)
     if target == "raw" or not np.any(x):
         m = measure(x, sr)
-        return x, 1.0, {"target": t["label"], "measured": m, "met": True,
-                        "note": "Raw: levels untouched." + (" Peaks above 0 dBFS will clip." if (m["sample_peak_db"] or -99) > 0 else "")}
+        return (
+            x,
+            1.0,
+            {
+                "target": t["label"],
+                "measured": m,
+                "met": True,
+                "note": "Raw: levels untouched."
+                + (" Peaks above 0 dBFS will clip." if (m["sample_peak_db"] or -99) > 0 else ""),
+            },
+        )
     if target == "acx":
         gain = 10 ** ((t["rms"] - rms_db(x)) / 20)
         y = x * gain
@@ -712,11 +893,17 @@ def master(x: np.ndarray, sr: int, target: str) -> tuple[np.ndarray, float, dict
         ok_peak = m["true_peak_db"] is not None and m["true_peak_db"] <= -3.0
         nf = m["noise_floor_db"]
         ok_nf = nf is None or nf <= -60
-        note = (f"ACX: RMS {m['rms_db']} dBFS (needs -23..-18) {'OK' if ok_rms else 'NOT MET'}; "
-                f"peak {m['true_peak_db']} dBFS (needs <= -3) {'OK' if ok_peak else 'NOT MET'}; "
-                f"noise floor {nf if nf is not None else 'digital silence'} (needs <= -60) {'OK' if ok_nf else 'NOT MET'}. "
-                "Pauses are digital silence; ACX reviewers may ask for real room tone. ACX also wants 44.1 kHz MP3 (192 kbps+ CBR).")
-        return y2.astype(np.float32), float(gain), {"target": t["label"], "measured": m, "met": ok_rms and ok_peak and ok_nf, "note": note}
+        note = (
+            f"ACX: RMS {m['rms_db']} dBFS (needs -23..-18) {'OK' if ok_rms else 'NOT MET'}; "
+            f"peak {m['true_peak_db']} dBFS (needs <= -3) {'OK' if ok_peak else 'NOT MET'}; "
+            f"noise floor {nf if nf is not None else 'digital silence'} (needs <= -60) {'OK' if ok_nf else 'NOT MET'}. "
+            "Pauses are digital silence; ACX reviewers may ask for real room tone. ACX also wants 44.1 kHz MP3 (192 kbps+ CBR)."
+        )
+        return (
+            y2.astype(np.float32),
+            float(gain),
+            {"target": t["label"], "measured": m, "met": ok_rms and ok_peak and ok_nf, "note": note},
+        )
     goal, tp = t["lufs"], t["tp"]
     ceiling = tp - 0.3
     y = x
@@ -737,21 +924,28 @@ def master(x: np.ndarray, sr: int, target: str) -> tuple[np.ndarray, float, dict
         ceiling -= 0.3
     m = measure(y, sr)
     met = m["lufs"] is not None and abs(m["lufs"] - goal) <= 1.0 and (m["true_peak_db"] or 0) <= tp
-    note = (f"Integrated {m['lufs']} LUFS (target {goal:g}), true peak {m['true_peak_db']} dBTP (max {tp:g}). "
-            + ("Target met." if met else "Target NOT met: the content is too short or too peaky to reach it cleanly."))
+    note = f"Integrated {m['lufs']} LUFS (target {goal:g}), true peak {m['true_peak_db']} dBTP (max {tp:g}). " + (
+        "Target met." if met else "Target NOT met: the content is too short or too peaky to reach it cleanly."
+    )
     return y.astype(np.float32), float(gain), {"target": t["label"], "measured": m, "met": bool(met), "note": note}
 
 
 # --------------------------------------------------------------------------- music bed
-def duck_gain(voice: np.ndarray, sr: int, depth_db: float = 12.0, attack_ms: float = 80.0,
-              release_ms: float = 400.0, threshold_db: float = -40.0) -> np.ndarray:
+def duck_gain(
+    voice: np.ndarray,
+    sr: int,
+    depth_db: float = 12.0,
+    attack_ms: float = 80.0,
+    release_ms: float = 400.0,
+    threshold_db: float = -40.0,
+) -> np.ndarray:
     """Per-sample gain (linear) for the music: drops by depth_db while the voice is speaking."""
     blk = max(1, sr // 100)  # 10 ms
     n = int(np.ceil(len(voice) / blk)) if len(voice) else 0
     if n == 0:
         return np.ones(0, np.float32)
     v = np.pad(np.asarray(voice, np.float64), (0, n * blk - len(voice))).reshape(n, blk)
-    lvl = 10 * np.log10(np.mean(v ** 2, axis=1) + 1e-12)
+    lvl = 10 * np.log10(np.mean(v**2, axis=1) + 1e-12)
     speech = lvl > threshold_db
     # hold through short gaps between words, and start ducking a little ahead of speech
     from scipy.ndimage import maximum_filter1d
@@ -770,9 +964,20 @@ def duck_gain(voice: np.ndarray, sr: int, depth_db: float = 12.0, attack_ms: flo
     return (10 ** (gs / 20)).astype(np.float32)
 
 
-def music_bed(path: Path, length: int, voice: np.ndarray, sr: int, level_db: float = -18.0, loop: bool = True,
-              duck: bool = True, duck_db: float = 12.0, attack_ms: float = 80.0, release_ms: float = 400.0,
-              fade_in: float = 1.0, fade_out: float = 2.0) -> np.ndarray:
+def music_bed(
+    path: Path,
+    length: int,
+    voice: np.ndarray,
+    sr: int,
+    level_db: float = -18.0,
+    loop: bool = True,
+    duck: bool = True,
+    duck_db: float = 12.0,
+    attack_ms: float = 80.0,
+    release_ms: float = 400.0,
+    fade_in: float = 1.0,
+    fade_out: float = 2.0,
+) -> np.ndarray:
     data, _ = aio.load(path, sr=sr)
     m = data.mean(axis=1).astype(np.float32) if data.ndim == 2 else data.astype(np.float32)
     if not len(m) or not np.any(m):
@@ -789,7 +994,7 @@ def music_bed(path: Path, length: int, voice: np.ndarray, sr: int, level_db: flo
         m[:fi] *= np.linspace(0, 1, min(fi, len(m)))
     if fo:
         k = min(fo, len(m))
-        m[len(m) - k:] *= np.linspace(1, 0, k)
+        m[len(m) - k :] *= np.linspace(1, 0, k)
     return m.astype(np.float32)
 
 
@@ -828,7 +1033,9 @@ def caption_cues(phrases: list[dict], max_chars: int = 84, max_dur: float = 6.0)
         if len(text) <= max_chars:
             pieces.append({"start": p["start"], "end": p["end"], "text": text, "speaker": p.get("speaker", "")})
             continue
-        words, parts, cur = text.split(), [], []
+        words = text.split()
+        parts: list[str] = []
+        cur: list[str] = []
         for w in words:
             if cur and len(" ".join(cur + [w])) > max_chars * 0.6:
                 parts.append(" ".join(cur))
@@ -845,8 +1052,13 @@ def caption_cues(phrases: list[dict], max_chars: int = 84, max_dur: float = 6.0)
     cues: list[dict] = []
     for pc in pieces:
         last = cues[-1] if cues else None
-        if (last and last["speaker"] == pc["speaker"] and len(last["text"]) + 1 + len(pc["text"]) <= max_chars
-                and pc["end"] - last["start"] <= max_dur and pc["start"] - last["end"] < 0.6):
+        if (
+            last
+            and last["speaker"] == pc["speaker"]
+            and len(last["text"]) + 1 + len(pc["text"]) <= max_chars
+            and pc["end"] - last["start"] <= max_dur
+            and pc["start"] - last["end"] < 0.6
+        ):
             last["text"] += " " + pc["text"]
             last["end"] = pc["end"]
         else:
@@ -855,13 +1067,15 @@ def caption_cues(phrases: list[dict], max_chars: int = 84, max_dur: float = 6.0)
 
 
 def to_srt(cues: list[dict]) -> str:
-    return "".join(f"{i}\n{_ts(c['start'], ',')} --> {_ts(c['end'], ',')}\n{_wrap(c['text'])}\n\n"
-                   for i, c in enumerate(cues, 1))
+    return "".join(
+        f"{i}\n{_ts(c['start'], ',')} --> {_ts(c['end'], ',')}\n{_wrap(c['text'])}\n\n" for i, c in enumerate(cues, 1)
+    )
 
 
 def to_vtt(cues: list[dict]) -> str:
-    return "WEBVTT\n\n" + "".join(f"{i}\n{_ts(c['start'], '.')} --> {_ts(c['end'], '.')}\n{_wrap(c['text'])}\n\n"
-                                  for i, c in enumerate(cues, 1))
+    return "WEBVTT\n\n" + "".join(
+        f"{i}\n{_ts(c['start'], '.')} --> {_ts(c['end'], '.')}\n{_wrap(c['text'])}\n\n" for i, c in enumerate(cues, 1)
+    )
 
 
 # --------------------------------------------------------------------------- render job
@@ -908,8 +1122,22 @@ def write_audio(path_base: Path, x: np.ndarray, sr: int, fmt: str) -> Path:
         tmp = path_base.with_suffix(".tmp.wav")
         aio.save(tmp, x, sr)
         try:
-            subprocess.run([aio._ffmpeg(), "-y", "-loglevel", "error", "-i", str(tmp), "-codec:a", "libmp3lame",
-                            "-b:a", "320k", str(path)], check=True)
+            subprocess.run(
+                [
+                    aio._ffmpeg(),
+                    "-y",
+                    "-loglevel",
+                    "error",
+                    "-i",
+                    str(tmp),
+                    "-codec:a",
+                    "libmp3lame",
+                    "-b:a",
+                    "320k",
+                    str(path),
+                ],
+                check=True,
+            )
         finally:
             tmp.unlink(missing_ok=True)
     else:
@@ -924,7 +1152,9 @@ def _resample(x: np.ndarray, sr: int) -> np.ndarray:
     return signal.resample_poly(x, sr // g, SR // g).astype(np.float32)
 
 
-def render_project(project: dict, opts: RenderOptions, out_dir: Path, progress=None, cancel: threading.Event | None = None) -> dict:
+def render_project(
+    project: dict, opts: RenderOptions, out_dir: Path, progress=None, cancel: threading.Event | None = None
+) -> dict:
     """Render a validated project into out_dir. Returns a result dict with public file names."""
     t0 = time.time()
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -958,7 +1188,11 @@ def render_project(project: dict, opts: RenderOptions, out_dir: Path, progress=N
                 a, ph = render_line(ln, dictionary, opts.polish)
             rendered.append((i, a, ph))
         except Exception as e:  # one bad line must not kill the render unless asked
-            msg = str(e) if isinstance(e, (RuntimeError, ValueError, KeyError)) else "The voice engine failed on this line."
+            msg = (
+                str(e)
+                if isinstance(e, (RuntimeError, ValueError, KeyError))
+                else "The voice engine failed on this line."
+            )
             msg = msg.strip("'\"") or "The voice engine failed on this line."
             errors.append({"line": i + 1, "id": ln.get("id"), "error": msg})
             if opts.stop_on_error:
@@ -975,8 +1209,9 @@ def render_project(project: dict, opts: RenderOptions, out_dir: Path, progress=N
         head = 0.0
     elif opts.target_duration:
         prog("Fitting to time", 0.8)
-        rendered, pauses, fit = fit_project(rendered, lines, pauses, head, tail, float(opts.target_duration),
-                                            dictionary, opts.polish, cancel)
+        rendered, pauses, fit = fit_project(
+            rendered, lines, pauses, head, tail, float(opts.target_duration), dictionary, opts.polish, cancel
+        )
     prog("Mixing", 0.86)
     pos = int(head * SR)
     placed, timeline, phrases_abs = [], [], []
@@ -985,25 +1220,55 @@ def render_project(project: dict, opts: RenderOptions, out_dir: Path, progress=N
         ln = lines[idx]
         if timed and ln.get("start") is not None:
             pos = int(round(float(ln["start"]) * SR))
-            nxt = next((lines[j]["start"] for j in range(idx + 1, len(lines))
-                        if lines[j].get("start") is not None and lines[j]["text"].strip()), None)
+            nxt = next(
+                (
+                    lines[j]["start"]
+                    for j in range(idx + 1, len(lines))
+                    if lines[j].get("start") is not None and lines[j]["text"].strip()
+                ),
+                None,
+            )
             end_t = (pos + len(a)) / SR
             limit = ln.get("end") if ln.get("end") is not None else nxt
             if nxt is not None and end_t > nxt + 0.01:
-                overlaps.append({"line": idx + 1, "kind": "overlap", "by": round(end_t - nxt, 2),
-                                 "message": f"Line {idx + 1} runs {end_t - nxt:.2f} s into line {idx + 2}'s start; both are kept."})
+                overlaps.append(
+                    {
+                        "line": idx + 1,
+                        "kind": "overlap",
+                        "by": round(end_t - nxt, 2),
+                        "message": f"Line {idx + 1} runs {end_t - nxt:.2f} s into line {idx + 2}'s start; both are kept.",
+                    }
+                )
             elif limit is not None and end_t > limit + 0.01:
-                overlaps.append({"line": idx + 1, "kind": "overrun", "by": round(end_t - limit, 2),
-                                 "message": f"Line {idx + 1} ends {end_t - limit:.2f} s after its cue end (no overlap)."})
+                overlaps.append(
+                    {
+                        "line": idx + 1,
+                        "kind": "overrun",
+                        "by": round(end_t - limit, 2),
+                        "message": f"Line {idx + 1} ends {end_t - limit:.2f} s after its cue end (no overlap).",
+                    }
+                )
         placed.append((idx, pos, a))
         spk = ln.get("speaker") or ln["voice"]
-        timeline.append({"line": idx + 1, "id": ln.get("id"), "speaker": ln.get("speaker", ""), "voice": ln["voice"],
-                         "delivery": ln["delivery"], "start": round(pos / SR, 3), "end": round((pos + len(a)) / SR, 3),
-                         "text": ln["text"],
-                         "phrases": [{"start": round(pos / SR + p["start"], 3), "end": round(pos / SR + p["end"], 3),
-                                      "text": p["text"]} for p in ph]})
-        phrases_abs += [{"start": pos / SR + p["start"], "end": pos / SR + p["end"], "text": p["text"], "speaker": spk}
-                        for p in ph]
+        timeline.append(
+            {
+                "line": idx + 1,
+                "id": ln.get("id"),
+                "speaker": ln.get("speaker", ""),
+                "voice": ln["voice"],
+                "delivery": ln["delivery"],
+                "start": round(pos / SR, 3),
+                "end": round((pos + len(a)) / SR, 3),
+                "text": ln["text"],
+                "phrases": [
+                    {"start": round(pos / SR + p["start"], 3), "end": round(pos / SR + p["end"], 3), "text": p["text"]}
+                    for p in ph
+                ],
+            }
+        )
+        phrases_abs += [
+            {"start": pos / SR + p["start"], "end": pos / SR + p["end"], "text": p["text"], "speaker": spk} for p in ph
+        ]
         k = len(placed) - 1
         pos += len(a) + (int(round(pauses[k] * SR)) if k < len(pauses) else 0)
     total = max(st_ + len(a_) for _, st_, a_ in placed) + int(tail * SR)
@@ -1014,22 +1279,40 @@ def render_project(project: dict, opts: RenderOptions, out_dir: Path, progress=N
         video_len = int(round(probe_duration(opts.video) * SR))
         speech_end = max(st_ + len(a_) for _, st_, a_ in placed)
         if speech_end > video_len:
-            overlaps.append({"line": placed[-1][0] + 1, "kind": "past_video", "by": round((speech_end - video_len) / SR, 2),
-                             "message": f"Speech runs {(speech_end - video_len) / SR:.2f} s past the end of the video; "
-                                        "the dub keeps it (the picture holds its last frame)."})
+            overlaps.append(
+                {
+                    "line": placed[-1][0] + 1,
+                    "kind": "past_video",
+                    "by": round((speech_end - video_len) / SR, 2),
+                    "message": f"Speech runs {(speech_end - video_len) / SR:.2f} s past the end of the video; "
+                    "the dub keeps it (the picture holds its last frame).",
+                }
+            )
         total = max(video_len, speech_end)
     stems: dict[str, np.ndarray] = {}
     voice_bus = np.zeros(total, np.float32)
     for idx, start, a in placed:
         ln = lines[idx]
         key = ln.get("speaker") or ln["voice"]
-        stems.setdefault(key, np.zeros(total, np.float32))[start:start + len(a)] += a
-        voice_bus[start:start + len(a)] += a
+        stems.setdefault(key, np.zeros(total, np.float32))[start : start + len(a)] += a
+        voice_bus[start : start + len(a)] += a
     music = None
     if opts.music is not None:
         prog("Adding music bed", 0.88)
-        music = music_bed(opts.music, total, voice_bus, SR, opts.music_level_db, opts.music_loop, opts.duck,
-                          opts.duck_db, opts.attack_ms, opts.release_ms, opts.fade_in, opts.fade_out)
+        music = music_bed(
+            opts.music,
+            total,
+            voice_bus,
+            SR,
+            opts.music_level_db,
+            opts.music_loop,
+            opts.duck,
+            opts.duck_db,
+            opts.attack_ms,
+            opts.release_ms,
+            opts.fade_in,
+            opts.fade_out,
+        )
     original = None
     if opts.video is not None and opts.video_mode == "duck":
         prog("Ducking original audio", 0.89)
@@ -1048,10 +1331,16 @@ def render_project(project: dict, opts: RenderOptions, out_dir: Path, progress=N
             m = report["measured"]
             nf = m["noise_floor_db"]
             report["met"] = bool(-23 <= m["rms_db"] <= -18 and m["true_peak_db"] <= -3.0 and nf <= -60)
-            report["note"] = (f"ACX: RMS {m['rms_db']} dBFS (needs -23..-18), peak {m['true_peak_db']} dBFS (needs <= -3), "
-                              f"noise floor {nf} dBFS (needs <= -60; room tone at {ACX_ROOM_TONE_DB:g} dBFS RMS fills pauses). "
-                              + ("All three met." if report["met"] else "NOT all met.")
-                              + ("" if (opts.format == "mp3" and sr == 44100) else " ACX wants 44.1 kHz MP3 (192 kbps+ CBR) for upload."))
+            report["note"] = (
+                f"ACX: RMS {m['rms_db']} dBFS (needs -23..-18), peak {m['true_peak_db']} dBFS (needs <= -3), "
+                f"noise floor {nf} dBFS (needs <= -60; room tone at {ACX_ROOM_TONE_DB:g} dBFS RMS fills pauses). "
+                + ("All three met." if report["met"] else "NOT all met.")
+                + (
+                    ""
+                    if (opts.format == "mp3" and sr == 44100)
+                    else " ACX wants 44.1 kHz MP3 (192 kbps+ CBR) for upload."
+                )
+            )
     if fit is not None:
         fit["achieved"] = round(len(mastered) / sr, 2)
         fit["met"] = abs(fit["achieved"] - fit["target"]) <= max(0.1, 0.01 * fit["target"])
@@ -1075,7 +1364,9 @@ def render_project(project: dict, opts: RenderOptions, out_dir: Path, progress=N
             files.append({"name": p.name, "kind": "stem", "speaker": name})
     if opts.line_clips:
         for idx, _, a in placed:
-            p = write_audio(out_dir / f"{title}-line{idx + 1:03d}", np.clip(_resample(a * gain, sr), -1, 1), sr, opts.format)
+            p = write_audio(
+                out_dir / f"{title}-line{idx + 1:03d}", np.clip(_resample(a * gain, sr), -1, 1), sr, opts.format
+            )
             files.append({"name": p.name, "kind": "line", "line": idx + 1})
     cues = caption_cues(phrases_abs)
     if opts.captions:
@@ -1084,10 +1375,20 @@ def render_project(project: dict, opts: RenderOptions, out_dir: Path, progress=N
         files += [{"name": f"{title}.srt", "kind": "captions"}, {"name": f"{title}.vtt", "kind": "captions"}]
     duration = len(mastered) / sr
     elapsed = time.time() - t0
-    tl = {"title": project.get("title", ""), "duration": round(duration, 3), "sample_rate": sr,
-          "target": opts.target, "loudness": report, "lines": timeline, "errors": errors,
-          "captions": [{"start": round(c["start"], 3), "end": round(c["end"], 3), "text": c["text"]} for c in cues],
-          "fit": fit, "line_fits": line_fits, "mode": "timed" if timed else "sequential", "overlaps": overlaps}
+    tl = {
+        "title": project.get("title", ""),
+        "duration": round(duration, 3),
+        "sample_rate": sr,
+        "target": opts.target,
+        "loudness": report,
+        "lines": timeline,
+        "errors": errors,
+        "captions": [{"start": round(c["start"], 3), "end": round(c["end"], 3), "text": c["text"]} for c in cues],
+        "fit": fit,
+        "line_fits": line_fits,
+        "mode": "timed" if timed else "sequential",
+        "overlaps": overlaps,
+    }
     (out_dir / f"{title}-timeline.json").write_text(json.dumps(tl, indent=2), encoding="utf-8")
     files.append({"name": f"{title}-timeline.json", "kind": "timeline"})
     if opts.video is not None:
@@ -1102,9 +1403,22 @@ def render_project(project: dict, opts: RenderOptions, out_dir: Path, progress=N
                 z.write(out_dir / f["name"], f["name"])
             else:
                 z.write(out_dir / f["name"], "lines/" + f["name"])
-    return {"mode": tl["mode"], "overlaps": overlaps, "fit": fit, "line_fits": line_fits, "files": files, "zip": zip_name, "duration": round(duration, 2), "elapsed": round(elapsed, 2),
-            "realtime_factor": round(duration / max(elapsed, 1e-6), 2), "loudness": report, "errors": errors,
-            "warnings": warnings, "captions": tl["captions"], "lines": [{k: v for k, v in t.items() if k != "phrases"} for t in timeline]}
+    return {
+        "mode": tl["mode"],
+        "overlaps": overlaps,
+        "fit": fit,
+        "line_fits": line_fits,
+        "files": files,
+        "zip": zip_name,
+        "duration": round(duration, 2),
+        "elapsed": round(elapsed, 2),
+        "realtime_factor": round(duration / max(elapsed, 1e-6), 2),
+        "loudness": report,
+        "errors": errors,
+        "warnings": warnings,
+        "captions": tl["captions"],
+        "lines": [{k: v for k, v in t.items() if k != "phrases"} for t in timeline],
+    }
 
 
 def timed_slot(lines: list[dict], i: int) -> float | None:
@@ -1112,8 +1426,14 @@ def timed_slot(lines: list[dict], i: int) -> float | None:
     ln = lines[i]
     if ln.get("start") is None:
         return None
-    nxt = next((lines[j]["start"] for j in range(i + 1, len(lines))
-                if lines[j].get("start") is not None and lines[j]["text"].strip()), None)
+    nxt = next(
+        (
+            lines[j]["start"]
+            for j in range(i + 1, len(lines))
+            if lines[j].get("start") is not None and lines[j]["text"].strip()
+        ),
+        None,
+    )
     end = ln.get("end")
     if end is None:
         end = nxt
@@ -1136,8 +1456,10 @@ def probe_duration(path: Path) -> float:
 
 def probe_streams(path: Path) -> dict:
     r = subprocess.run([aio._ffmpeg(), "-hide_banner", "-i", str(path)], capture_output=True, text=True)
-    return {"video": bool(re.search(r"Stream #\S+.*: Video:", r.stderr)),
-            "audio": bool(re.search(r"Stream #\S+.*: Audio:", r.stderr))}
+    return {
+        "video": bool(re.search(r"Stream #\S+.*: Video:", r.stderr)),
+        "audio": bool(re.search(r"Stream #\S+.*: Audio:", r.stderr)),
+    }
 
 
 def original_bed(video: Path, length: int, voice: np.ndarray, opts) -> np.ndarray | None:
@@ -1168,12 +1490,15 @@ def mux_video(video: Path, audio: np.ndarray, sr: int, base: Path, cues: list[di
         tmp_srt.write_text(to_srt(cues), encoding="utf-8")
         cmd += ["-i", str(tmp_srt)]
         maps += ["-map", "2:s"]
-        sub_codec = ["-c:s", {".mp4": "mov_text", ".mov": "mov_text", ".webm": "webvtt", ".mkv": "srt"}[ext],
-                     "-metadata:s:s:0", "language=eng"]
+        sub_codec = [
+            "-c:s",
+            {".mp4": "mov_text", ".mov": "mov_text", ".webm": "webvtt", ".mkv": "srt"}[ext],
+            "-metadata:s:s:0",
+            "language=eng",
+        ]
     acodec = ["-c:a", "libopus", "-b:a", "192k"] if ext == ".webm" else ["-c:a", "aac", "-b:a", "256k"]
     try:
-        subprocess.run(cmd + maps + ["-c:v", "copy", *acodec, *sub_codec, str(out)], check=True,
-                       capture_output=True)
+        subprocess.run(cmd + maps + ["-c:v", "copy", *acodec, *sub_codec, str(out)], check=True, capture_output=True)
     except subprocess.CalledProcessError:
         out.unlink(missing_ok=True)
         raise StudioError("Could not put the dub into this video. Try an MP4 (H.264) file.")
@@ -1187,8 +1512,10 @@ def fit_project(rendered, lines, pauses, head, tail, target, dictionary, polish,
     """Fit the whole mix to `target` seconds: speed (safe range) -> fine stretch -> inter-line pauses."""
     fixed = head + tail
     free = [j for j, (idx, _, _) in enumerate(rendered) if not lines[idx].get("target")]
+
     def length():
         return fixed + sum(len(a) for _, a, _ in rendered) / SR + sum(pauses)
+
     start = length()
     locked = sum(len(rendered[j][1]) for j in range(len(rendered)) if j not in free) / SR
     speech = sum(len(rendered[j][1]) for j in free) / SR
@@ -1197,8 +1524,10 @@ def fit_project(rendered, lines, pauses, head, tail, target, dictionary, polish,
     warn = []
     f = float(np.clip(need, *SAFE_SPEED)) if np.isfinite(need) else SAFE_SPEED[1]
     if not SAFE_SPEED[0] <= need <= SAFE_SPEED[1]:
-        warn.append(f"Fitting {start:.1f} s into {target:g} s needs {need:.2f}x tempo; capped at the safe "
-                    f"{SAFE_SPEED[0]}-{SAFE_SPEED[1]}x range, then pauses were adjusted.")
+        warn.append(
+            f"Fitting {start:.1f} s into {target:g} s needs {need:.2f}x tempo; capped at the safe "
+            f"{SAFE_SPEED[0]}-{SAFE_SPEED[1]}x range, then pauses were adjusted."
+        )
     out = list(rendered)
     if abs(f - 1) > 0.01:
         for j in free:
@@ -1235,9 +1564,18 @@ def fit_project(rendered, lines, pauses, head, tail, target, dictionary, polish,
                 new[k] = v
     if abs(target - (length() - sum(pauses) + sum(new))) > max(0.1, 0.01 * target):
         warn.append("Could not reach the target within the safe limits; shorten or lengthen the script.")
-    return rendered, new, {"target": round(target, 2), "start": round(start, 2), "speed_factor": round(f, 3),
-                           "stretch": round(r, 3), "pause_change": round(sum(new) - sum(pauses), 2),
-                           "warnings": warn}
+    return (
+        rendered,
+        new,
+        {
+            "target": round(target, 2),
+            "start": round(start, 2),
+            "speed_factor": round(f, 3),
+            "stretch": round(r, 3),
+            "pause_change": round(sum(new) - sum(pauses), 2),
+            "warnings": warn,
+        },
+    )
 
 
 # --------------------------------------------------------------------------- projects on disk
@@ -1296,13 +1634,25 @@ def cli_render(a) -> dict:
     if rate is None:
         rate = 44100 if a.target == "acx" else (48000 if video else 24000)
     out = Path(a.out) if a.out else base.with_name(base.stem + "-render")
-    opts = RenderOptions(target=a.target, format=a.format, sample_rate=rate, stems=stems, video=video,
-                         video_mode=a.video_audio)
+    opts = RenderOptions(
+        target=a.target, format=a.format, sample_rate=rate, stems=stems, video=video, video_mode=a.video_audio
+    )
     res = render_project(project, opts, out, progress=lambda s, f: print(f"[{int(f * 100):3d}%] {s}", file=sys.stderr))
     m = res["loudness"]["measured"]
-    return {"out_dir": str(out), "files": [f["name"] for f in res["files"]] + [res["zip"]],
-            "duration": res["duration"], "elapsed": res["elapsed"], "target": res["loudness"]["target"],
-            "target_met": res["loudness"]["met"], "lufs": m["lufs"], "true_peak_db": m["true_peak_db"],
-            "rms_db": m["rms_db"], "noise_floor_db": m["noise_floor_db"], "note": res["loudness"]["note"],
-            "warnings": pre_warn + res["warnings"], "errors": res["errors"], "overlaps": res["overlaps"],
-            "line_fits": res["line_fits"]}
+    return {
+        "out_dir": str(out),
+        "files": [f["name"] for f in res["files"]] + [res["zip"]],
+        "duration": res["duration"],
+        "elapsed": res["elapsed"],
+        "target": res["loudness"]["target"],
+        "target_met": res["loudness"]["met"],
+        "lufs": m["lufs"],
+        "true_peak_db": m["true_peak_db"],
+        "rms_db": m["rms_db"],
+        "noise_floor_db": m["noise_floor_db"],
+        "note": res["loudness"]["note"],
+        "warnings": pre_warn + res["warnings"],
+        "errors": res["errors"],
+        "overlaps": res["overlaps"],
+        "line_fits": res["line_fits"],
+    }

@@ -7,14 +7,17 @@ const assert = require('node:assert/strict');
   try {
     const page = await browser.newPage();
     const errors = [];
-    page.on('pageerror', error => errors.push(error.message));
+    page.on('pageerror', (error) => errors.push(error.message));
     await page.goto('http://127.0.0.1:8765');
     await page.waitForSelector('#template:not([disabled])');
     const keys = ['ai_clean', 'dereverb', 'demetal', 'deharsh', 'warmth', 'denoise', 'room_tone'];
     const templates = {
-      clean: [0, 0, 0.25, 0.2, 0.25, 0, 0], ad: [1, 0.3, 0.7, 0.6, 0.5, 0, 0],
-      metallic: [0, 0, 0.85, 0.4, 0.35, 0, 0], echo: [1, 0.6, 0.4, 0.3, 0.25, 0, 0],
-      noise: [1, 0, 0.25, 0.2, 0.25, 0.2, 0], strong: [1, 0.6, 1, 0.9, 0.7, 0, 0],
+      clean: [0, 0, 0.25, 0.2, 0.25, 0, 0],
+      ad: [1, 0.3, 0.7, 0.6, 0.5, 0, 0],
+      metallic: [0, 0, 0.85, 0.4, 0.35, 0, 0],
+      echo: [1, 0.6, 0.4, 0.3, 0.25, 0, 0],
+      noise: [1, 0, 0.25, 0.2, 0.25, 0.2, 0],
+      strong: [1, 0.6, 1, 0.9, 0.7, 0, 0],
     };
     for (const [name, values] of Object.entries(templates)) {
       await page.selectOption('#template', name);
@@ -39,9 +42,13 @@ const assert = require('node:assert/strict');
     assert.equal(await page.isEnabled('#cleanBtn'), true);
     // Verify the browser sends the current controls, without processing a fake recording.
     let payload;
-    await page.route('**/api/clean', async route => {
+    await page.route('**/api/clean', async (route) => {
       payload = route.request().postData();
-      await route.fulfill({ status: 400, contentType: 'application/json', body: '{"detail":"Test upload intercepted"}' });
+      await route.fulfill({
+        status: 400,
+        contentType: 'application/json',
+        body: '{"detail":"Test upload intercepted"}',
+      });
     });
     await page.click('#cleanBtn');
     await page.waitForFunction(() => document.querySelector('#cleanStatus').textContent === 'Test upload intercepted');
@@ -52,8 +59,13 @@ const assert = require('node:assert/strict');
     await page.selectOption('#template', 'echo');
     assert.equal(Number(await page.inputValue('#s-dereverb')), 0.6);
     assert.deepEqual(errors, []);
-    console.log('Browser passed: all six templates, labels, keyboard adjustment, reset, native chooser event, upload values, mobile width, no script errors.');
+    console.log(
+      'Browser passed: all six templates, labels, keyboard adjustment, reset, native chooser event, upload values, mobile width, no script errors.',
+    );
   } finally {
     await browser.close();
   }
-})().catch(error => { console.error(error); process.exitCode = 1; });
+})().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});

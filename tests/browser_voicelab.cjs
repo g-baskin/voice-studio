@@ -8,13 +8,28 @@ const os = require('node:os');
 
 const URL = (process.env.NV_URL || 'http://127.0.0.1:8771') + '/voicelab.html';
 
-function wav(seconds = 12) { // tone bursts: valid 10-60 s reference, fast to generate
-  const sr = 16000, n = sr * seconds, b = Buffer.alloc(44 + n * 2);
-  b.write('RIFF'); b.writeUInt32LE(b.length - 8, 4); b.write('WAVEfmt ', 8);
-  b.writeUInt32LE(16, 16); b.writeUInt16LE(1, 20); b.writeUInt16LE(1, 22); b.writeUInt32LE(sr, 24);
-  b.writeUInt32LE(sr * 2, 28); b.writeUInt16LE(2, 32); b.writeUInt16LE(16, 34);
-  b.write('data', 36); b.writeUInt32LE(n * 2, 40);
-  for (let i = 0; i < n; i++) b.writeInt16LE(Math.round(6000 * Math.sin(2 * Math.PI * 160 * i / sr) * (Math.sin(2 * Math.PI * 2 * i / sr) > 0)), 44 + 2 * i);
+function wav(seconds = 12) {
+  // tone bursts: valid 10-60 s reference, fast to generate
+  const sr = 16000,
+    n = sr * seconds,
+    b = Buffer.alloc(44 + n * 2);
+  b.write('RIFF');
+  b.writeUInt32LE(b.length - 8, 4);
+  b.write('WAVEfmt ', 8);
+  b.writeUInt32LE(16, 16);
+  b.writeUInt16LE(1, 20);
+  b.writeUInt16LE(1, 22);
+  b.writeUInt32LE(sr, 24);
+  b.writeUInt32LE(sr * 2, 28);
+  b.writeUInt16LE(2, 32);
+  b.writeUInt16LE(16, 34);
+  b.write('data', 36);
+  b.writeUInt32LE(n * 2, 40);
+  for (let i = 0; i < n; i++)
+    b.writeInt16LE(
+      Math.round(6000 * Math.sin((2 * Math.PI * 160 * i) / sr) * Number(Math.sin((2 * Math.PI * 2 * i) / sr) > 0)),
+      44 + 2 * i,
+    );
   return b;
 }
 
@@ -47,16 +62,23 @@ async function noOverflow(page, label) {
     assert.match(await page.textContent('#libStatus'), /No voices match/);
     await page.fill('#libSearch', 'george');
     await page.locator('#libList li button', { hasText: 'Preview' }).first().click();
-    await page.waitForFunction(() => { const a = document.querySelector('#libAudio'); return !a.hidden && a.src.startsWith('blob:'); });
-    await page.waitForFunction(() => document.querySelector('#libAudio').duration > 1);
-    await page.selectOption('#libGender', ''); await page.selectOption('#libLang', ''); await page.fill('#libSearch', '');
+    await page.waitForFunction(() => {
+      const a = /** @type {HTMLAudioElement} */ (document.querySelector('#libAudio'));
+      return !a.hidden && a.src.startsWith('blob:');
+    });
+    await page.waitForFunction(
+      () => /** @type {HTMLAudioElement} */ (document.querySelector('#libAudio')).duration > 1,
+    );
+    await page.selectOption('#libGender', '');
+    await page.selectOption('#libLang', '');
+    await page.fill('#libSearch', '');
     await page.screenshot({ path: '/tmp/nv-voicelab-desktop.png', fullPage: false });
 
     // Keyboard tab switching
     await page.focus('#tab-library');
     await page.keyboard.press('ArrowRight');
     assert.equal(await page.getAttribute('#tab-design', 'aria-selected'), 'true');
-    assert.ok(await page.isVisible('#design') && !(await page.isVisible('#library')));
+    assert.ok((await page.isVisible('#design')) && !(await page.isVisible('#library')));
     assert.equal(await page.evaluate(() => document.activeElement.id), 'tab-design');
 
     // Design preview + save
@@ -98,11 +120,19 @@ async function noOverflow(page, label) {
     assert.match(await page.textContent('#descStatus'), /male.*British English.*lower pitch/);
     const opt = page.locator('#descOptions .option').first();
     await opt.locator('button', { hasText: 'Play option 1' }).click();
-    await page.waitForFunction(() => document.querySelector('#descOptions .option audio').src.startsWith('blob:'));
+    await page.waitForFunction(() =>
+      /** @type {HTMLAudioElement} */ (document.querySelector('#descOptions .option audio')).src.startsWith('blob:'),
+    );
     await opt.locator('input').fill('Described Voice');
     await opt.locator('button', { hasText: 'Save' }).click();
     await page.waitForFunction(() => /Saved/.test(document.querySelector('#descOptions .option .status').textContent));
-    const lib = await (await page.request.get(process.env.NV_URL ? process.env.NV_URL + '/api/voicelab/library?kind=custom' : 'http://127.0.0.1:8771/api/voicelab/library?kind=custom')).json();
+    const lib = await (
+      await page.request.get(
+        process.env.NV_URL
+          ? process.env.NV_URL + '/api/voicelab/library?kind=custom'
+          : 'http://127.0.0.1:8771/api/voicelab/library?kind=custom',
+      )
+    ).json();
     const desc = lib.voices.find((v) => v.name === 'Described Voice');
     assert.ok(desc && desc.meta.source === 'describe');
     created.push(desc.id);
@@ -117,10 +147,16 @@ async function noOverflow(page, label) {
     assert.match(await page.textContent('#matchStatus'), /permission/);
     await page.check('#matchConsent');
     await page.click('#matchGo');
-    await page.waitForFunction(() => /Comparing|Measuring|Refining/.test(document.querySelector('#matchStatus').textContent), null, { timeout: 60000 });
+    await page.waitForFunction(
+      () => /Comparing|Measuring|Refining/.test(document.querySelector('#matchStatus').textContent),
+      null,
+      { timeout: 60000 },
+    );
     assert.ok(await page.isVisible('#matchCancel'));
     await page.click('#matchCancel');
-    await page.waitForFunction(() => /Cancelled|Done/.test(document.querySelector('#matchStatus').textContent), null, { timeout: 120000 });
+    await page.waitForFunction(() => /Cancelled|Done/.test(document.querySelector('#matchStatus').textContent), null, {
+      timeout: 120000,
+    });
     assert.ok(await page.isEnabled('#matchGo'));
 
     // Clone tab shows the panel filled by clone.js (reached via the Match link)
@@ -145,8 +181,17 @@ async function noOverflow(page, label) {
     console.log('voicelab browser check passed');
   } finally {
     for (const id of created) {
-      try { await page.request.delete((process.env.NV_URL || 'http://127.0.0.1:8771') + '/api/voicelab/voices/' + encodeURIComponent(id)); } catch (_) { /* best effort */ }
+      try {
+        await page.request.delete(
+          (process.env.NV_URL || 'http://127.0.0.1:8771') + '/api/voicelab/voices/' + encodeURIComponent(id),
+        );
+      } catch {
+        /* best effort */
+      }
     }
     await browser.close();
   }
-})().catch((e) => { console.error(e); process.exit(1); });
+})().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});

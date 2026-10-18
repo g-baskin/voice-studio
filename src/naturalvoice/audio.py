@@ -1,4 +1,5 @@
 """Loading and saving audio (and pulling audio out of / back into video) via ffmpeg."""
+
 from __future__ import annotations
 
 import shutil
@@ -60,7 +61,24 @@ def remux_video(video_in: str | Path, audio: np.ndarray, sr: int, video_out: str
         tmp = Path(td) / "clean.wav"
         sf.write(str(tmp), audio, sr, subtype="PCM_24")
         subprocess.run(
-            [_ffmpeg(), "-y", "-loglevel", "error", "-i", str(video_in), "-i", str(tmp),
-             "-map", "0:v?", "-map", "1:a", "-c:v", "copy", *acodec, "-shortest", str(video_out)],
+            [
+                _ffmpeg(),
+                "-y",
+                "-loglevel",
+                "error",
+                "-i",
+                str(video_in),
+                "-i",
+                str(tmp),
+                "-map",
+                "0:v?",
+                "-map",
+                "1:a",
+                "-c:v",
+                "copy",
+                *acodec,
+                "-shortest",
+                str(video_out),
+            ],
             check=True,
         )

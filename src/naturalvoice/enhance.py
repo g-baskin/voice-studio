@@ -6,6 +6,7 @@ GTCRN works at 16 kHz, which would make a 24-48 kHz voice sound muffled. So inst
 output directly we read off the *gain* it applies to each frequency band and frame, then apply that
 gain to the full-bandwidth original. Above 8 kHz we reuse the gain of the 6-8 kHz band.
 """
+
 from __future__ import annotations
 
 from functools import lru_cache
@@ -55,9 +56,10 @@ def gain_mask(x: np.ndarray, sr: int) -> tuple[np.ndarray, np.ndarray, np.ndarra
     inp = np.stack([X.real, X.imag], axis=-1).astype(np.float32)[None]  # (1, 257, T, 2)
     out = np.empty_like(inp)
     for t in range(inp.shape[2]):
-        o, conv, tra, inter = sess.run(None, {"mix": inp[:, :, t:t + 1], "conv_cache": conv,
-                                              "tra_cache": tra, "inter_cache": inter})
-        out[:, :, t:t + 1] = o
+        o, conv, tra, inter = sess.run(
+            None, {"mix": inp[:, :, t : t + 1], "conv_cache": conv, "tra_cache": tra, "inter_cache": inter}
+        )
+        out[:, :, t : t + 1] = o
     E = out[0, ..., 0] + 1j * out[0, ..., 1]
     g = np.abs(E) / (np.abs(X) + 1e-8)
     return np.clip(g, 0.0, 1.0), np.fft.rfftfreq(N_FFT, 1 / 16000), np.arange(X.shape[1]) * HOP / 16000

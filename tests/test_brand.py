@@ -1,5 +1,5 @@
 """The logo files the pages, the PWA manifest and the README point to must exist and be the right size."""
-import json
+
 import re
 import struct
 from pathlib import Path
@@ -19,8 +19,16 @@ def png_size(path: Path) -> tuple[int, int]:
     return struct.unpack(">II", data[16:24])
 
 
-@pytest.mark.parametrize("name,size", [("icon-192.png", 192), ("icon-512.png", 512), ("icon-maskable-512.png", 512),
-                                       ("apple-touch-icon.png", 180), ("favicon-32.png", 32)])
+@pytest.mark.parametrize(
+    "name,size",
+    [
+        ("icon-192.png", 192),
+        ("icon-512.png", 512),
+        ("icon-maskable-512.png", 512),
+        ("apple-touch-icon.png", 180),
+        ("favicon-32.png", 32),
+    ],
+)
 def test_icon_pngs_have_the_declared_size(name, size):
     assert png_size(WEB / name) == (size, size)
 

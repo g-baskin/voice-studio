@@ -9,6 +9,7 @@ GET  /api/clone/preview/{job}/audio    WAV once done
 POST /api/clone/convert                multipart: voice, file (1-60 s performance), consent=true -> {"job": id} (202)
 GET  /api/clone/convert/{job}[/audio]  same shapes as preview (voice changer)
 """
+
 from __future__ import annotations
 
 import logging
@@ -48,8 +49,9 @@ def _truthy(v: str | None) -> bool:
 
 
 @router.post("/voices", status_code=201)
-async def create_voice(name: str = Form(""), consent: str = Form(""), transcript: str = Form(""),
-                       file: UploadFile = File(None)):
+async def create_voice(
+    name: str = Form(""), consent: str = Form(""), transcript: str = Form(""), file: UploadFile = File(None)
+):
     from . import clone, voices
 
     try:
@@ -99,7 +101,7 @@ async def create_voice(name: str = Form(""), consent: str = Form(""), transcript
 
 @router.post("/preview", status_code=202)
 def preview(voice: str = Form(""), text: str = Form(""), speed: float = Form(1.0), language: str = Form("en")):
-    from . import clone, voices
+    from . import clone
 
     text, removed = clone.clean_tags((text or "").strip())
     if not text:
@@ -112,11 +114,18 @@ def preview(voice: str = Form(""), text: str = Form(""), speed: float = Form(1.0
     if language not in clone.LANGUAGES:
         raise HTTPException(400, f"Unsupported language. Choose one of: {', '.join(clone.LANGUAGES)}.")
     _check_voice(voice)
-    warning = (f"Removed unsupported tag{'s' if len(removed) > 1 else ''} {', '.join(dict.fromkeys(removed))[:200]}. "
-               f"Supported: {' '.join(clone.EMOTION_TAGS)}") if removed else None
+    warning = (
+        (
+            f"Removed unsupported tag{'s' if len(removed) > 1 else ''} {', '.join(dict.fromkeys(removed))[:200]}. "
+            f"Supported: {' '.join(clone.EMOTION_TAGS)}"
+        )
+        if removed
+        else None
+    )
     if language != "en":
-        return _start_job(lambda prog: clone.speak_language(text, voice, language, speed, progress=prog), "preview",
-                          warning=warning)
+        return _start_job(
+            lambda prog: clone.speak_language(text, voice, language, speed, progress=prog), "preview", warning=warning
+        )
     return _start_job(lambda prog: clone.speak(text, voice, speed, progress=prog), "preview", warning=warning)
 
 
@@ -158,18 +167,29 @@ def _start_job(render, kind: str, cleanup=None, warning: str | None = None):
 
         t = time.time()
         try:
+
             def prog(f, step):
                 jobs[job].update(progress=round(f, 2), step=step)
+
             wav, sr = render(prog)
             WORK.mkdir(parents=True, exist_ok=True)
             out = WORK / f"{kind}-{job}.wav"
             audio.save(out, wav, sr)
-            jobs[job].update(status="done", progress=1.0, step="Done", output=str(out),
-                             seconds=round(len(wav) / sr, 2), render_seconds=round(time.time() - t, 1))
+            jobs[job].update(
+                status="done",
+                progress=1.0,
+                step="Done",
+                output=str(out),
+                seconds=round(len(wav) / sr, 2),
+                render_seconds=round(time.time() - t, 1),
+            )
         except Exception as e:
             log.exception("Clone %s failed", kind)
-            msg = str(e) if isinstance(e, (ValueError, clone.EngineMissing)) else \
-                "The cloning engine could not process this. Try a shorter clip."
+            msg = (
+                str(e)
+                if isinstance(e, (ValueError, clone.EngineMissing))
+                else "The cloning engine could not process this. Try a shorter clip."
+            )
             jobs[job].update(status="error", error=msg)
         finally:
             processing.release()
@@ -196,7 +216,10 @@ async def convert(voice: str = Form(""), consent: str = Form(""), file: UploadFi
         _check_voice(voice)
         WORK.mkdir(parents=True, exist_ok=True)
         d = Path(tempfile.mkdtemp(dir=WORK))
-        cleanup = lambda: shutil.rmtree(d, ignore_errors=True)
+
+        def cleanup() -> None:
+            shutil.rmtree(d, ignore_errors=True)
+
         try:
             src, size = d / f"in{suffix}", 0
             with src.open("wb") as fh:

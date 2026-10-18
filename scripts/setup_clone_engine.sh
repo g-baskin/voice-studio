@@ -6,11 +6,14 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 ENGINE=engines/chatterbox
 DTYPE="${1:-fp32}"
-REV=d21799bd0354adb85e348b8a0442a8405110a2cf   # pinned commit of ResembleAI/chatterbox-turbo-ONNX
+REV=d21799bd0354adb85e348b8a0442a8405110a2cf # pinned commit of ResembleAI/chatterbox-turbo-ONNX
 BASE="https://huggingface.co/ResembleAI/chatterbox-turbo-ONNX/resolve/$REV"
 MODELS="$ENGINE/models"
 
-command -v uv >/dev/null || { echo "uv is required (https://docs.astral.sh/uv/)"; exit 1; }
+command -v uv >/dev/null || {
+  echo "uv is required (https://docs.astral.sh/uv/)"
+  exit 1
+}
 echo "==> Python environment in $ENGINE/.venv"
 (cd "$ENGINE" && uv sync --quiet)
 
@@ -18,13 +21,19 @@ mkdir -p "$MODELS/onnx"
 fetch() { # path sha256(or -)
   local path="$1" sum="$2" dst="$MODELS/$1"
   if [ -f "$dst" ]; then
-    if [ "$sum" = "-" ] || [ "$(shasum -a 256 "$dst" | cut -d' ' -f1)" = "$sum" ]; then echo "    ok  $path"; return; fi
-    echo "    bad checksum, re-downloading $path"; rm -f "$dst"
+    if [ "$sum" = "-" ] || [ "$(shasum -a 256 "$dst" | cut -d' ' -f1)" = "$sum" ]; then
+      echo "    ok  $path"
+      return
+    fi
+    echo "    bad checksum, re-downloading $path"
+    rm -f "$dst"
   fi
   echo "    get $path"
   curl -fL --retry 3 -C - -o "$dst.part" "$BASE/$path"
   if [ "$sum" != "-" ] && [ "$(shasum -a 256 "$dst.part" | cut -d' ' -f1)" != "$sum" ]; then
-    rm -f "$dst.part"; echo "Checksum mismatch for $path"; exit 1
+    rm -f "$dst.part"
+    echo "Checksum mismatch for $path"
+    exit 1
   fi
   mv "$dst.part" "$dst"
 }
@@ -54,14 +63,20 @@ if [ "$DTYPE" != "q8" ]; then
   fetch onnx/speech_encoder.onnx_data c9915ff6c529e7bb80983b525255e6744d6c39c7e35b12720925ba99ed0d0a2f
 fi
 # DTYPE = default precision when NATURALVOICE_CLONE_PRECISION is unset
-[ "$DTYPE" = "all" ] && echo fp32 > "$MODELS/DTYPE" || echo "$DTYPE" > "$MODELS/DTYPE"
+[ "$DTYPE" = "all" ] && echo fp32 >"$MODELS/DTYPE" || echo "$DTYPE" >"$MODELS/DTYPE"
 
 echo "==> Speaker-similarity model (WeSpeaker ResNet34-LM, Apache-2.0) in engines/eval/models"
-EVAL=engines/eval/models; mkdir -p "$EVAL"
-SPK=voxceleb_resnet34_LM.onnx; SPK_SUM=7bb2f06e9df17cdf1ef14ee8a15ab08ed28e8d0ef5054ee135741560df2ec068
+EVAL=engines/eval/models
+mkdir -p "$EVAL"
+SPK=voxceleb_resnet34_LM.onnx
+SPK_SUM=7bb2f06e9df17cdf1ef14ee8a15ab08ed28e8d0ef5054ee135741560df2ec068
 if [ ! -f "$EVAL/$SPK" ] || [ "$(shasum -a 256 "$EVAL/$SPK" | cut -d' ' -f1)" != "$SPK_SUM" ]; then
   curl -fL --retry 3 -o "$EVAL/$SPK.part" "https://huggingface.co/Wespeaker/wespeaker-voxceleb-resnet34-LM/resolve/main/$SPK"
-  [ "$(shasum -a 256 "$EVAL/$SPK.part" | cut -d' ' -f1)" = "$SPK_SUM" ] || { rm -f "$EVAL/$SPK.part"; echo "Checksum mismatch for $SPK"; exit 1; }
+  [ "$(shasum -a 256 "$EVAL/$SPK.part" | cut -d' ' -f1)" = "$SPK_SUM" ] || {
+    rm -f "$EVAL/$SPK.part"
+    echo "Checksum mismatch for $SPK"
+    exit 1
+  }
   mv "$EVAL/$SPK.part" "$EVAL/$SPK"
 else echo "    ok  $SPK"; fi
 echo "==> Done. Chatterbox-Turbo ($DTYPE) installed in $ENGINE"

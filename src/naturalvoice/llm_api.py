@@ -1,4 +1,5 @@
 """/api/llm: connect an OpenRouter key from the app. The key is never sent back to the browser."""
+
 from __future__ import annotations
 
 from fastapi import APIRouter, HTTPException

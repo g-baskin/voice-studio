@@ -137,6 +137,30 @@ PLAYWRIGHT_MODULE=/path/to/playwright NV_URL=http://127.0.0.1:8765 node tests/br
 The `tests/browser_*.cjs` checks drive a real browser against a running server; see each file's header. The
 Python package is `naturalvoice` (`src/naturalvoice`); Voice Studio is the product name.
 
+### Local code-quality checks
+
+CI is disabled by choice; these checks run locally. Python tooling is pinned in `uv.lock`, and JavaScript
+tooling in `package-lock.json`. Install Node **22.13+ (22.x)**, ShellCheck and shfmt (verified with 0.11.0 and
+3.14.1 respectively), then:
+
+```sh
+uv sync --locked
+npm ci --ignore-scripts
+npm run check          # lint + format check + type check; does not reformat source
+npm run lint           # Ruff, ESLint and ShellCheck
+npm run format:check   # Ruff format, Prettier and shfmt
+npm run typecheck      # DOM declarations, mypy and TypeScript checkJs
+npm run format         # intentionally reformats Python, JavaScript and shell source
+uv run --locked pytest -ra
+```
+
+Coverage includes application Python, the cloning worker, developer scripts and tests; browser JavaScript,
+the service worker and Node scripts have separate type-check environments. Existing Python bodies are checked
+by mypy, while imports without available third-party typing remain permissive. JavaScript uses incremental,
+non-strict `checkJs`, not a claim of complete strict typing. Inline HTML scripts are not type checked.
+`types/dom.d.ts` is generated from the page templates and checked for drift. After changing HTML IDs or tags,
+run `uv run python scripts/web_types.py --write`; don't edit that generated file by hand.
+
 ## Builds and releases
 
 See the [changelog](CHANGELOG.md) for changes and the [build and release guide](docs/releases.md) for

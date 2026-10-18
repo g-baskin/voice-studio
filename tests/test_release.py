@@ -1,4 +1,5 @@
 """Product versions must agree before a build can be released."""
+
 from pathlib import Path
 import plistlib
 import tomllib
@@ -15,9 +16,7 @@ def test_product_versions_match_package_metadata(surface: str) -> None:
     expected = project["project"]["version"]
     lock = tomllib.loads((root / "uv.lock").read_text())
     locked_version = next(
-        package["version"]
-        for package in lock["package"]
-        if package["name"] == project["project"]["name"]
+        package["version"] for package in lock["package"] if package["name"] == project["project"]["name"]
     )
     with (root / "desktop/Voice Studio.app/Contents/Info.plist").open("rb") as file:
         desktop = plistlib.load(file)

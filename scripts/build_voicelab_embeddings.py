@@ -4,6 +4,7 @@ Writes src/naturalvoice/voicelab_embeddings.npz (names, emb, pitch, bright, fing
 while the fingerprint (Kokoro voices file + speaker model + measure line) still matches. ~6 min on an Intel i5.
 Run: uv run python scripts/build_voicelab_embeddings.py
 """
+
 import time
 
 from naturalvoice import voicelab as vl, voices as vlib

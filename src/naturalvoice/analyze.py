@@ -5,6 +5,7 @@ These are heuristics, not lab measurements:
 * metallic      - average height (dB) of narrow resonance peaks in 0.9-11 kHz.
 * harshness_db  - 4-9 kHz energy relative to the 200-3000 Hz voice body.
 """
+
 from __future__ import annotations
 
 import numpy as np
@@ -18,9 +19,9 @@ def echo_db(x: np.ndarray, sr: int) -> float:
     if len(x) < win * 20:
         return 0.0
     f = np.lib.stride_tricks.sliding_window_view(x, win)[:: win // 2]
-    e = np.sort(10 * np.log10(np.mean(f ** 2, axis=1) + 1e-12))
+    e = np.sort(10 * np.log10(np.mean(f**2, axis=1) + 1e-12))
     n = len(e)
-    return float(np.mean(e[: max(1, int(0.15 * n))]) - np.mean(e[int(0.8 * n):]))
+    return float(np.mean(e[: max(1, int(0.15 * n))]) - np.mean(e[int(0.8 * n) :]))
 
 
 def metallic(x: np.ndarray, sr: int) -> float:
@@ -49,10 +50,11 @@ def listener_score(x: np.ndarray, sr: int, max_seconds: float = 60.0) -> float |
 def report(audio: np.ndarray, sr: int) -> dict:
     x = audio if audio.ndim == 1 else audio.mean(axis=1)
     from . import quality
+
     scores = {}
     if len(x) and np.max(np.abs(x)) > 1e-8:
         try:
-            scores = quality.dnsmos(x[:int(60 * sr)], sr)
+            scores = quality.dnsmos(x[: int(60 * sr)], sr)
         except RuntimeError:
             pass  # Optional scoring models are not installed.
     return {

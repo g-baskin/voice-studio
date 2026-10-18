@@ -1,0 +1,10 @@
+{
+  "extends": "./jsconfig.json",
+  "compilerOptions": {
+    "lib": ["ES2022", "DOM"],
+    "types": ["node"],
+    "maxNodeModuleJsDepth": 0
+  },
+  "include": ["scripts/*.cjs", "tests/*.cjs", "*.mjs"],
+  "exclude": []
+}
