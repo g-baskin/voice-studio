@@ -20,6 +20,23 @@
         "Skill: changelog-release-notes-stinger loaded; its Hivemind-specific automation does not apply here. Used honest unreleased changelog categories only."
       ]
     },
+    "commit-gate": {
+      "checkedAt": "2026-10-18T20:01:05.070Z",
+      "commit": "9f0eac7",
+      "uncommittedChanges": true,
+      "result": "pass",
+      "summary": "Approved project commit workflow revalidated: standalone command validation and standalone git diff --check both exited 0. Required local checks/tests/build and review are documented; not an automatic Git hook.",
+      "findings": [],
+      "evidence": [
+        "Scope: re-check only approved .gg/commands/commit.md and AGENTS.md workflow documentation; no broader audit.",
+        "Read .gg/commands/commit.md and current Git status; only approved workflow docs and checklist record are pending.",
+        "Standalone .venv/bin/python -B validation exited 0: check script, pytest dependency, build backend and AGENTS.md pointer exist.",
+        "Same validation confirmed required checks/tests/build/review, failure stops, explicit staging, no --no-verify, foreground pushes and disabled CI.",
+        "Standalone git diff --check exited 0; no chained commands could mask its failure.",
+        "Not checked: automatic hook enforcement or end-to-end workflow execution at this re-check. Later /commit request is handled separately.",
+        "Skills: none newly loaded. This re-check changed only the checklist record; no commit/push performed as part of the re-check."
+      ]
+    },
     "docs": {
       "checkedAt": "2026-10-18T17:18:07.795Z",
       "commit": "4e17b0f",

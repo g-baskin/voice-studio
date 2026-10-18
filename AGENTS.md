@@ -9,4 +9,5 @@ Read `CLAUDE.md` for workflow and behavior details, `CONTEXT.md` for domain term
 - Check locally: `npm run check` (lint, format check and type check); individual commands are `npm run lint`, `npm run format:check` and `npm run typecheck`. Apply formatting with `npm run format`.
 - After HTML ID/tag changes, run `uv run python scripts/web_types.py --write` to refresh checked DOM declarations.
 - CI lives in `.github/workflows/ci.yml` but is disabled at the owner's request. Keep checks local; do not re-enable CI without approval.
+- For commit requests, follow `.gg/commands/commit.md`: local checks, tests, build and a read-only review before staging/committing.
 - Never commit with `--no-verify`.
