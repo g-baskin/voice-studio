@@ -35,7 +35,7 @@ naturalvoice = "naturalvoice.cli:main"  # old name, kept so existing commands ke
 Repository = "https://github.com/g-baskin/voice-studio"
 
 [build-system]
-requires = ["uv_build>=0.9.13,<0.10.0"]
+requires = ["uv_build>=0.9.13,<0.14.0"]
 build-backend = "uv_build"
 
 [tool.uv.build-backend]
