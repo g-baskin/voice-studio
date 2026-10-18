@@ -1,0 +1,17 @@
+.venv/
+__pycache__/
+models/
+bench/audio/
+samples/
+*.pyc
+.env
+.env.*
+!.env.example
+.pytest_cache/
+.DS_Store
+dist/
+build/
+bench/refs/
+data/
+engines/*/.venv/
+engines/*/models/

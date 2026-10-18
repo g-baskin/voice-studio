@@ -1,0 +1,26 @@
+#!/bin/bash
+# Voice Studio launcher: starts the local engine (if it isn't running) and opens the app window.
+# The engine keeps running in the background; use "Stop Voice Studio.command" to stop it.
+APP="$(cd "$(dirname "$0")/../.." && pwd)"
+ROOT="$(cd "$APP/../.." && pwd)"
+export PATH="$HOME/.local/bin:/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin:$PATH"
+PORT="${NATURALVOICE_PORT:-8765}"
+URL="http://127.0.0.1:$PORT"
+ready() { curl -sf "$URL/api/presets" >/dev/null 2>&1; }
+if ! ready; then
+  if ! command -v uv >/dev/null 2>&1; then
+    osascript -e 'display alert "Voice Studio needs uv" message "Install uv (https://docs.astral.sh/uv/) and try again."'
+    exit 1
+  fi
+  mkdir -p "$ROOT/data"
+  (cd "$ROOT" && uv run voicestudio serve --port "$PORT" >>"$ROOT/data/server.log" 2>&1 &)
+  for _ in $(seq 120); do ready && break; sleep 0.5; done
+  if ! ready; then
+    osascript -e 'display alert "Voice Studio could not start" message "See data/server.log in the project folder."'
+    exit 1
+  fi
+fi
+for b in "Google Chrome" "Brave Browser" "Microsoft Edge"; do
+  if [ -d "/Applications/$b.app" ]; then open -na "$b" --args --app="$URL"; exit 0; fi
+done
+open "$URL"

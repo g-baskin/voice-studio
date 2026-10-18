@@ -1,0 +1,10 @@
+{
+  "name": "Voice Studio",
+  "short_name": "Voice Studio",
+  "description": "Make AI voices sound human: no metallic tone, no echo.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f6f4ef",
+  "theme_color": "#1f2a24",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}

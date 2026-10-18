@@ -1,0 +1,118 @@
+{
+ "line": "The morning light settled over the quiet harbour, and everyone stopped to listen.",
+ "measured": "pitch = median F0 (Hz), brightness = spectral centroid (Hz)",
+ "voices": {
+  "af_alloy": {
+   "pitch": 151.9,
+   "brightness": 1037.6
+  },
+  "af_aoede": {
+   "pitch": 189.0,
+   "brightness": 372.7
+  },
+  "af_bella": {
+   "pitch": 201.7,
+   "brightness": 660.2
+  },
+  "af_heart": {
+   "pitch": 200.0,
+   "brightness": 1611.9
+  },
+  "af_jessica": {
+   "pitch": 217.2,
+   "brightness": 710.0
+  },
+  "af_kore": {
+   "pitch": 161.1,
+   "brightness": 1037.4
+  },
+  "af_nicole": {
+   "pitch": 154.8,
+   "brightness": 587.8
+  },
+  "af_nova": {
+   "pitch": 166.7,
+   "brightness": 815.7
+  },
+  "af_river": {
+   "pitch": 182.5,
+   "brightness": 915.1
+  },
+  "af_sarah": {
+   "pitch": 196.7,
+   "brightness": 1349.0
+  },
+  "af_sky": {
+   "pitch": 155.8,
+   "brightness": 954.3
+  },
+  "am_adam": {
+   "pitch": 120.0,
+   "brightness": 1120.4
+  },
+  "am_echo": {
+   "pitch": 116.8,
+   "brightness": 1045.8
+  },
+  "am_eric": {
+   "pitch": 163.3,
+   "brightness": 682.1
+  },
+  "am_fenrir": {
+   "pitch": 150.5,
+   "brightness": 1246.8
+  },
+  "am_liam": {
+   "pitch": 137.1,
+   "brightness": 1147.7
+  },
+  "am_michael": {
+   "pitch": 120.6,
+   "brightness": 1043.6
+  },
+  "am_onyx": {
+   "pitch": 88.9,
+   "brightness": 357.9
+  },
+  "am_puck": {
+   "pitch": 116.2,
+   "brightness": 1206.0
+  },
+  "am_santa": {
+   "pitch": 166.7,
+   "brightness": 693.4
+  },
+  "bf_alice": {
+   "pitch": 222.2,
+   "brightness": 582.5
+  },
+  "bf_emma": {
+   "pitch": 184.6,
+   "brightness": 1591.0
+  },
+  "bf_isabella": {
+   "pitch": 210.5,
+   "brightness": 1524.7
+  },
+  "bf_lily": {
+   "pitch": 196.7,
+   "brightness": 572.7
+  },
+  "bm_daniel": {
+   "pitch": 125.0,
+   "brightness": 547.5
+  },
+  "bm_fable": {
+   "pitch": 130.4,
+   "brightness": 1618.1
+  },
+  "bm_george": {
+   "pitch": 146.3,
+   "brightness": 560.7
+  },
+  "bm_lewis": {
+   "pitch": 95.6,
+   "brightness": 576.3
+  }
+ }
+}

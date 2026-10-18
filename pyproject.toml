@@ -1,0 +1,56 @@
+[project]
+name = "voice-studio"
+version = "0.3.0"
+description = "Voice Studio: local voice production suite. Clean AI voices, write and render voice-overs, design and clone voices."
+readme = "README.md"
+license = "AGPL-3.0-only"
+license-files = ["LICENSE"]
+authors = [
+    { name = "AutomationGod", email = "gregory.baskin@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.143.3",
+    "kokoro-onnx>=0.6.1",
+    "nara-wpe>=0.0.11",
+    "noisereduce>=3.0.3",
+    "numpy>=2.5.4",
+    "openai>=3.35.1",
+    "pedalboard>=0.9.26",
+    "pesq>=0.0.4",
+    "pyloudnorm>=0.2.0",
+    "pyroomacoustics>=0.10.1",
+    "pystoi>=0.4.1",
+    "python-multipart>=0.0.32",
+    "scipy>=1.18.1",
+    "soundfile>=0.14.0",
+    "uvicorn[standard]>=0.54.0",
+]
+
+[project.scripts]
+voicestudio = "naturalvoice.cli:main"
+naturalvoice = "naturalvoice.cli:main"  # old name, kept so existing commands keep working
+
+[project.urls]
+Repository = "https://github.com/g-baskin/voice-studio"
+
+[build-system]
+requires = ["uv_build>=0.9.13,<0.10.0"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+# The Python package keeps its original folder name (naturalvoice); the product name is Voice Studio.
+module-name = "naturalvoice"
+
+[tool.uv]
+# onnxruntime >=1.20 has no Intel-Mac wheels; 1.19.2 works fine with kokoro-onnx.
+override-dependencies = ["onnxruntime==1.19.2"]
+
+[dependency-groups]
+dev = [
+    "httpx>=0.28.1",
+    "pytest>=9.1.1",
+]
+
+[tool.pytest.ini_options]
+markers = ["slow: renders with real models (several seconds to minutes)"]
