@@ -137,6 +137,13 @@ PLAYWRIGHT_MODULE=/path/to/playwright NV_URL=http://127.0.0.1:8765 node tests/br
 The `tests/browser_*.cjs` checks drive a real browser against a running server; see each file's header. The
 Python package is `naturalvoice` (`src/naturalvoice`); Voice Studio is the product name.
 
+## Builds and releases
+
+See the [changelog](CHANGELOG.md) for changes and the [build and release guide](docs/releases.md) for
+locked clean-checkout setup, package builds, verification and the manual release checklist. The current
+source version is `0.3.0`; no tagged release has been published yet. Source checkout is the supported install
+method; the macOS app is a launcher for that checkout, not a standalone installer.
+
 ## License
 
 Voice Studio is free software under the **GNU Affero General Public License, version 3 only**

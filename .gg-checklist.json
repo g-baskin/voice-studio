@@ -1,6 +1,25 @@
 {
   "version": 1,
   "items": {
+    "build-release": {
+      "checkedAt": "2026-10-18T17:50:26.462Z",
+      "commit": "1aa1c11",
+      "uncommittedChanges": true,
+      "result": "pass",
+      "summary": "All three recorded findings fixed: product versions align, an honest unreleased changelog exists, and build/release steps are documented. Clean-source artifact build passed; fresh dependency install remains unverified.",
+      "findings": [],
+      "evidence": [
+        "Scope: re-check only the three recorded findings: version drift, missing changelog and missing build/manual-release procedure.",
+        "Aligned runtime and both desktop version fields with pyproject.toml/uv.lock at 0.3.0; .venv/bin/pytest -q tests/test_release.py: 4 passed.",
+        "Added CHANGELOG.md grounded in git history and explicitly unreleased; README links it and docs/releases.md with locked setup, artifact checks, versioning and approval-gated release steps.",
+        "uv build --offline --no-python-downloads from a temporary clean export of tracked source plus new docs/test: built sdist and wheel from sdist successfully, using uv 0.9.13.",
+        "Inspected wheel: all 17 web assets, voice feature/embedding assets, metadata/runtime version 0.3.0, both CLI entry points and license present; no .env/data/models/.venv paths.",
+        "uv --offline lock --check: passed (77 packages); local Markdown link checks and git diff --check passed.",
+        "Not checked: fresh dependency installation, full runtime/browser suite, standalone wheel install, other platforms or live release. Clean export included approved uncommitted fixes, not a remote clone.",
+        "No tags, releases, commits or pushes created. Git tag --list remains empty.",
+        "Skill: changelog-release-notes-stinger loaded; its Hivemind-specific automation does not apply here. Used honest unreleased changelog categories only."
+      ]
+    },
     "docs": {
       "checkedAt": "2026-10-18T17:18:07.795Z",
       "commit": "4e17b0f",
