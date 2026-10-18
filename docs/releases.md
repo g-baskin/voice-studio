@@ -86,7 +86,7 @@ No workflow publishes automatically. Normal development and pushes to `dev` are 
 3. Review and merge the approved candidate from `dev` into `main`. Verify the exact `main` commit and rebuild
    artifacts there; don't select stale artifacts from an earlier version in `dist/`.
 4. Only after approval, create an annotated `vX.Y.Z` tag at that verified commit and push that specific tag.
-   Push in the foreground; this environment has rejected credentials on background pushes.
+   Run Git pushes in the foreground.
 5. Create a GitHub Release for the existing tag using the changelog entry as notes. Describe the supported
    source-checkout installation and its model/ffmpeg prerequisites, and list untested platforms. Attach only
    the verified artifacts and their SHA-256 checksums if distributing Python artifacts.
