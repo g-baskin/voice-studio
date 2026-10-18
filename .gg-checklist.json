@@ -37,6 +37,25 @@
         "Skills: none loaded."
       ]
     },
+    "git-github": {
+      "checkedAt": "2026-10-18T18:49:37.757Z",
+      "commit": "fed022a",
+      "uncommittedChanges": false,
+      "result": "pass",
+      "summary": "Main remains protected by required PRs and force-push/deletion blocks, including admins. CI workflow and required status checks disabled at owner's request; settings independently verified.",
+      "findings": [],
+      "accepted": [
+        "Owner explicitly requested CI disabled; main no longer requires build-test or other status checks before merging."
+      ],
+      "evidence": [
+        "Scope: re-check existing main-protection finding after owner requested disabling CI; no new audit.",
+        "gh workflow disable 388678787 succeeded; removed only main's required_status_checks using GitHub API.",
+        "Independent Python assertions against gh API passed: CI disabled_manually, required checks absent, PR requirement/admin enforcement retained, force pushes and deletion blocked.",
+        "Recent CI runs all completed; no running CI cancellation needed. Dependabot Updates remains active.",
+        "Not checked: runtime tests, remote-only history, ignore/blob re-audit or deliberate blocked pushes/merges; repository files unchanged apart from this checklist record.",
+        "Skills: no additional skill loaded; change limited to explicitly requested CI shutdown and preventing a disabled-check merge blocker."
+      ]
+    },
     "naming": {
       "checkedAt": "2026-10-18T18:20:22.593Z",
       "commit": "55ed789",
