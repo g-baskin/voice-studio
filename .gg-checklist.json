@@ -36,6 +36,25 @@
         "Not checked: fresh installation, server/browser launch, full pytest, external services, deployment or legal compliance; documentation-only fix.",
         "Skills: none loaded."
       ]
+    },
+    "naming": {
+      "checkedAt": "2026-10-18T18:20:22.593Z",
+      "commit": "55ed789",
+      "uncommittedChanges": true,
+      "result": "pass",
+      "summary": "Both recorded documentation findings fixed: a 27-term glossary with an instruction pointer and an accepted retrospective cloning-engine ADR. Re-check limited to those findings; existing APIs and identifiers unchanged.",
+      "findings": [],
+      "evidence": [
+        "Scope: re-check only missing shared glossary and missing ADR for the existing cloning-engine/isolation decision.",
+        "Added CONTEXT.md with 27 domain terms distinguishing custom/cloned/user-created voices, voice vectors/delivery styles, cleanup presets/templates and speaker/voice identities.",
+        "Added CLAUDE.md glossary-reading pointer and ADR lifecycle instruction; linked both documents from docs/cloning.md.",
+        "Added docs/adr/0001-isolate-the-cloning-engine.md: accepted, explicitly retrospective, with context, options, outcome, consequences, evidence and supersession rules.",
+        "Compared glossary edge cases with previously inspected voice categories, Studio styles and UI preset/template mapping; no API, storage key or identifier renames.",
+        "Re-read clone.py/worker.py lifecycle and JSON-lines protocol via git grep; ADR is grounded in existing cloning guide/runtime pins and labels alternatives unbenchmarked.",
+        "Read-only Python check passed: 27 unique terms, 7 local links resolve, instruction pointer and accepted ADR sections/provenance present. git diff --check passed.",
+        "Not checked: runtime/browser tests, exhaustive identifier renaming, or new architecture evaluation; documentation-only changes, no commits or pushes.",
+        "Skills: shared-language method and adr-writing-stinger MADR guide applied; existing decision recorded without inventing historical deliberations."
+      ]
     }
   }
 }

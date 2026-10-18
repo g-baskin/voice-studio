@@ -4,6 +4,9 @@ Speak any English text in the voice of a short reference recording (5–60 s), f
 
 ## Engine
 
+The existing engine and isolation decision is recorded in [ADR 0001](adr/0001-isolate-the-cloning-engine.md).
+See the [domain glossary](../CONTEXT.md) for the distinction between custom and cloned voices.
+
 **Chatterbox-Turbo (ONNX)** by Resemble AI, about 350M parameters, English only. It is **MIT licensed**, so commercial use is allowed.
 - Model: https://huggingface.co/ResembleAI/chatterbox-turbo-ONNX, pinned to revision `d21799bd0354adb85e348b8a0442a8405110a2cf`
 - Upstream: https://github.com/resemble-ai/chatterbox
