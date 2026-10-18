@@ -72,6 +72,28 @@ precedence. Other options, checked in this order after OpenRouter: `OPENAI_API_K
 server via `NATURALVOICE_LLM_URL` (LM Studio, vLLM...), or a local [Ollama](https://ollama.com) chat model.
 When you use an AI service, the text of your brief or script is sent to that provider under its terms.
 
+## Environment settings (optional)
+
+**Core local use requires no environment variables.** [`.env.example`](.env.example) lists optional AI-service
+keys, model choices, storage paths and cloning-worker settings. Voice Studio does **not** automatically load
+`.env` files.
+
+To use one, run `cp -n .env.example .env` from the project root (this keeps an existing `.env`). Edit `.env`,
+uncomment only the settings you need, and replace their example values. Keep credentials in `.env`, which is
+git-ignored; never commit them. Then start from the same terminal using Bash or Zsh:
+
+```sh
+set -a
+. ./.env
+set +a
+uv run voicestudio serve --open
+```
+
+Only source a file you trust: the shell executes its contents. Quote values, especially paths with spaces.
+These settings apply to this terminal and its child processes, not an app launched separately by double-clicking.
+For a custom AI server, use `NATURALVOICE_LLM_KEY` for authentication; OpenRouter keys (including a saved UI key)
+and `OPENAI_API_KEY` take priority over `NATURALVOICE_LLM_URL`.
+
 ## Command line
 
 ```sh

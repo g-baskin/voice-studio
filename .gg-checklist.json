@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "items": {
+    "docs": {
+      "checkedAt": "2026-10-18T17:18:07.795Z",
+      "commit": "4e17b0f",
+      "uncommittedChanges": true,
+      "result": "pass",
+      "summary": "Previously recorded environment-documentation finding fixed and verified: optional settings example added with explicit shell-loading instructions. Re-check limited to that finding.",
+      "findings": [],
+      "evidence": [
+        "Scope: re-check only the missing environment example and loading instructions approved for fixing.",
+        "Read runtime environment consumers in src/naturalvoice and engines/chatterbox/worker.py; .env.example documents all 12 settings found.",
+        "bash -n .env.example and Bash sourcing with set -a/set +a passed; example contains comments only, leaving defaults unchanged.",
+        "Read-only Python assertions passed: README states no required variables/no automatic loading; all 7 local links resolve.",
+        "git check-ignore verified .env is ignored and .env.example is not; git diff --check passed.",
+        "Not checked: fresh installation, server/browser launch, full pytest, external services, deployment or legal compliance; documentation-only fix.",
+        "Skills: none loaded."
+      ]
+    }
+  }
+}
