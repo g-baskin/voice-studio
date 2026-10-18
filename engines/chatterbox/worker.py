@@ -7,6 +7,7 @@ Responses: {"id": .., "ok": true, ...} or {"id": .., "ok": false, "error": "..."
 The reference must be a 24 kHz mono 16-bit WAV (the app preprocesses it). Audio is written as float32 .npy.
 Logs go to stderr so stdout stays a clean protocol channel.
 """
+
 from __future__ import annotations
 
 import json
@@ -37,8 +38,7 @@ def _sess(name: str, dtype: str) -> ort.InferenceSession:
     opts = ort.SessionOptions()
     opts.intra_op_num_threads = int(os.environ.get("NATURALVOICE_CLONE_THREADS", 2))
     opts.graph_optimization_level = ort.GraphOptimizationLevel.ORT_ENABLE_ALL
-    return ort.InferenceSession(str(MODELS / "onnx" / f"{name}{suffix}.onnx"), opts,
-                                providers=["CPUExecutionProvider"])
+    return ort.InferenceSession(str(MODELS / "onnx" / f"{name}{suffix}.onnx"), opts, providers=["CPUExecutionProvider"])
 
 
 class Engine:
@@ -51,8 +51,11 @@ class Engine:
         self.emb = _sess("embed_tokens", self.dtype)
         self.lm = _sess("language_model", self.dtype)
         self.dec = _sess("conditional_decoder", self.dtype)
-        self.kv_inputs = [(i.name, np.float16 if i.type == "tensor(float16)" else np.float32)
-                          for i in self.lm.get_inputs() if "past_key_values" in i.name]
+        self.kv_inputs = [
+            (i.name, np.float16 if i.type == "tensor(float16)" else np.float32)
+            for i in self.lm.get_inputs()
+            if "past_key_values" in i.name
+        ]
         self._cond: dict[tuple[str, float], tuple] = {}
         log(f"chatterbox loaded ({self.dtype}) in {time.time() - t:.1f}s")
 
@@ -77,8 +80,9 @@ class Engine:
             pcm = np.frombuffer(w.readframes(w.getnframes()), dtype="<i2").astype(np.float32) / 32768
         tokens = self.enc.run(None, {"audio_values": pcm[None, :]})[1].astype(np.int64)
         tokens = np.concatenate([prompt_token, tokens, np.full((1, 3), SILENCE, dtype=np.int64)], axis=1)
-        wav = self.dec.run(None, dict(speech_tokens=tokens, speaker_embeddings=spk_emb,
-                                      speaker_features=spk_feat))[0].squeeze(0)
+        wav = self.dec.run(None, dict(speech_tokens=tokens, speaker_embeddings=spk_emb, speaker_features=spk_feat))[
+            0
+        ].squeeze(0)
         return np.asarray(wav, dtype=np.float32).reshape(-1)
 
     def speak(self, text: str, ref: str, seed: int = 0) -> np.ndarray:
@@ -93,8 +97,9 @@ class Engine:
         # ~25 speech tokens per second; allow generous room for slow speech, stop runaway loops
         max_new = min(1000, 60 + 8 * len(text))
         for _ in range(max_new):
-            logits, *present = self.lm.run(None, dict(inputs_embeds=embeds, attention_mask=mask,
-                                                      position_ids=pos, **past))
+            logits, *present = self.lm.run(
+                None, dict(inputs_embeds=embeds, attention_mask=mask, position_ids=pos, **past)
+            )
             scores = logits[:, -1, :].astype(np.float32)
             seen = np.unique(np.array(gen))
             s = scores[0, seen]
@@ -112,8 +117,9 @@ class Engine:
         if speech.shape[1] == 0:
             raise RuntimeError("The model produced no speech for this text.")
         tokens = np.concatenate([prompt_token, speech, np.full((1, 3), SILENCE, dtype=np.int64)], axis=1)
-        wav = self.dec.run(None, dict(speech_tokens=tokens, speaker_embeddings=spk_emb,
-                                      speaker_features=spk_feat))[0].squeeze(0)
+        wav = self.dec.run(None, dict(speech_tokens=tokens, speaker_embeddings=spk_emb, speaker_features=spk_feat))[
+            0
+        ].squeeze(0)
         return np.asarray(wav, dtype=np.float32).reshape(-1)
 
 

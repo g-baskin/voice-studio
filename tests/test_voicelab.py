@@ -40,10 +40,14 @@ def test_recipe_validation():
     assert [v["weight"] for v in r["voices"]] == [0.25, 0.75]
     style, lang = vl.build_style(r)
     assert style.shape == vlib.STYLE_SHAPE and lang == "en-us"
-    for bad in (recipe(("af_heart", 1)), recipe(*[(n, 1) for n in ["af_heart", "af_bella", "af_nicole",
-                                                                    "am_adam", "am_michael", "bf_emma"]]),
-                recipe(("af_heart", 1), ("nope", 1)), recipe(("af_heart", 1), ("af_heart", 1)),
-                recipe(("af_heart", 1), ("am_adam", 1), gender=3), recipe(("af_heart", 1), ("am_adam", 1), pitch=1)):
+    for bad in (
+        recipe(("af_heart", 1)),
+        recipe(*[(n, 1) for n in ["af_heart", "af_bella", "af_nicole", "am_adam", "am_michael", "bf_emma"]]),
+        recipe(("af_heart", 1), ("nope", 1)),
+        recipe(("af_heart", 1), ("af_heart", 1)),
+        recipe(("af_heart", 1), ("am_adam", 1), gender=3),
+        recipe(("af_heart", 1), ("am_adam", 1), pitch=1),
+    ):
         with pytest.raises(ValueError):
             vl.validate_recipe(bad)
 
@@ -85,13 +89,14 @@ def test_api_validation_errors_hide_paths(client, tmp_path):
     bad = [
         client.post("/api/voicelab/design/preview", json={"recipe": recipe(("af_heart", 1))}),
         client.post("/api/voicelab/design/preview", json={"recipe": recipe(("af_heart", 1), ("x", 1))}),
-        client.post("/api/voicelab/design/preview", json={"recipe": recipe(("af_heart", 1), ("am_adam", 1)),
-                                                          "text": "x" * 400}),
+        client.post(
+            "/api/voicelab/design/preview", json={"recipe": recipe(("af_heart", 1), ("am_adam", 1)), "text": "x" * 400}
+        ),
         client.post("/api/voicelab/design/save", json={"recipe": recipe(("af_heart", 1), ("am_adam", 1)), "name": " "}),
         client.post("/api/voicelab/describe", json={"prompt": "x" * 400}),
         client.post("/api/voicelab/describe", json={"gender": "robot"}),
         client.get("/api/voicelab/preview", params={"voice": "custom:000000000000"}),
-        client.post(f"/api/voicelab/voices/custom:../../etc/rename", json={"name": "x"}),
+        client.post("/api/voicelab/voices/custom:../../etc/rename", json={"name": "x"}),
     ]
     for r in bad:
         assert 400 <= r.status_code < 500, r.text
@@ -104,8 +109,12 @@ def test_api_validation_errors_hide_paths(client, tmp_path):
     assert wrong_type.status_code == 400
     short = io.BytesIO()
     sf.write(short, np.zeros(24000 * 2, np.float32), 24000, format="WAV")
-    assert client.post("/api/voicelab/match", files={"file": ("a.wav", short.getvalue())},
-                       data={"consent": "true", "budget": "5"}).status_code == 400
+    assert (
+        client.post(
+            "/api/voicelab/match", files={"file": ("a.wav", short.getvalue())}, data={"consent": "true", "budget": "5"}
+        ).status_code
+        == 400
+    )
 
 
 def test_busy_returns_429(client):
@@ -131,13 +140,25 @@ def test_describe_maps_keywords_to_matching_stock_voices():
 
 def test_match_job_end_to_end(client, monkeypatch):
     real = vl.match
-    monkeypatch.setattr(vl, "match", lambda *a, **kw: real(*a, candidates=["af_heart", "am_michael", "bf_emma"], **kw))
+
+    def match_candidates(ref, ref_sr, budget_s=180, progress=None, cancel=None):
+        return real(
+            ref,
+            ref_sr,
+            budget_s=budget_s,
+            progress=progress,
+            cancel=cancel,
+            candidates=["af_heart", "am_michael", "bf_emma"],
+        )
+
+    monkeypatch.setattr(vl, "match", match_candidates)
     ref = vl.render(vlib.style_of("af_bella"), "en-us", "Every summer we picked tomatoes and carried them home.")
     ref = np.tile(np.concatenate([ref, np.zeros(4800, np.float32)]), 4)
     buf = io.BytesIO()
     sf.write(buf, ref, vl.SR, format="WAV")
-    job = client.post("/api/voicelab/match", files={"file": ("ref.wav", buf.getvalue())},
-                      data={"consent": "true", "budget": "5"}).json()["job"]
+    job = client.post(
+        "/api/voicelab/match", files={"file": ("ref.wav", buf.getvalue())}, data={"consent": "true", "budget": "5"}
+    ).json()["job"]
     for _ in range(240):
         st = client.get(f"/api/voicelab/match/{job}").json()
         if st["status"] != "running":
@@ -145,7 +166,11 @@ def test_match_job_end_to_end(client, monkeypatch):
         time.sleep(0.5)
     assert st["status"] == "done", st
     res = st["result"]
-    assert -1 <= res["before"] <= res["after"] <= 1 and res["best_stock"][0]["id"] in {"af_heart", "am_michael", "bf_emma"}
+    assert -1 <= res["before"] <= res["after"] <= 1 and res["best_stock"][0]["id"] in {
+        "af_heart",
+        "am_michael",
+        "bf_emma",
+    }
     assert res["best_stock"][0]["id"] != "am_michael"  # a female reference should not match the male voice best
     assert client.get(f"/api/voicelab/match/{job}/audio", params={"which": "after"}).status_code == 200
     saved = client.post(f"/api/voicelab/match/{job}/save", json={"name": "Matched"}).json()
@@ -156,8 +181,10 @@ def test_match_job_end_to_end(client, monkeypatch):
 
 def test_star_voices_end_to_end(client, tmp_path):
     """Stars persist on disk, show in /api/voices and the library, filter, and vanish when a voice is deleted."""
-    rec = client.post("/api/voicelab/design/save", json={
-        "recipe": recipe(("af_heart", 1), ("am_michael", 1)), "name": "Star me", "kind": "blend"}).json()
+    rec = client.post(
+        "/api/voicelab/design/save",
+        json={"recipe": recipe(("af_heart", 1), ("am_michael", 1)), "name": "Star me", "kind": "blend"},
+    ).json()
     mine = rec["id"]
     cat = {v["id"]: v for v in client.get("/api/voices").json()["catalog"]}
     assert cat["af_heart"]["starred"] is False and cat[mine]["starred"] is False

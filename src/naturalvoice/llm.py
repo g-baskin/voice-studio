@@ -11,6 +11,7 @@ Where the key comes from, in order:
   4. NATURALVOICE_LLM_URL (+ optional OPENAI_API_KEY / NATURALVOICE_LLM_KEY)
   5. a local Ollama server that has a chat model installed
 """
+
 from __future__ import annotations
 
 import json
@@ -93,20 +94,43 @@ def config() -> dict | None:
     if not key and saved.get("api_key"):
         key, src = saved["api_key"], "OpenRouter (saved key)"
     if key:
-        return {"base_url": OPENROUTER_URL, "api_key": key, "provider": "openrouter", "label": src,
-                "model": model_env or saved.get("model") or OPENROUTER_MODEL, "headers": {
-                    "HTTP-Referer": SITE_URL, "X-Title": SITE_NAME}}
+        return {
+            "base_url": OPENROUTER_URL,
+            "api_key": key,
+            "provider": "openrouter",
+            "label": src,
+            "model": model_env or saved.get("model") or OPENROUTER_MODEL,
+            "headers": {"HTTP-Referer": SITE_URL, "X-Title": SITE_NAME},
+        }
     if os.environ.get("OPENAI_API_KEY"):
-        return {"base_url": "https://api.openai.com/v1", "api_key": os.environ["OPENAI_API_KEY"], "provider": "openai",
-                "label": "OpenAI (environment key)", "model": model_env or "gpt-4o-mini", "headers": {}}
+        return {
+            "base_url": "https://api.openai.com/v1",
+            "api_key": os.environ["OPENAI_API_KEY"],
+            "provider": "openai",
+            "label": "OpenAI (environment key)",
+            "model": model_env or "gpt-4o-mini",
+            "headers": {},
+        }
     url = os.environ.get("NATURALVOICE_LLM_URL", "").strip().rstrip("/")
     if url:
-        return {"base_url": url, "api_key": os.environ.get("NATURALVOICE_LLM_KEY", "none"), "provider": "custom",
-                "label": "your LLM server", "model": model_env or "default", "headers": {}}
+        return {
+            "base_url": url,
+            "api_key": os.environ.get("NATURALVOICE_LLM_KEY", "none"),
+            "provider": "custom",
+            "label": "your LLM server",
+            "model": model_env or "default",
+            "headers": {},
+        }
     models = ollama_chat_models()
     if models:
-        return {"base_url": OLLAMA_URL, "api_key": "ollama", "provider": "ollama",
-                "label": "local Ollama (" + models[0] + ")", "model": model_env or models[0], "headers": {}}
+        return {
+            "base_url": OLLAMA_URL,
+            "api_key": "ollama",
+            "provider": "ollama",
+            "label": "local Ollama (" + models[0] + ")",
+            "model": model_env or models[0],
+            "headers": {},
+        }
     return None
 
 
@@ -114,18 +138,29 @@ def status() -> dict:
     """Safe to send to the browser: never contains the key (only the last 4 characters of a saved one)."""
     c = config()
     saved = _saved()
-    out = {"available": c is not None, "via": c["label"] if c else None,
-           "provider": c["provider"] if c else None, "model": c["model"] if c else OPENROUTER_MODEL,
-           "key_saved": bool(saved.get("api_key")), "key_hint": _mask(saved.get("api_key", "")),
-           "env_key": bool(os.environ.get("OPENROUTER_API_KEY", "").strip()), "default_model": OPENROUTER_MODEL}
+    out = {
+        "available": c is not None,
+        "via": c["label"] if c else None,
+        "provider": c["provider"] if c else None,
+        "model": c["model"] if c else OPENROUTER_MODEL,
+        "key_saved": bool(saved.get("api_key")),
+        "key_hint": _mask(saved.get("api_key", "")),
+        "env_key": bool(os.environ.get("OPENROUTER_API_KEY", "").strip()),
+        "default_model": OPENROUTER_MODEL,
+    }
     return out
 
 
 def _client(c: dict, timeout: float):
     from openai import OpenAI
 
-    return OpenAI(base_url=c["base_url"], api_key=c["api_key"], default_headers=c["headers"] or None,
-                  timeout=timeout, max_retries=1)
+    return OpenAI(
+        base_url=c["base_url"],
+        api_key=c["api_key"],
+        default_headers=c["headers"] or None,
+        timeout=timeout,
+        max_retries=1,
+    )
 
 
 def _explain(e: Exception, c: dict) -> str:
@@ -137,7 +172,7 @@ def _explain(e: Exception, c: dict) -> str:
     if isinstance(e, openai.RateLimitError):
         return f"{who} says the limit or credit has run out. Check your account, then try again."
     if isinstance(e, openai.NotFoundError):
-        return f"{who} doesn't know the model \"{c['model']}\". Pick another model name."
+        return f'{who} doesn\'t know the model "{c["model"]}". Pick another model name.'
     if isinstance(e, openai.APITimeoutError):
         return f"{who} took too long to answer. Try again."
     if isinstance(e, openai.APIConnectionError):
@@ -152,8 +187,11 @@ def chat(system: str, user: str, temperature: float = 0.4, timeout: float = 90, 
     try:
         kw = {"max_tokens": max_tokens} if max_tokens else {}
         r = _client(c, timeout).chat.completions.create(
-            model=c["model"], temperature=temperature, **kw,
-            messages=[{"role": "system", "content": system}, {"role": "user", "content": user}])
+            model=c["model"],
+            temperature=temperature,
+            **kw,
+            messages=[{"role": "system", "content": system}, {"role": "user", "content": user}],
+        )
         out = (r.choices[0].message.content or "").strip()
     except Exception as e:  # SDK errors are mapped to plain sentences; the key never appears in them
         raise RuntimeError(_explain(e, c)) from None
@@ -166,12 +204,18 @@ def connect(api_key: str, model: str = "") -> dict:
     """Validate with a tiny real request, and only then save. Returns the safe status."""
     if not _KEY_OK.match((api_key or "").strip()):
         raise ValueError("That doesn't look like an API key. Paste the whole key with no spaces.")
-    probe = {"base_url": OPENROUTER_URL, "api_key": api_key.strip(), "provider": "openrouter", "label": "",
-             "model": (model or "").strip() or OPENROUTER_MODEL,
-             "headers": {"HTTP-Referer": SITE_URL, "X-Title": SITE_NAME}}
+    probe = {
+        "base_url": OPENROUTER_URL,
+        "api_key": api_key.strip(),
+        "provider": "openrouter",
+        "label": "",
+        "model": (model or "").strip() or OPENROUTER_MODEL,
+        "headers": {"HTTP-Referer": SITE_URL, "X-Title": SITE_NAME},
+    }
     try:
         _client(probe, 30).chat.completions.create(
-            model=probe["model"], max_tokens=5, messages=[{"role": "user", "content": "Say OK."}])
+            model=probe["model"], max_tokens=5, messages=[{"role": "user", "content": "Say OK."}]
+        )
     except Exception as e:
         raise RuntimeError(_explain(e, probe)) from None
     save_key(api_key, model)

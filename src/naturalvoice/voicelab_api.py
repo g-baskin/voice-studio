@@ -1,4 +1,5 @@
 """API routes for /api/voicelab (registered in server.py). Errors never include filesystem paths."""
+
 from __future__ import annotations
 
 import logging
@@ -62,6 +63,7 @@ def _recipe_gender(recipe: dict) -> str:
 
 # ------------------------------------------------------------------ library
 
+
 @router.get("/library")
 def library(language: str = "", gender: str = "", kind: str = "", q: str = ""):
     try:
@@ -73,12 +75,20 @@ def library(language: str = "", gender: str = "", kind: str = "", q: str = ""):
         items_f = [r for r in items if r.get("starred")]
     else:
         items_f = items
-    out = [r for r in items_f
-           if (not language or r.get("language") == language) and (not gender or r.get("gender") == gender)
-           and (not kind or kind == "starred" or r.get("kind") == kind) and (not q or q in (r["name"] + " " + r["id"]).lower())]
-    return {"voices": out, "total": len(items),
-            "languages": sorted({r.get("language", "Other") for r in items}),
-            "controls": {k: {kk: vv for kk, vv in c.items() if kk != "scale"} for k, c in vl.CONTROLS.items()}}
+    out = [
+        r
+        for r in items_f
+        if (not language or r.get("language") == language)
+        and (not gender or r.get("gender") == gender)
+        and (not kind or kind == "starred" or r.get("kind") == kind)
+        and (not q or q in (r["name"] + " " + r["id"]).lower())
+    ]
+    return {
+        "voices": out,
+        "total": len(items),
+        "languages": sorted({r.get("language", "Other") for r in items}),
+        "controls": {k: {kk: vv for kk, vv in c.items() if kk != "scale"} for k, c in vl.CONTROLS.items()},
+    }
 
 
 def _known(voice_id: str) -> dict:
@@ -157,6 +167,7 @@ def voice(voice_id: str):
 
 # ------------------------------------------------------------------ design (blend)
 
+
 class Design(BaseModel):
     recipe: dict
     text: str | None = Field(default=None, max_length=1000)
@@ -195,13 +206,18 @@ def design_save(body: Design):
         raise HTTPException(400, "Unknown design kind.")
     recipe = vl.validate_recipe(body.recipe)
     try:
-        return vlib.save_custom(body.name or "", style, lang=lang,
-                                meta={"source": body.kind, "recipe": recipe, "gender": _recipe_gender(recipe)})
+        return vlib.save_custom(
+            body.name or "",
+            style,
+            lang=lang,
+            meta={"source": body.kind, "recipe": recipe, "gender": _recipe_gender(recipe)},
+        )
     except ValueError as e:
         raise HTTPException(400, str(e))
 
 
 # ------------------------------------------------------------------ describe
+
 
 class Describe(BaseModel):
     prompt: str = Field(default="", max_length=vl.MAX_TEXT)
@@ -209,13 +225,17 @@ class Describe(BaseModel):
     accent: str = ""
     age: str = ""
     energy: str = ""
-    seed: int | None = Field(default=None, ge=0, lt=2 ** 32)
+    seed: int | None = Field(default=None, ge=0, lt=2**32)
 
 
 @router.post("/describe")
 def describe(body: Describe):
-    if body.gender not in {"", "female", "male"} or body.accent not in {"", *vlib.LANGS} \
-            or body.age not in {"", "young", "adult", "older"} or body.energy not in {"", "calm", "neutral", "energetic"}:
+    if (
+        body.gender not in {"", "female", "male"}
+        or body.accent not in {"", *vlib.LANGS}
+        or body.age not in {"", "young", "adult", "older"}
+        or body.energy not in {"", "calm", "neutral", "energetic"}
+    ):
         raise HTTPException(400, "Unknown option in the voice description.")
     if not body.prompt.strip() and not any([body.gender, body.accent, body.age, body.energy]):
         raise HTTPException(400, "Describe the voice or pick at least one option.")
@@ -228,6 +248,7 @@ def describe(body: Describe):
 
 
 # ------------------------------------------------------------------ match a recording
+
 
 @router.post("/match")
 async def match_start(file: UploadFile = File(...), consent: str = Form(""), budget: float = Form(180)):
@@ -270,8 +291,15 @@ async def match_start(file: UploadFile = File(...), consent: str = Form(""), bud
     finally:
         await file.close()
     cancel = threading.Event()
-    match_jobs[job] = {"status": "running", "step": "Starting", "progress": 0.0, "started": time.time(),
-                       "budget": budget, "_cancel": cancel, "_dir": d}
+    match_jobs[job] = {
+        "status": "running",
+        "step": "Starting",
+        "progress": 0.0,
+        "started": time.time(),
+        "budget": budget,
+        "_cancel": cancel,
+        "_dir": d,
+    }
 
     def run():
         j = match_jobs[job]
@@ -341,9 +369,17 @@ def match_save(job: str, body: SaveMatch):
         raise HTTPException(400, "The match job has not finished.")
     r = j["result"]
     try:
-        return vlib.save_custom(body.name, j["_style"], lang="en-us",
-                                meta={"source": "match", "similarity_before": r["before"],
-                                      "similarity_after": r["after"], "best_stock": r["best_stock"],
-                                      "consent": True})
+        return vlib.save_custom(
+            body.name,
+            j["_style"],
+            lang="en-us",
+            meta={
+                "source": "match",
+                "similarity_before": r["before"],
+                "similarity_after": r["after"],
+                "best_stock": r["best_stock"],
+                "consent": True,
+            },
+        )
     except ValueError as e:
         raise HTTPException(400, str(e))

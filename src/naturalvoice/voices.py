@@ -9,6 +9,7 @@ Custom voices live in DATA_DIR/voices as ``<id>.json`` (metadata) plus ``<id>.np
 shape (510, 1, 256)) or ``<id>.wav`` (clone reference). DATA_DIR defaults to ``<project>/data`` and can be
 moved with NATURALVOICE_DATA.
 """
+
 from __future__ import annotations
 
 import json
@@ -25,10 +26,18 @@ VOICE_DIR = DATA_DIR / "voices"
 STYLE_SHAPE = (510, 1, 256)
 _ID = re.compile(r"^[0-9a-f]{12}$")
 
-LANGS = {"a": "en-us", "b": "en-gb", "e": "es", "f": "fr-fr", "h": "hi", "i": "it",
-         "p": "pt-br", "j": "ja", "z": "cmn"}
-LANG_NAMES = {"a": "American English", "b": "British English", "e": "Spanish", "f": "French", "h": "Hindi",
-              "i": "Italian", "p": "Brazilian Portuguese", "j": "Japanese", "z": "Mandarin Chinese"}
+LANGS = {"a": "en-us", "b": "en-gb", "e": "es", "f": "fr-fr", "h": "hi", "i": "it", "p": "pt-br", "j": "ja", "z": "cmn"}
+LANG_NAMES = {
+    "a": "American English",
+    "b": "British English",
+    "e": "Spanish",
+    "f": "French",
+    "h": "Hindi",
+    "i": "Italian",
+    "p": "Brazilian Portuguese",
+    "j": "Japanese",
+    "z": "Mandarin Chinese",
+}
 
 
 def lang_for(voice: str) -> str:
@@ -36,9 +45,14 @@ def lang_for(voice: str) -> str:
 
 
 def stock_info(name: str) -> dict:
-    return {"id": name, "name": name[3:].replace("_", " ").title(), "kind": "stock",
-            "gender": "female" if name[1:2] == "f" else "male",
-            "language": LANG_NAMES.get(name[:1], "Other"), "lang": lang_for(name)}
+    return {
+        "id": name,
+        "name": name[3:].replace("_", " ").title(),
+        "kind": "stock",
+        "gender": "female" if name[1:2] == "f" else "male",
+        "language": LANG_NAMES.get(name[:1], "Other"),
+        "lang": lang_for(name),
+    }
 
 
 def _paths(vid: str) -> tuple[Path, Path, Path]:
@@ -51,8 +65,14 @@ def new_id() -> str:
     return uuid.uuid4().hex[:12]
 
 
-def save_custom(name: str, style: np.ndarray, meta: dict | None = None, lang: str = "en-us",
-                kind: str = "custom", vid: str | None = None) -> dict:
+def save_custom(
+    name: str,
+    style: np.ndarray,
+    meta: dict | None = None,
+    lang: str = "en-us",
+    kind: str = "custom",
+    vid: str | None = None,
+) -> dict:
     """Save a Kokoro style vector as a reusable voice; returns its record."""
     style = np.asarray(style, dtype=np.float32)
     if style.shape != STYLE_SHAPE or not np.isfinite(style).all():
@@ -63,8 +83,7 @@ def save_custom(name: str, style: np.ndarray, meta: dict | None = None, lang: st
     vid = vid or new_id()
     meta_p, npy_p, _ = _paths(vid)
     VOICE_DIR.mkdir(parents=True, exist_ok=True)
-    rec = {"id": f"custom:{vid}", "name": name, "kind": kind, "lang": lang, "created": time.time(),
-           "meta": meta or {}}
+    rec = {"id": f"custom:{vid}", "name": name, "kind": kind, "lang": lang, "created": time.time(), "meta": meta or {}}
     np.save(npy_p, style)
     meta_p.write_text(json.dumps(rec, indent=2))
     return rec
@@ -79,8 +98,14 @@ def save_clone(name: str, wav_bytes_path: Path, meta: dict | None = None, lang: 
     meta_p, _, wav_p = _paths(vid)
     VOICE_DIR.mkdir(parents=True, exist_ok=True)
     Path(wav_bytes_path).replace(wav_p)
-    rec = {"id": f"clone:{vid}", "name": name, "kind": "clone", "lang": lang, "created": time.time(),
-           "meta": meta or {}}
+    rec = {
+        "id": f"clone:{vid}",
+        "name": name,
+        "kind": "clone",
+        "lang": lang,
+        "created": time.time(),
+        "meta": meta or {},
+    }
     meta_p.write_text(json.dumps(rec, indent=2))
     return rec
 

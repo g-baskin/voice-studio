@@ -12,6 +12,7 @@ What makes synthetic speech sound fake, and what each stage does about it:
 * Dead digital silence      -> optional, very quiet room tone under the voice.
 * Uneven level              -> loudness normalisation (-16 LUFS) with a peak limiter.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, asdict, replace
@@ -23,14 +24,14 @@ from scipy.ndimage import uniform_filter1d, median_filter
 
 @dataclass(frozen=True)
 class Settings:
-    ai_clean: float = 0.0      # 0..1 neural cleanup (GTCRN); needs models/gtcrn_simple.onnx
-    dereverb: float = 0.8      # 0..1 how much echo to remove
-    demetal: float = 0.7       # 0..1 how hard to cut metallic resonances
-    deharsh: float = 0.6       # 0..1 taming of fizzy 4-9 kHz
-    warmth: float = 0.5        # 0..1 low-mid body + soft saturation
-    denoise: float = 0.0       # 0..1 residual hiss/artifact removal
-    room_tone: float = 0.3     # 0..1 quiet natural room tone (0 = off)
-    loudness: float = -16.0    # target LUFS
+    ai_clean: float = 0.0  # 0..1 neural cleanup (GTCRN); needs models/gtcrn_simple.onnx
+    dereverb: float = 0.8  # 0..1 how much echo to remove
+    demetal: float = 0.7  # 0..1 how hard to cut metallic resonances
+    deharsh: float = 0.6  # 0..1 taming of fizzy 4-9 kHz
+    warmth: float = 0.5  # 0..1 low-mid body + soft saturation
+    denoise: float = 0.0  # 0..1 residual hiss/artifact removal
+    room_tone: float = 0.3  # 0..1 quiet natural room tone (0 = off)
+    loudness: float = -16.0  # target LUFS
 
     def to_dict(self) -> dict:
         return asdict(self)
@@ -59,6 +60,7 @@ def get_settings(preset: str = "standard", **overrides) -> Settings:
 
 # --------------------------------------------------------------------------- helpers
 
+
 def _stft_params(sr: int) -> tuple[int, int]:
     n_fft = 512 if sr <= 16000 else 1024 if sr <= 24000 else 2048
     return n_fft, n_fft // 4
@@ -85,6 +87,7 @@ def _db(x):
 
 # --------------------------------------------------------------------------- stages
 
+
 def estimate_rt60(x: np.ndarray, sr: int) -> float:
     """Blind decay-time estimate: median slope of the energy envelope right after speech stops."""
     hop = int(0.01 * sr)
@@ -92,14 +95,14 @@ def estimate_rt60(x: np.ndarray, sr: int) -> float:
     if len(x) < win * 20:
         return 0.5
     frames = np.lib.stride_tricks.sliding_window_view(x, win)[::hop]
-    e = 10 * np.log10(np.mean(frames ** 2, axis=1) + 1e-12)
+    e = 10 * np.log10(np.mean(frames**2, axis=1) + 1e-12)
     e = uniform_filter1d(e, 3)
     peak = np.percentile(e, 95)
     slopes = []
     i = 1
     while i < len(e) - 40:
         if e[i] > peak - 15 and e[i] >= e[i - 1] and e[i + 1] < e[i]:
-            seg = e[i:i + 40]  # 400 ms
+            seg = e[i : i + 40]  # 400 ms
             j = 1
             while j < len(seg) and seg[j] < seg[j - 1] + 0.5:
                 j += 1
@@ -148,6 +151,7 @@ def dereverb(x: np.ndarray, sr: int, amount: float, rt60: float | None = None, g
     e = 10 * np.log10((np.abs(Z) ** 2).sum(axis=0) + 1e-12)
     look = max(1, int(0.25 * sr / hop))
     from scipy.ndimage import maximum_filter1d
+
     recent = maximum_filter1d(e, size=2 * look + 1, origin=look // 2)  # mostly looks back
     below = recent - e
     start, rng = 18.0, 20.0
@@ -185,8 +189,10 @@ def find_resonances(x: np.ndarray, sr: int, fmin=900.0, fmax=11000.0, thresh_db=
     masked = np.where(band, excess, 0.0)  # 0 = 'no excess' (a large negative value would wreck peak widths)
     peaks, props = signal.find_peaks(masked, height=thresh_db, width=(1, int(500 / df) + 1), wlen=int(2000 / df))
     order = np.argsort(props["peak_heights"])[::-1][:max_peaks]
-    return [(float(f[peaks[i]]), float(props["peak_heights"][i]), float(max(props["widths"][i] * df, 2 * df)))
-            for i in order]
+    return [
+        (float(f[peaks[i]]), float(props["peak_heights"][i]), float(max(props["widths"][i] * df, 2 * df)))
+        for i in order
+    ]
 
 
 def demetal(x: np.ndarray, sr: int, amount: float) -> np.ndarray:
@@ -240,12 +246,14 @@ def deharsh(x: np.ndarray, sr: int, amount: float) -> np.ndarray:
 
 
 def tone(x: np.ndarray, sr: int, warmth: float, deharsh_amt: float) -> np.ndarray:
-    from pedalboard import Pedalboard, HighpassFilter, LowShelfFilter, HighShelfFilter, PeakFilter
+    from pedalboard import Pedalboard, Plugin, HighpassFilter, LowShelfFilter, HighShelfFilter, PeakFilter
 
-    fx = [HighpassFilter(cutoff_frequency_hz=70)]
+    fx: list[Plugin] = [HighpassFilter(cutoff_frequency_hz=70)]
     if warmth > 0:
-        fx += [LowShelfFilter(cutoff_frequency_hz=220, gain_db=2.5 * warmth, q=0.7),
-               PeakFilter(cutoff_frequency_hz=3000, gain_db=-1.0 * warmth, q=0.8)]
+        fx += [
+            LowShelfFilter(cutoff_frequency_hz=220, gain_db=2.5 * warmth, q=0.7),
+            PeakFilter(cutoff_frequency_hz=3000, gain_db=-1.0 * warmth, q=0.8),
+        ]
     if deharsh_amt > 0 and sr > 22000:
         fx.append(HighShelfFilter(cutoff_frequency_hz=10000, gain_db=-3.0 * deharsh_amt, q=0.7))
     y = Pedalboard(fx)(x[None, :].astype(np.float32), sr)[0]
@@ -274,13 +282,14 @@ def add_room_tone(x: np.ndarray, sr: int, amount: float, seed: int = 7) -> np.nd
     n = rng.standard_normal(len(x)).astype(np.float32)
     b, a = signal.butter(1, 400 / (sr / 2), btype="low")  # warm, roomy
     n = signal.lfilter(b, a, n).astype(np.float32)
-    n /= np.sqrt(np.mean(n ** 2)) + 1e-9
-    level = np.sqrt(np.mean(x ** 2)) + 1e-9
+    n /= np.sqrt(np.mean(n**2)) + 1e-9
+    level = np.sqrt(np.mean(x**2)) + 1e-9
     return x + n * level * (10 ** (-58 / 20)) * amount
 
 
-def soft_limit(x: np.ndarray, sr: int, ceiling_db: float = -1.0, lookahead_ms: float = 5.0,
-               release_ms: float = 150.0) -> np.ndarray:
+def soft_limit(
+    x: np.ndarray, sr: int, ceiling_db: float = -1.0, lookahead_ms: float = 5.0, release_ms: float = 150.0
+) -> np.ndarray:
     """Look-ahead peak limiter: gain drops just before a peak and recovers slowly (no distortion)."""
     from scipy.ndimage import minimum_filter1d
 
@@ -323,6 +332,7 @@ def normalize(x: np.ndarray, sr: int, target_lufs: float) -> np.ndarray:
 
 # --------------------------------------------------------------------------- chain
 
+
 def process_mono(x: np.ndarray, sr: int, s: Settings, progress=None) -> np.ndarray:
     from . import enhance
 
@@ -357,6 +367,6 @@ def humanize(audio: np.ndarray, sr: int, settings: Settings | None = None, progr
     mid = audio.mean(axis=1)
     side = (audio[:, 0] - audio[:, 1]) / 2
     mid_p = process_mono(mid, sr, s, progress)
-    gain = np.sqrt(np.mean(mid_p ** 2) / (np.mean(mid ** 2) + 1e-12))
+    gain = np.sqrt(np.mean(mid_p**2) / (np.mean(mid**2) + 1e-12))
     side_p = side * gain * 0.5  # side carries most of the echo; reduce it
     return np.stack([mid_p + side_p, mid_p - side_p], axis=1).clip(-0.99, 0.99).astype(np.float32)

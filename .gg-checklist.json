@@ -74,6 +74,66 @@
         "Not checked: runtime/browser tests, exhaustive identifier renaming, or new architecture evaluation; documentation-only changes, no commits or pushes.",
         "Skills: shared-language method and adr-writing-stinger MADR guide applied; existing decision recorded without inventing historical deliberations."
       ]
+    },
+    "quality-tools": {
+      "checkedAt": "2026-10-18T19:27:42.448Z",
+      "commit": "6945015",
+      "uncommittedChanges": true,
+      "result": "pass",
+      "summary": "All three recorded tooling gaps fixed: local lint, formatting and incremental type checks pass for Python, JavaScript and shell. Tests pass 140/140; CI remains disabled. Inline HTML scripts and strict typing are excluded.",
+      "findings": [],
+      "evidence": [
+        "Scope: re-check the three approved tooling findings; added pinned Python/JS tools, local scripts, type declarations, formatter configuration and documented coverage.",
+        "npm run check passed: Ruff + ESLint + ShellCheck, Ruff format + Prettier + shfmt, DOM declaration drift check, mypy and three TypeScript checkJs environments.",
+        "mypy checked 39 Python files, including existing function bodies; browser/service-worker/Node JS checked separately. Third-party missing types remain permissive; JS is non-strict.",
+        "uv run --locked pytest -ra: 140 passed, including a new missing-cloning-worker-pipe regression test. Existing assertions retained or strengthened.",
+        "uv build --offline: sdist and wheel built successfully; all 13 tracked JS/CJS files passed node --check.",
+        "Compared three lint-cleaned Studio regexes against previous versions on 40 tag/bracket samples each: identical results. git diff --check passed.",
+        "Pinned tools verified via PyPI/npm metadata before installation. uv.lock comparison found no changes to existing dependency versions; npm lock uses registry.npmjs.org.",
+        "README/AGENTS document setup and local checks; node_modules/tool caches ignored; added npm Dependabot coverage. Formatted existing Python/JS/shell files.",
+        "Not checked: live browser automation (Playwright absent), inline HTML scripts, strict-mode migration or cross-platform checks. No commits/pushes; unrelated checklist records preserved.",
+        "No new skill loaded; existing bulletproof dependency controls applied. GitHub API confirms CI remains disabled_manually."
+      ]
+    },
+    "secrets": {
+      "checkedAt": "2026-10-18T19:00:45.006Z",
+      "commit": "6945015",
+      "uncommittedChanges": false,
+      "result": "pass",
+      "summary": "No real secrets found in 101 tracked files or 9 locally reachable commits. One scanner candidate is a mocked test fixture. Ignore rules and tested key handling passed; remote-only history and ignored credentials were not scanned.",
+      "findings": [],
+      "evidence": [
+        "Scope: tracked files, locally reachable Git history, env exclusions, and LLM/TTS credential sources/storage/response handling; limited secrets review.",
+        "Profile: public Python/FastAPI local voice app with browser UI, local audio/scripts and optional provider keys; no hosted deployment reviewed.",
+        "Gitleaks 8.30.1 git --log-opts='--all --full-history': 9 commits; one generic-api-key candidate at tests/test_llm.py:13. Scanner exit 1, not a clean scan.",
+        "Gitleaks stdin: 101 tracked files, same candidate; default rules, suppressions disabled, redacted reports processed in memory. No report files written.",
+        "One distinct candidate dropped: historical value equals current fake-marked fixture; FakeClient/mock paths inspected. No confirmed credential leak.",
+        "Ignore probes passed: .env, .env.local, .env.production, src/.env, data/llm.json and temporary key file. .env.example trackable with empty key placeholders.",
+        "Read llm.py, llm_api.py, TTS env/provider use, browser key submission, .env.example and test_llm.py: env keys or ignored 0600 JSON storage; masked status and sanitized SDK errors.",
+        "PYTHONDONTWRITEBYTECODE=1 .venv/bin/pytest -p no:cacheprovider -q tests/test_llm.py: 15 passed; temporary fixtures verify permissions/status/errors without project cache writes.",
+        "Not checked: remote-only branches, unreachable objects, ignored credentials, deployed logs/artifacts, compressed interiors or exhaustive endpoint security. No external key validation.",
+        "Skill: bulletproof reused from this session in report-only mode; verification/audit-protocol references read. No code edits, installations, commits or pushes."
+      ]
+    },
+    "tests": {
+      "checkedAt": "2026-10-18T19:43:07.713Z",
+      "commit": "6945015",
+      "uncommittedChanges": true,
+      "result": "pass",
+      "summary": "Current local suite passes 140/140 with no skips, exercising real DSP, models, HTTP/CLI paths, persistence and exports. Reviewed assertions support core local workflows; live browser/provider and exhaustive coverage remain unverified.",
+      "findings": [],
+      "evidence": [
+        "Scope: current working-tree tests, major local workflows and mock boundaries; report-only review, preserving existing uncommitted quality-tool changes.",
+        "Profile: Python/FastAPI local voice app with browser UI/macOS launcher, local audio/projects/voices and optional paid providers; CI intentionally disabled.",
+        "Ran .venv/bin/python -B -m pytest -p no:cacheprovider -ra with bytecode disabled: 140 passed, 0 skipped, 716.24 seconds; confirmed final log.",
+        "Run isolated TMPDIR, NATURALVOICE_DATA, NUMBA_CACHE_DIR, XDG_CACHE_HOME and MPLCONFIGDIR outside project; no pytest cache or project output generation requested.",
+        "Read test_core.py: real DSP/ONNX/ffmpeg cleanup, video/audio outputs, score comparisons, offline TTS, Node syntax and template interaction assertions.",
+        "Read test_studio.py: actual rendering, loudness/stems/captions, project CRUD, invalid saved data, busy responses, timed dubbing and CLI output files.",
+        "Read test_clone.py/test_voicelab.py: real clone/conversion/language renders, consent/input validation, real voice blending/matching and persisted saved/starred voices.",
+        "Read test_workflow.py/test_llm.py/test_scriptgen.py: focused DSP doubles complemented by real core tests; external LLM calls mocked while parsing/storage/error behavior runs.",
+        "Not checked: live Playwright browser runs (not installed), paid providers, cross-platform behavior, mutation testing or quantitative coverage. No claim of exhaustive path coverage.",
+        "Skill: tdd loaded and applied in report-only mode to seams, assertions and mock boundaries; no test edits, red/green changes, installs, commits or pushes."
+      ]
     }
   }
 }

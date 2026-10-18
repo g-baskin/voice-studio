@@ -1,4 +1,5 @@
 """API routes for /api/studio (registered in server.py)."""
+
 from __future__ import annotations
 
 import io
@@ -178,9 +179,11 @@ def _busy():
 # --------------------------------------------------------------------------- info, parsing, preview
 @router.get("/presets")
 def presets():
-    return {"delivery": {k: {"label": v["label"], "does": v["does"]} for k, v in st.DELIVERY.items()},
-            "targets": {k: v["label"] for k, v in st.TARGETS.items()},
-            "limits": {"lines": st.MAX_LINES, "chars": st.MAX_CHARS, "music_mb": MUSIC_MAX // 2**20}}
+    return {
+        "delivery": {k: {"label": v["label"], "does": v["does"]} for k, v in st.DELIVERY.items()},
+        "targets": {k: v["label"] for k, v in st.TARGETS.items()},
+        "limits": {"lines": st.MAX_LINES, "chars": st.MAX_CHARS, "music_mb": MUSIC_MAX // 2**20},
+    }
 
 
 @router.post("/parse")
@@ -305,6 +308,7 @@ async def upload_music(file: UploadFile = File(...)):
         if not size:
             raise HTTPException(400, "The music file is empty.")
         from . import audio as aio
+
         try:
             data, sr = aio.load(path)
         except Exception:
@@ -314,10 +318,10 @@ async def upload_music(file: UploadFile = File(...)):
         raise
     finally:
         await file.close()
-    return {"music_id": mid, "name": Path(file.filename).name[:120], "seconds": round(len(data) / sr, 1)}
+    return {"music_id": mid, "name": Path(file.filename or "").name[:120], "seconds": round(len(data) / sr, 1)}
 
 
-VIDEO_MAX = 2 * 1024 ** 3
+VIDEO_MAX = 2 * 1024**3
 
 
 def _scratch(kind: str) -> Path:
@@ -369,8 +373,12 @@ async def upload_video(file: UploadFile = File(...)):
         raise
     finally:
         await file.close()
-    return {"video_id": vid, "name": Path(file.filename).name[:120], "seconds": round(seconds, 2),
-            "has_audio": streams["audio"]}
+    return {
+        "video_id": vid,
+        "name": Path(file.filename or "").name[:120],
+        "seconds": round(seconds, 2),
+        "has_audio": streams["audio"],
+    }
 
 
 @router.post("/subtitles")
@@ -419,20 +427,45 @@ def render(req: RenderRequest):
     job = uuid.uuid4().hex
     out = WORK / "renders" / job
     cancel = threading.Event()
-    jobs[job] = {"status": "running", "step": "Starting", "progress": 0.0, "title": project["title"],
-                 "created": time.time(), "cancel": cancel}
-    opts = st.RenderOptions(target=req.target, sample_rate=req.sample_rate, format=req.format, stems=req.stems,
-                            line_clips=req.line_clips, captions=req.captions, polish=req.polish,
-                            stop_on_error=req.stop_on_error, music=music, music_level_db=req.music_level_db,
-                            music_loop=req.music_loop, duck=req.duck, duck_db=req.duck_db, attack_ms=req.attack_ms,
-                            release_ms=req.release_ms, fade_in=req.fade_in, fade_out=req.fade_out,
-                            target_duration=req.target_duration, room_tone=req.room_tone,
-                            video=video, video_mode=req.video_mode, video_level_db=req.video_level_db,
-                            video_subs=req.video_subs)
+    jobs[job] = {
+        "status": "running",
+        "step": "Starting",
+        "progress": 0.0,
+        "title": project["title"],
+        "created": time.time(),
+        "cancel": cancel,
+    }
+    opts = st.RenderOptions(
+        target=req.target,
+        sample_rate=req.sample_rate,
+        format=req.format,
+        stems=req.stems,
+        line_clips=req.line_clips,
+        captions=req.captions,
+        polish=req.polish,
+        stop_on_error=req.stop_on_error,
+        music=music,
+        music_level_db=req.music_level_db,
+        music_loop=req.music_loop,
+        duck=req.duck,
+        duck_db=req.duck_db,
+        attack_ms=req.attack_ms,
+        release_ms=req.release_ms,
+        fade_in=req.fade_in,
+        fade_out=req.fade_out,
+        target_duration=req.target_duration,
+        room_tone=req.room_tone,
+        video=video,
+        video_mode=req.video_mode,
+        video_level_db=req.video_level_db,
+        video_subs=req.video_subs,
+    )
 
     def run():
         try:
-            res = st.render_project(project, opts, out, lambda s, f: jobs[job].update(step=s, progress=round(f, 3)), cancel)
+            res = st.render_project(
+                project, opts, out, lambda s, f: jobs[job].update(step=s, progress=round(f, 3)), cancel
+            )
             jobs[job].update(status="done", progress=1.0, step="Done", result=res)
         except st.Cancelled:
             jobs[job].update(status="cancelled", step="Cancelled")
@@ -442,7 +475,9 @@ def render(req: RenderRequest):
             shutil.rmtree(out, ignore_errors=True)
         except Exception:
             log.exception("Studio render failed")
-            jobs[job].update(status="error", error="The render failed. Try fewer lines or a different voice, then retry.")
+            jobs[job].update(
+                status="error", error="The render failed. Try fewer lines or a different voice, then retry."
+            )
             shutil.rmtree(out, ignore_errors=True)
         finally:
             sem.release()
@@ -474,8 +509,18 @@ def render_cancel(job: str):
 
 @router.get("/renders")
 def renders():
-    return {"renders": [{"job": k, "title": j["title"], "status": j["status"], "created": j["created"],
-                         "duration": j.get("result", {}).get("duration")} for k, j in reversed(jobs.items())]}
+    return {
+        "renders": [
+            {
+                "job": k,
+                "title": j["title"],
+                "status": j["status"],
+                "created": j["created"],
+                "duration": j.get("result", {}).get("duration"),
+            }
+            for k, j in reversed(jobs.items())
+        ]
+    }
 
 
 @router.get("/render/{job}/file/{name}")
@@ -490,8 +535,15 @@ def render_file(job: str, name: str):
     path = WORK / "renders" / job / name
     if not path.exists():
         raise HTTPException(404, "File expired.")
-    types = {".wav": "audio/wav", ".flac": "audio/flac", ".mp3": "audio/mpeg", ".srt": "text/plain",
-             ".vtt": "text/vtt", ".json": "application/json", ".zip": "application/zip"}
+    types = {
+        ".wav": "audio/wav",
+        ".flac": "audio/flac",
+        ".mp3": "audio/mpeg",
+        ".srt": "text/plain",
+        ".vtt": "text/vtt",
+        ".json": "application/json",
+        ".zip": "application/zip",
+    }
     return FileResponse(path, media_type=types.get(path.suffix, "application/octet-stream"), filename=name)
 
 
@@ -532,8 +584,14 @@ def list_projects():
         try:
             raw = json.loads(p.read_text(encoding="utf-8"))
             proj = raw["project"]
-            out.append({"id": p.stem, "title": str(proj.get("title", ""))[:120], "lines": len(proj.get("lines", [])),
-                        "updated": raw.get("updated", 0)})
+            out.append(
+                {
+                    "id": p.stem,
+                    "title": str(proj.get("title", ""))[:120],
+                    "lines": len(proj.get("lines", [])),
+                    "updated": raw.get("updated", 0),
+                }
+            )
         except (OSError, ValueError, KeyError, TypeError, AttributeError):
             out.append({"id": p.stem, "title": "(damaged project file)", "lines": 0, "updated": 0, "damaged": True})
     return {"projects": sorted(out, key=lambda r: r["updated"], reverse=True)}

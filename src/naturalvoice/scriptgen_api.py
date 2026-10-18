@@ -1,10 +1,11 @@
 """/api/scriptgen: generate a speaker-tagged script from a brief (language model if set up, else built-in outline)."""
+
 from __future__ import annotations
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
-from . import llm, rewrite, scriptgen
+from . import llm, scriptgen
 
 router = APIRouter(prefix="/api/scriptgen")
 
@@ -18,14 +19,19 @@ class Brief(BaseModel):
     speakers: list[str] = Field(default_factory=lambda: ["Narrator"], max_length=4)
     cta: str = Field(default="", max_length=200)
     audience: str = Field(default="", max_length=200)
-    mode: str = "auto"            # auto | llm | template
+    mode: str = "auto"  # auto | llm | template
     emotion_tags: bool = False
 
 
 @router.get("/status")
 def status():
-    return {"llm": llm.status(), "kinds": scriptgen.KINDS, "tones": scriptgen.TONES,
-            "min_seconds": 10, "max_seconds": 300}
+    return {
+        "llm": llm.status(),
+        "kinds": scriptgen.KINDS,
+        "tones": scriptgen.TONES,
+        "min_seconds": 10,
+        "max_seconds": 300,
+    }
 
 
 @router.get("/sample")

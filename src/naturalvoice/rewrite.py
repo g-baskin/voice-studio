@@ -11,28 +11,89 @@ Rule-based steps (each reported back, so nothing changes silently):
 * long sentences are split at natural joints so there is room to breathe
 * optional contractions for a conversational tone
 """
+
 from __future__ import annotations
 
 import re
 
 from . import llm
 
-ONES = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve",
-        "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"]
+ONES = [
+    "zero",
+    "one",
+    "two",
+    "three",
+    "four",
+    "five",
+    "six",
+    "seven",
+    "eight",
+    "nine",
+    "ten",
+    "eleven",
+    "twelve",
+    "thirteen",
+    "fourteen",
+    "fifteen",
+    "sixteen",
+    "seventeen",
+    "eighteen",
+    "nineteen",
+]
 TENS = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"]
-SCALES = [(10 ** 9, "billion"), (10 ** 6, "million"), (10 ** 3, "thousand")]
-ORD_IRREG = {"one": "first", "two": "second", "three": "third", "five": "fifth", "eight": "eighth",
-             "nine": "ninth", "twelve": "twelfth"}
-ABBR = {"Dr.": "Doctor", "Mr.": "Mister", "Mrs.": "Missus", "Ms.": "Miss", "Prof.": "Professor", "St.": "Saint",
-        "vs.": "versus", "vs": "versus", "etc.": "et cetera", "e.g.": "for example", "i.e.": "that is",
-        "approx.": "approximately", "Inc.": "Incorporated", "Ltd.": "Limited", "Co.": "Company",
-        "min.": "minutes", "hr.": "hours", "&": "and", "w/": "with", "w/o": "without"}
-CONTRACTIONS = [(r"\bdo not\b", "don't"), (r"\bdoes not\b", "doesn't"), (r"\bdid not\b", "didn't"),
-                (r"\bis not\b", "isn't"), (r"\bare not\b", "aren't"), (r"\bcannot\b", "can't"),
-                (r"\bwill not\b", "won't"), (r"\bI am\b", "I'm"), (r"\bit is\b", "it's"), (r"\bIt is\b", "It's"),
-                (r"\bthat is\b", "that's"), (r"\bwe are\b", "we're"), (r"\bthey are\b", "they're"),
-                (r"\byou are\b", "you're"), (r"\bI will\b", "I'll"), (r"\byou will\b", "you'll"),
-                (r"\bwe will\b", "we'll"), (r"\bI have\b", "I've"), (r"\bwe have\b", "we've")]
+SCALES = [(10**9, "billion"), (10**6, "million"), (10**3, "thousand")]
+ORD_IRREG = {
+    "one": "first",
+    "two": "second",
+    "three": "third",
+    "five": "fifth",
+    "eight": "eighth",
+    "nine": "ninth",
+    "twelve": "twelfth",
+}
+ABBR = {
+    "Dr.": "Doctor",
+    "Mr.": "Mister",
+    "Mrs.": "Missus",
+    "Ms.": "Miss",
+    "Prof.": "Professor",
+    "St.": "Saint",
+    "vs.": "versus",
+    "vs": "versus",
+    "etc.": "et cetera",
+    "e.g.": "for example",
+    "i.e.": "that is",
+    "approx.": "approximately",
+    "Inc.": "Incorporated",
+    "Ltd.": "Limited",
+    "Co.": "Company",
+    "min.": "minutes",
+    "hr.": "hours",
+    "&": "and",
+    "w/": "with",
+    "w/o": "without",
+}
+CONTRACTIONS = [
+    (r"\bdo not\b", "don't"),
+    (r"\bdoes not\b", "doesn't"),
+    (r"\bdid not\b", "didn't"),
+    (r"\bis not\b", "isn't"),
+    (r"\bare not\b", "aren't"),
+    (r"\bcannot\b", "can't"),
+    (r"\bwill not\b", "won't"),
+    (r"\bI am\b", "I'm"),
+    (r"\bit is\b", "it's"),
+    (r"\bIt is\b", "It's"),
+    (r"\bthat is\b", "that's"),
+    (r"\bwe are\b", "we're"),
+    (r"\bthey are\b", "they're"),
+    (r"\byou are\b", "you're"),
+    (r"\bI will\b", "I'll"),
+    (r"\byou will\b", "you'll"),
+    (r"\bwe will\b", "we'll"),
+    (r"\bI have\b", "I've"),
+    (r"\bwe have\b", "we've"),
+]
 
 
 def int_to_words(n: int) -> str:
@@ -91,16 +152,45 @@ def spell_numbers(text: str) -> str:
         if m.group(3):
             c = int(m.group(3)[1:].ljust(2, "0")[:2])
             if c:
-                out += " and " + int_to_words(c) + " " + (cur[1] if c == 1 else ("pence" if cur[1] == "penny" else cur[1] + "s"))
-        return out + {"k": " thousand", "K": " thousand", "m": " million", "M": " million", "b": " billion", "B": " billion"}.get(m.group(4) or "", "")
+                out += (
+                    " and "
+                    + int_to_words(c)
+                    + " "
+                    + (cur[1] if c == 1 else ("pence" if cur[1] == "penny" else cur[1] + "s"))
+                )
+        return out + {
+            "k": " thousand",
+            "K": " thousand",
+            "m": " million",
+            "M": " million",
+            "b": " billion",
+            "B": " billion",
+        }.get(m.group(4) or "", "")
 
     text = re.sub(r"([$£€])(\d[\d,]*)(\.\d+)?([kKmMbB]\b)?", money, text)
     text = re.sub(r"(\d+(?:\.\d+)?)\s?%", lambda m: spell_numbers(m.group(1)) + " percent", text)
-    text = re.sub(r"\b(\d{1,2}):(\d{2})\s?(am|pm|AM|PM|a\.m\.|p\.m\.)", lambda m: (
-        int_to_words(int(m.group(1))) + (" o'clock" if m.group(2) == "00" else " oh " + ONES[int(m.group(2))] if m.group(2)[0] == "0" else " " + int_to_words(int(m.group(2))))
-        + " " + " ".join(m.group(3).lower().replace(".", "")) ), text)
+    text = re.sub(
+        r"\b(\d{1,2}):(\d{2})\s?(am|pm|AM|PM|a\.m\.|p\.m\.)",
+        lambda m: (
+            int_to_words(int(m.group(1)))
+            + (
+                " o'clock"
+                if m.group(2) == "00"
+                else " oh " + ONES[int(m.group(2))]
+                if m.group(2)[0] == "0"
+                else " " + int_to_words(int(m.group(2)))
+            )
+            + " "
+            + " ".join(m.group(3).lower().replace(".", ""))
+        ),
+        text,
+    )
     text = re.sub(r"\b(\d+)(st|nd|rd|th)\b", lambda m: ordinal_words(int(m.group(1))), text)
-    text = re.sub(r"\b(1[0-9]{3}|20[0-9]{2})\b(?!\s?(?:people|items|dollars|users|%))", lambda m: year_words(int(m.group(1))), text)
+    text = re.sub(
+        r"\b(1[0-9]{3}|20[0-9]{2})\b(?!\s?(?:people|items|dollars|users|%))",
+        lambda m: year_words(int(m.group(1))),
+        text,
+    )
     return re.sub(r"\d[\d,]*(?:\.\d+)?", _num, text)
 
 
@@ -109,7 +199,7 @@ def clean_symbols(text: str) -> tuple[str, list[str]]:
     t = text
     t2 = re.sub(r"https?://\S+|www\.\S+", "the link", t)
     if t2 != t:
-        notes.append("Replaced links with \"the link\".")
+        notes.append('Replaced links with "the link".')
     t = t2
     t2 = re.sub(r"\b[\w.+-]+@[\w-]+\.[\w.-]+\b", lambda m: m.group(0).replace("@", " at ").replace(".", " dot "), t)
     if t2 != t:
@@ -120,7 +210,13 @@ def clean_symbols(text: str) -> tuple[str, list[str]]:
     if t2 != t:
         notes.append("Removed markdown symbols.")
     t = t2
-    t = t.replace("\u2014", ", ").replace("\u2013", " to ").replace("\u2026", "...").replace("\u201c", '"').replace("\u201d", '"')
+    t = (
+        t.replace("\u2014", ", ")
+        .replace("\u2013", " to ")
+        .replace("\u2026", "...")
+        .replace("\u201c", '"')
+        .replace("\u201d", '"')
+    )
     t = t.replace("\u2019", "'").replace("\u2018", "'")
     return t, notes
 
@@ -214,10 +310,16 @@ def llm_rewrite(text: str, tone: str = "natural", instruction: str = "") -> dict
     """Ask a language model to rewrite for speech. Raises RuntimeError with a plain message if none is set up."""
     if tone not in TONES:
         raise ValueError("Unknown tone.")
-    system = ("You rewrite text so it reads well when spoken aloud by a voice actor. Keep the meaning and every fact. "
-              "Write numbers and symbols as words. Do not add stage directions, markdown or quotes. Keep tags "
-              "in square brackets such as [pause 1s] or [laugh] exactly as written. Reply with only the rewritten text. "
-              + TONES[tone] + (" Extra direction: " + instruction.strip()[:300] if instruction.strip() else ""))
+    system = (
+        "You rewrite text so it reads well when spoken aloud by a voice actor. Keep the meaning and every fact. "
+        "Write numbers and symbols as words. Do not add stage directions, markdown or quotes. Keep tags "
+        "in square brackets such as [pause 1s] or [laugh] exactly as written. Reply with only the rewritten text. "
+        + TONES[tone]
+        + (" Extra direction: " + instruction.strip()[:300] if instruction.strip() else "")
+    )
     out = chat(system, text)
-    return {"text": out, "notes": [f"Rewritten for a {tone} tone by a language model. Read it before using it."],
-            "engine": "language model"}
+    return {
+        "text": out,
+        "notes": [f"Rewritten for a {tone} tone by a language model. Read it before using it."],
+        "engine": "language model",
+    }

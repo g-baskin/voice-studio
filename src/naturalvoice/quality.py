@@ -8,6 +8,7 @@
 * PESQ wideband (ITU-T P.862.2): compares with the clean reference; 1 (bad) to 4.6 (identical).
 * STOI: intelligibility vs the clean reference, 0-1.
 """
+
 from __future__ import annotations
 
 from functools import lru_cache
@@ -34,6 +35,7 @@ def to_16k(x: np.ndarray, sr: int) -> np.ndarray:
 
 # --------------------------------------------------------------------------- mel (librosa-compatible)
 
+
 def _hz_to_mel(f):
     f = np.asarray(f, dtype=float)
     f_sp, min_log_hz = 200.0 / 3, 1000.0
@@ -57,7 +59,7 @@ def _mel_basis(sr: int, n_fft: int, n_mels: int) -> np.ndarray:
     lower = -ramps[:-2] / fdiff[:-1, None]
     upper = ramps[2:] / fdiff[1:, None]
     w = np.maximum(0, np.minimum(lower, upper))
-    w *= (2.0 / (mel_f[2: n_mels + 2] - mel_f[:n_mels]))[:, None]  # slaney norm
+    w *= (2.0 / (mel_f[2 : n_mels + 2] - mel_f[:n_mels]))[:, None]  # slaney norm
     return w
 
 
@@ -76,13 +78,16 @@ def melspec_db(audio: np.ndarray, n_mels=120, frame_size=320, hop=160, sr=SR) ->
 
 # --------------------------------------------------------------------------- DNSMOS
 
+
 @lru_cache(maxsize=1)
 def _dnsmos_sessions():
     import onnxruntime as ort
 
     p1, p2 = Path(MODEL_DIR) / "dnsmos_sig_bak_ovr.onnx", Path(MODEL_DIR) / "dnsmos_p808.onnx"
     if not p1.exists() or not p2.exists():
-        raise RuntimeError(f"DNSMOS models missing in {MODEL_DIR}: get sig_bak_ovr.onnx and model_v8.onnx from {DNSMOS_URL}")
+        raise RuntimeError(
+            f"DNSMOS models missing in {MODEL_DIR}: get sig_bak_ovr.onnx and model_v8.onnx from {DNSMOS_URL}"
+        )
     opts = ort.SessionOptions()
     opts.log_severity_level = 3
     return ort.InferenceSession(str(p1), opts), ort.InferenceSession(str(p2), opts)
@@ -100,18 +105,25 @@ def dnsmos(x: np.ndarray, sr: int) -> dict:
     p_bak = np.poly1d([-0.13166888, 1.60915514, -0.39604546])
     p_ovr = np.poly1d([-0.06766283, 1.11546468, 0.04602535])
     for i in range(hops):
-        seg = audio[i * SR: i * SR + n]
+        seg = audio[i * SR : i * SR + n]
         if len(seg) < n:
             continue
         mel = melspec_db(seg[:-160])[:900][None]
         p.append(float(p808.run(None, {"input_1": mel})[0][0][0]))
         s, b, o = main.run(None, {"input_1": seg[None].astype(np.float32)})[0][0]
-        sig.append(p_sig(s)); bak.append(p_bak(b)); ovr.append(p_ovr(o))
-    return {"SIG": float(np.mean(sig)), "BAK": float(np.mean(bak)), "OVRL": float(np.mean(ovr)),
-            "P808": float(np.mean(p))}
+        sig.append(p_sig(s))
+        bak.append(p_bak(b))
+        ovr.append(p_ovr(o))
+    return {
+        "SIG": float(np.mean(sig)),
+        "BAK": float(np.mean(bak)),
+        "OVRL": float(np.mean(ovr)),
+        "P808": float(np.mean(p)),
+    }
 
 
 # --------------------------------------------------------------------------- reference-based
+
 
 def pesq_wb(ref: np.ndarray, y: np.ndarray, sr: int) -> float | None:
     from pesq import pesq, PesqError

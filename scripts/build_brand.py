@@ -6,19 +6,21 @@ The mark tells the product's story in one line: a coarse, stair-stepped, echoing
 
     uv run python scripts/build_brand.py     # writes docs/assets/*.svg and src/naturalvoice/web/icon*.svg
 """
+
 from __future__ import annotations
 
 import math
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-GREY_A, GREY_B = "#d3dae0", "#7f8b95"        # cold steel
-GREEN_A, GREEN_B = "#8af0bd", "#2fa36b"      # warm, living green
+GREY_A, GREY_B = "#d3dae0", "#7f8b95"  # cold steel
+GREEN_A, GREEN_B = "#8af0bd", "#2fa36b"  # warm, living green
 BG_A, BG_B = "#0b1310", "#18271f"
 
 
 def wave_path(x0, x1, cy, amp, cycles, step0, t_flat, t_smooth, env=None):
     """One continuous path: quantised steps of width step0 that ease to zero between t_flat and t_smooth."""
+
     def f(x):
         t = (x - x0) / (x1 - x0)
         e = 1.0 if env is None else env(t)
@@ -66,12 +68,16 @@ def defs(prefix, x_grey, x_green, x0, x1, ghost_end):
 def wave_group(prefix, d, stroke, echo_dx, echo_dy=0, end_cap=None, echoes_k=(2, 1)):
     echoes = "".join(
         f'<path d="{d}" transform="translate({echo_dx * k} {echo_dy * k})" stroke="url(#{prefix}ghost)" '
-        f'stroke-width="{stroke}" opacity="{0.55 / k:.2f}" fill="none" stroke-linejoin="miter"/>' for k in echoes_k)
+        f'stroke-width="{stroke}" opacity="{0.55 / k:.2f}" fill="none" stroke-linejoin="miter"/>'
+        for k in echoes_k
+    )
     cap = f'<circle cx="{end_cap[0]}" cy="{end_cap[1]}" r="{stroke / 2:.1f}" fill="{GREEN_B}"/>' if end_cap else ""
-    return (f'{echoes}<path d="{d}" stroke="url(#{prefix}glow)" stroke-width="{stroke * 1.9:.0f}" fill="none" '
-            f'filter="url(#{prefix}blur)" stroke-linejoin="round"/>'
-            f'<path d="{d}" stroke="url(#{prefix}wave)" stroke-width="{stroke}" fill="none" '
-            f'stroke-linejoin="miter" stroke-miterlimit="3" stroke-linecap="butt"/>{cap}')
+    return (
+        f'{echoes}<path d="{d}" stroke="url(#{prefix}glow)" stroke-width="{stroke * 1.9:.0f}" fill="none" '
+        f'filter="url(#{prefix}blur)" stroke-linejoin="round"/>'
+        f'<path d="{d}" stroke="url(#{prefix}wave)" stroke-width="{stroke}" fill="none" '
+        f'stroke-linejoin="miter" stroke-miterlimit="3" stroke-linecap="butt"/>{cap}'
+    )
 
 
 def icon_svg(inset=0.0, rounded=True, canvas=512):
@@ -96,9 +102,13 @@ def icon_svg(inset=0.0, rounded=True, canvas=512):
 def banner_svg():
     w, h = 1280, 640
     cy, amp = 470, 100
-    d = wave_path(64, 1216, cy, amp, 5.6, 30, 0.34, 0.56, env=lambda t: 0.55 + 0.45 * math.sin(math.pi * min(1, t * 1.15)))
-    guides = "".join(f'<line x1="0" x2="{w}" y1="{y}" y2="{y}" stroke="#ffffff" stroke-opacity="0.05"/>'
-                     for y in (cy - amp - 20, cy, cy + amp + 20))
+    d = wave_path(
+        64, 1216, cy, amp, 5.6, 30, 0.34, 0.56, env=lambda t: 0.55 + 0.45 * math.sin(math.pi * min(1, t * 1.15))
+    )
+    guides = "".join(
+        f'<line x1="0" x2="{w}" y1="{y}" y2="{y}" stroke="#ffffff" stroke-opacity="0.05"/>'
+        for y in (cy - amp - 20, cy, cy + amp + 20)
+    )
     font = "'SF Pro Display','Helvetica Neue',Inter,'Segoe UI',system-ui,sans-serif"
     return f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {w} {h}" width="{w}" height="{h}" role="img" aria-label="Voice Studio: make AI voices sound human">
   <defs>

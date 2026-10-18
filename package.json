@@ -1,0 +1,19 @@
+{
+  "name": "voice-studio-quality-tools",
+  "private": true,
+  "scripts": {
+    "lint": "uv run --locked ruff check src tests scripts engines/chatterbox/worker.py && eslint . && shellcheck scripts/*.sh",
+    "format": "uv run --locked ruff format src tests scripts engines/chatterbox/worker.py && prettier --write \"src/naturalvoice/web/**/*.js\" \"scripts/*.cjs\" \"tests/*.cjs\" \"*.mjs\" && shfmt -w -i 2 scripts/*.sh",
+    "format:check": "uv run --locked ruff format --check src tests scripts engines/chatterbox/worker.py && prettier --check \"src/naturalvoice/web/**/*.js\" \"scripts/*.cjs\" \"tests/*.cjs\" \"*.mjs\" && shfmt -d -i 2 scripts/*.sh",
+    "typecheck": "uv run --locked python scripts/web_types.py && uv run --locked mypy && tsc -p jsconfig.json && tsc -p jsconfig.worker.json && tsc -p jsconfig.node.json",
+    "check": "npm run lint && npm run format:check && npm run typecheck"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@types/node": "22.20.5",
+    "eslint": "10.13.0",
+    "globals": "17.13.0",
+    "prettier": "3.9.10",
+    "typescript": "7.0.2"
+  }
+}

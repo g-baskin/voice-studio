@@ -1,4 +1,5 @@
 """POST /api/rewrite: built-in speech-friendly rewrite, optional language-model rewrite."""
+
 from __future__ import annotations
 
 from fastapi import APIRouter, HTTPException
@@ -11,7 +12,7 @@ router = APIRouter(prefix="/api/rewrite")
 
 class Body(BaseModel):
     text: str = Field(min_length=1, max_length=20000)
-    mode: str = "rules"            # rules | llm
+    mode: str = "rules"  # rules | llm
     tone: str = "natural"
     conversational: bool = False
     instruction: str = Field(default="", max_length=300)

@@ -2,6 +2,7 @@
 
 Writes src/naturalvoice/voicelab_features.json. Run: uv run python scripts/build_voicelab_features.py
 """
+
 import json
 import sys
 import time
@@ -19,6 +20,10 @@ for n in vl._stock_names():
         a = vl.render(vlib.style_of(n), "en-us", LINE)
         feats[n] = {"pitch": round(vl.pitch_hz(a), 1), "brightness": round(vl.brightness_hz(a), 1)}
         print(n, feats[n], flush=True)
-OUT.write_text(json.dumps({"line": LINE, "measured": "pitch = median F0 (Hz), brightness = spectral centroid (Hz)",
-                           "voices": feats}, indent=1))
+OUT.write_text(
+    json.dumps(
+        {"line": LINE, "measured": "pitch = median F0 (Hz), brightness = spectral centroid (Hz)", "voices": feats},
+        indent=1,
+    )
+)
 print(f"{len(feats)} voices in {time.time() - t0:.0f} s")

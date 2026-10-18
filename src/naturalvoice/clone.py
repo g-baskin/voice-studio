@@ -4,6 +4,7 @@ Engine: Chatterbox-Turbo (Resemble AI, MIT licence) as ONNX, run in an isolated 
 environment under ``engines/chatterbox`` by a persistent worker process (JSON lines over stdin/stdout,
 models loaded once, stopped after an idle timeout). Install with ``scripts/setup_clone_engine.sh``.
 """
+
 from __future__ import annotations
 
 import json
@@ -33,8 +34,17 @@ _REQUIRED = ("speech_encoder", "embed_tokens", "language_model", "conditional_de
 
 # Paralinguistic tags Chatterbox-Turbo was trained on; each is one special token in tokenizer.json
 # (upstream EVENT_TAGS in resemble-ai/chatterbox gradio_tts_turbo_app.py).
-EMOTION_TAGS = ["[clear throat]", "[sigh]", "[shush]", "[cough]", "[groan]", "[sniff]", "[gasp]",
-                "[chuckle]", "[laugh]"]
+EMOTION_TAGS = [
+    "[clear throat]",
+    "[sigh]",
+    "[shush]",
+    "[cough]",
+    "[groan]",
+    "[sniff]",
+    "[gasp]",
+    "[chuckle]",
+    "[laugh]",
+]
 _TAG = re.compile(r"\[([^\[\]\n]{0,40})\]")
 
 
@@ -50,6 +60,7 @@ def clean_tags(text: str) -> tuple[str, list[str]]:
             return " " + known[key] + " "
         removed.append(m.group(0))
         return " "
+
     out = _TAG.sub(sub, text or "")
     out = re.sub(r"[ \t]+", " ", out)
     out = re.sub(r" +([,.!?;:])", r"\1", out)
@@ -72,12 +83,16 @@ def _dtype() -> str:
 def installed() -> bool:
     suffix = "" if _dtype() == "fp32" else "_quantized"
     onnx = ENGINE_DIR / "models" / "onnx"
-    return (_python().exists() and (ENGINE_DIR / "worker.py").exists()
-            and (ENGINE_DIR / "models" / "tokenizer.json").exists()
-            and all((onnx / f"{n}{suffix}.onnx_data").exists() for n in _REQUIRED))
+    return (
+        _python().exists()
+        and (ENGINE_DIR / "worker.py").exists()
+        and (ENGINE_DIR / "models" / "tokenizer.json").exists()
+        and all((onnx / f"{n}{suffix}.onnx_data").exists() for n in _REQUIRED)
+    )
 
 
 # --------------------------------------------------------------------------- worker
+
 
 class _Worker:
     def __init__(self):
@@ -118,9 +133,15 @@ class _Worker:
         if not installed():
             raise EngineMissing("The voice cloning engine is not installed. " + SETUP_HINT)
         self.lines = queue.Queue()
-        self.proc = subprocess.Popen([str(_python()), str(ENGINE_DIR / "worker.py")], stdin=subprocess.PIPE,
-                                     stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True, bufsize=1,
-                                     cwd=str(ENGINE_DIR))
+        self.proc = subprocess.Popen(
+            [str(_python()), str(ENGINE_DIR / "worker.py")],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+            text=True,
+            bufsize=1,
+            cwd=str(ENGINE_DIR),
+        )
         threading.Thread(target=self._read, args=(self.proc,), daemon=True).start()
         msg = self._wait(0, LOAD_TIMEOUT)
         if not msg.get("ok"):
@@ -131,7 +152,8 @@ class _Worker:
         p, self.proc = self.proc, None
         if p and p.poll() is None:
             try:
-                p.stdin.close()
+                if p.stdin is not None:
+                    p.stdin.close()
                 p.wait(timeout=5)
             except Exception:
                 p.kill()
@@ -152,10 +174,13 @@ class _Worker:
         with self.lock:
             if not self.proc or self.proc.poll() is not None:
                 self._start()
+            proc = self.proc
+            if proc is None or proc.stdin is None:
+                raise RuntimeError("The cloning engine input pipe is unavailable.")
             rid = self.next_id
             self.next_id += 1
-            self.proc.stdin.write(json.dumps({**req, "id": rid}) + "\n")
-            self.proc.stdin.flush()
+            proc.stdin.write(json.dumps({**req, "id": rid}) + "\n")
+            proc.stdin.flush()
             msg = self._wait(rid, timeout)
             self.last = time.time()
             self._arm_idle()
@@ -180,13 +205,22 @@ def stop() -> None:
 
 
 def status() -> dict:
-    return {"installed": installed(), "model": MODEL_NAME, "license": LICENSE, "sample_rate": SR,
-            "device": "cpu", "precision": _dtype(), "emotion_tags": EMOTION_TAGS,
-            "languages": [{"code": k, "name": v} for k, v in LANGUAGE_NAMES.items()], "warm": _worker.running,
-            "setup": None if installed() else SETUP_HINT}
+    return {
+        "installed": installed(),
+        "model": MODEL_NAME,
+        "license": LICENSE,
+        "sample_rate": SR,
+        "device": "cpu",
+        "precision": _dtype(),
+        "emotion_tags": EMOTION_TAGS,
+        "languages": [{"code": k, "name": v} for k, v in LANGUAGE_NAMES.items()],
+        "warm": _worker.running,
+        "setup": None if installed() else SETUP_HINT,
+    }
 
 
 # --------------------------------------------------------------------------- reference prep
+
 
 def _resample(x: np.ndarray, sr: int, target: int) -> np.ndarray:
     if sr == target:
@@ -233,7 +267,7 @@ def prepare_reference(src: Path, dst: Path) -> dict:
         raise ValueError(f"The recording must be {REF_MIN:.0f} to {REF_MAX:.0f} seconds long (got {raw:.1f} s).")
     x = _resample(x, sr, SR)
     x = _trim(x, SR)
-    if len(x) / SR < 3.0 or np.sqrt(np.mean(x ** 2)) < 1e-4:
+    if len(x) / SR < 3.0 or np.sqrt(np.mean(x**2)) < 1e-4:
         raise ValueError("Not enough speech in the recording. Record at least 5 seconds of clear talking.")
     x = x[: int(REF_KEEP * SR)]
     x = x - float(np.mean(x))
@@ -246,6 +280,7 @@ def prepare_reference(src: Path, dst: Path) -> dict:
 
 
 # --------------------------------------------------------------------------- joins
+
 
 def fade(x: np.ndarray, sr: int, ms: float = 8.0) -> np.ndarray:
     """Short raised-cosine fade in and out so a clip can butt against silence without a click."""
@@ -270,6 +305,7 @@ def crossfade(a: np.ndarray, b: np.ndarray, n: int) -> np.ndarray:
 
 # --------------------------------------------------------------------------- speaking
 
+
 def split_sentences(text: str, max_chars: int = 220) -> list[tuple[str, float]]:
     """(sentence, pause_after). Short sentences are joined; long ones split at commas/semicolons."""
     out: list[tuple[str, float]] = []
@@ -283,7 +319,7 @@ def split_sentences(text: str, max_chars: int = 220) -> list[tuple[str, float]]:
                 cut = max(s.rfind(",", 0, max_chars), s.rfind(";", 0, max_chars), s.rfind(" ", 0, max_chars))
                 cut = cut if cut > 20 else max_chars
                 pieces.append(s[: cut + 1].strip())
-                s = s[cut + 1:].strip()
+                s = s[cut + 1 :].strip()
             if s:
                 pieces.append(s)
         merged: list[str] = []
@@ -326,8 +362,10 @@ def speak(text: str, voice_id: str, speed: float = 1.0, progress=None) -> tuple[
             if progress:
                 progress(i / len(parts), f"Speaking sentence {i + 1} of {len(parts)}")
             out = Path(td) / f"{uuid.uuid4().hex}.npy"
-            _worker.call({"op": "speak", "text": sentence, "ref": str(ref), "out": str(out), "seed": i},
-                         timeout=60 + 3 * len(sentence))
+            _worker.call(
+                {"op": "speak", "text": sentence, "ref": str(ref), "out": str(out), "seed": i},
+                timeout=60 + 3 * len(sentence),
+            )
             wav = _trim(np.load(out).astype(np.float32), SR, thresh_db=-45, keep=0.04)
             pieces.append(fade(wav, SR))
             pieces.append(np.zeros(int(pause * (1 + rng.uniform(-0.15, 0.15)) * SR), dtype=np.float32))
@@ -368,7 +406,7 @@ def prepare_source(src: Path, dst: Path) -> dict:
     if raw < SRC_MIN - 0.05 or raw > SRC_MAX + 0.5:
         raise ValueError(f"The performance must be {SRC_MIN:.0f} to {SRC_MAX:.0f} seconds long (got {raw:.1f} s).")
     x = _trim(_resample(x, sr, SR), SR, thresh_db=-50, keep=0.15)
-    if len(x) / SR < 0.5 or np.sqrt(np.mean(x ** 2)) < 1e-4:
+    if len(x) / SR < 0.5 or np.sqrt(np.mean(x**2)) < 1e-4:
         raise ValueError("No speech found in the recording.")
     peak = float(np.max(np.abs(x)))
     x = x * (0.9 / peak) if peak > 0.9 or peak < 0.3 else x
@@ -417,8 +455,9 @@ def convert(source_audio_path, voice_id: str, progress=None) -> tuple[np.ndarray
             b = cuts[i + 1] + (h if i + 1 < len(cuts) - 1 else 0)
             seg_p, out = Path(td) / f"s{i}.wav", Path(td) / f"o{i}.npy"
             sf.write(str(seg_p), x[a:b], SR, subtype="PCM_16")
-            _worker.call({"op": "convert", "src": str(seg_p), "ref": str(ref), "out": str(out)},
-                         timeout=60 + 8 * (b - a) / SR)
+            _worker.call(
+                {"op": "convert", "src": str(seg_p), "ref": str(ref), "out": str(out)}, timeout=60 + 8 * (b - a) / SR
+            )
             w = np.load(out).astype(np.float32)
             # the decoder keeps timing (25 tokens/s); pin to the source length so parts line up exactly
             w = np.pad(w, (0, max(0, (b - a) - len(w))))[: b - a]
@@ -447,10 +486,10 @@ def _median_f0(x: np.ndarray, sr: int) -> float | None:
     n, f0s = int(0.04 * sr), []
     lo, hi = int(sr / 400), int(sr / 70)
     for i in range(0, len(x) - n, n):
-        f = x[i:i + n] - x[i:i + n].mean()
-        if np.sqrt(np.mean(f ** 2)) < 0.02:
+        f = x[i : i + n] - x[i : i + n].mean()
+        if np.sqrt(np.mean(f**2)) < 0.02:
             continue
-        ac = np.correlate(f, f, "full")[n - 1:]
+        ac = np.correlate(f, f, "full")[n - 1 :]
         lag = lo + int(np.argmax(ac[lo:hi]))
         if ac[lag] > 0.4 * ac[0]:
             f0s.append(sr / lag)

@@ -5,6 +5,7 @@ Natural-ness tricks on top of the raw model:
 * inserts real-length pauses for commas, sentence ends and paragraphs,
 * runs the 'light' humanize chain to remove vocoder metallic tone and add room tone.
 """
+
 from __future__ import annotations
 
 import json
@@ -41,8 +42,17 @@ def voices() -> list[str]:
 
 
 def _lang_for(voice: str) -> str:
-    return {"a": "en-us", "b": "en-gb", "e": "es", "f": "fr-fr", "h": "hi", "i": "it",
-            "p": "pt-br", "j": "ja", "z": "cmn"}.get(voice[:1], "en-us")
+    return {
+        "a": "en-us",
+        "b": "en-gb",
+        "e": "es",
+        "f": "fr-fr",
+        "h": "hi",
+        "i": "it",
+        "p": "pt-br",
+        "j": "ja",
+        "z": "cmn",
+    }.get(voice[:1], "en-us")
 
 
 def split_chunks(text: str) -> list[tuple[str, float]]:
@@ -104,8 +114,9 @@ def speak_elevenlabs(text: str, voice: str, api_key: str) -> tuple[np.ndarray, i
 def speak_openai(text: str, voice: str, api_key: str) -> tuple[np.ndarray, int]:
     req = urllib.request.Request(
         "https://api.openai.com/v1/audio/speech",
-        data=json.dumps({"model": "gpt-4o-mini-tts", "voice": voice or "alloy", "input": text,
-                         "response_format": "pcm"}).encode(),
+        data=json.dumps(
+            {"model": "gpt-4o-mini-tts", "voice": voice or "alloy", "input": text, "response_format": "pcm"}
+        ).encode(),
         headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
     )
     with urllib.request.urlopen(req, timeout=120) as r:
@@ -113,8 +124,14 @@ def speak_openai(text: str, voice: str, api_key: str) -> tuple[np.ndarray, int]:
     return pcm, 24000
 
 
-def speak(text: str, voice: str = "af_heart", speed: float = 1.0, engine: str = "kokoro",
-          humanize: bool = True, settings: hz.Settings | None = None) -> tuple[np.ndarray, int]:
+def speak(
+    text: str,
+    voice: str = "af_heart",
+    speed: float = 1.0,
+    engine: str = "kokoro",
+    humanize: bool = True,
+    settings: hz.Settings | None = None,
+) -> tuple[np.ndarray, int]:
     if engine == "kokoro" and voice.startswith("clone:"):
         engine = "clone"
     if engine == "clone":

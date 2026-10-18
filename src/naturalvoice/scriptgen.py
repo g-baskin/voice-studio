@@ -5,6 +5,7 @@
   (hook, body, call to action) so the feature always works. It is a template, not an AI, and says so.
 Output is always {title, lines:[{speaker, text}], engine, notes, words, estimated_seconds}.
 """
+
 from __future__ import annotations
 
 import json
@@ -26,12 +27,44 @@ TONES = ["friendly", "energetic", "professional", "calm", "dramatic", "funny"]
 CLONE_TAGS = ["[chuckle]", "[laugh]", "[sigh]", "[gasp]"]
 
 SAMPLES = {
-    "ad": [("Sunrise Coffee", "Small-batch roasted beans delivered fresh every week; free shipping on the first box; cancel any time", "Order your first box today.")],
-    "social": [("Glow Skin Serum", "One drop a day; visible glow in a week; made with vitamin C", "Tap the link to try it.")],
-    "podcast_intro": [("The Weekend Builders", "Every week we build one project in under two hours; real tools, real mistakes; no experience needed", "")],
-    "explainer": [("how noise-cancelling headphones work", "microphones listen to the noise around you; the headphones play the opposite sound wave; the two cancel out", "")],
-    "story": [("The Lighthouse Keeper", "an old keeper guards a quiet coast; one stormy night a small boat appears; he lights the lamp and brings it home", "")],
-    "dialogue": [("a new budgeting app", "it tracks spending automatically; it shows where money leaks; setup takes two minutes", "Try it free this week.")],
+    "ad": [
+        (
+            "Sunrise Coffee",
+            "Small-batch roasted beans delivered fresh every week; free shipping on the first box; cancel any time",
+            "Order your first box today.",
+        )
+    ],
+    "social": [
+        ("Glow Skin Serum", "One drop a day; visible glow in a week; made with vitamin C", "Tap the link to try it.")
+    ],
+    "podcast_intro": [
+        (
+            "The Weekend Builders",
+            "Every week we build one project in under two hours; real tools, real mistakes; no experience needed",
+            "",
+        )
+    ],
+    "explainer": [
+        (
+            "how noise-cancelling headphones work",
+            "microphones listen to the noise around you; the headphones play the opposite sound wave; the two cancel out",
+            "",
+        )
+    ],
+    "story": [
+        (
+            "The Lighthouse Keeper",
+            "an old keeper guards a quiet coast; one stormy night a small boat appears; he lights the lamp and brings it home",
+            "",
+        )
+    ],
+    "dialogue": [
+        (
+            "a new budgeting app",
+            "it tracks spending automatically; it shows where money leaks; setup takes two minutes",
+            "Try it free this week.",
+        )
+    ],
 }
 
 
@@ -65,20 +98,27 @@ def _assign(texts: list[str], speakers: list[str]) -> list[dict]:
     return [{"speaker": speakers[i % len(speakers)], "text": t} for i, t in enumerate(texts) if t]
 
 
-def template_script(topic: str, brief: str, kind: str, tone: str, seconds: int, speakers: list[str],
-                    cta: str = "") -> dict:
+def template_script(
+    topic: str, brief: str, kind: str, tone: str, seconds: int, speakers: list[str], cta: str = ""
+) -> dict:
     topic = (topic or "this").strip()
     pts = _points(brief) or ["it makes your day easier"]
     budget = int(seconds * WORDS_PER_SECOND)
     hook = HOOKS.get(tone, HOOKS["friendly"])
-    cta = cta.strip() or {"ad": f"Try {topic} today.", "social": "Follow for more.", "dialogue": f"Give {topic} a try."}.get(kind, "")
+    cta = cta.strip() or {
+        "ad": f"Try {topic} today.",
+        "social": "Follow for more.",
+        "dialogue": f"Give {topic} a try.",
+    }.get(kind, "")
     if kind == "dialogue":
         a, b = speakers[0], speakers[1 if len(speakers) > 1 else 0]
         texts = [(a, f"Have you heard about {topic}?"), (b, "No. What is it?")]
         for i, p in enumerate(pts):
             texts.append((a if i % 2 == 0 else b, _sentence(p if i == 0 else p)))
             if i < len(pts) - 1:
-                texts.append((b if i % 2 == 0 else a, ["Really?", "That sounds useful.", "Okay, I'm interested."][i % 3]))
+                texts.append(
+                    (b if i % 2 == 0 else a, ["Really?", "That sounds useful.", "Okay, I'm interested."][i % 3])
+                )
         texts.append((b, "Sounds great. How do I start?"))
         texts.append((a, _sentence(cta) or "Just give it a try."))
         lines = [{"speaker": s, "text": t} for s, t in texts]
@@ -87,7 +127,14 @@ def template_script(topic: str, brief: str, kind: str, tone: str, seconds: int, 
             body = [f"Welcome to {topic}.", _sentence(pts[0]), *[_sentence(p) for p in pts[1:3]], "Let's get into it."]
         elif kind == "explainer":
             order = ["First", "Next", "Then", "Finally"]
-            body = [f"Let's talk about {topic}."] + [f"{order[min(i, 3)]}, {p.strip().rstrip('.')[:1].lower() + p.strip().rstrip('.')[1:]}." for i, p in enumerate(pts)] + ["And that's the big idea."]
+            body = (
+                [f"Let's talk about {topic}."]
+                + [
+                    f"{order[min(i, 3)]}, {p.strip().rstrip('.')[:1].lower() + p.strip().rstrip('.')[1:]}."
+                    for i, p in enumerate(pts)
+                ]
+                + ["And that's the big idea."]
+            )
         elif kind == "story":
             body = [f"This is the story of {topic}.", *[_sentence(p) for p in pts], "And that is how it ended."]
         elif kind == "social":
@@ -97,12 +144,17 @@ def template_script(topic: str, brief: str, kind: str, tone: str, seconds: int, 
         if cta:
             body.append(_sentence(cta))
         lines = _assign(body, speakers)
+
     # Trim from the middle until it fits the length (never drop the first or the last line).
-    def words(ls): return sum(len(l["text"].split()) for l in ls)
+    def words(lines):
+        return sum(len(line["text"].split()) for line in lines)
+
     while words(lines) > budget * 1.15 and len(lines) > 3:
         lines.pop(len(lines) // 2)
-    notes = ["Built-in outline: your own points arranged into a script structure. It's a template, not an AI. "
-             "Connect an AI (an OpenRouter key) for fully written scripts."]
+    notes = [
+        "Built-in outline: your own points arranged into a script structure. It's a template, not an AI. "
+        "Connect an AI (an OpenRouter key) for fully written scripts."
+    ]
     if words(lines) < budget * 0.6:
         notes.append("Shorter than the length you asked for. Add more details to the brief to fill the time.")
     return {"title": topic[:80], "lines": lines, "engine": "built-in outline", "notes": notes}
@@ -114,8 +166,11 @@ def _parse(raw: str, speakers: list[str]) -> tuple[str, list[dict]]:
     if m:
         try:
             data = json.loads(m.group(0))
-            lines = [{"speaker": str(l.get("speaker", speakers[0]))[:30], "text": str(l.get("text", "")).strip()}
-                     for l in data.get("lines", []) if isinstance(l, dict) and str(l.get("text", "")).strip()]
+            lines = [
+                {"speaker": str(line.get("speaker", speakers[0]))[:30], "text": str(line.get("text", "")).strip()}
+                for line in data.get("lines", [])
+                if isinstance(line, dict) and str(line.get("text", "")).strip()
+            ]
             if lines:
                 return str(data.get("title", ""))[:80], lines
         except (ValueError, AttributeError):
@@ -130,32 +185,60 @@ def _parse(raw: str, speakers: list[str]) -> tuple[str, list[dict]]:
     return title, lines
 
 
-def llm_script(topic: str, brief: str, kind: str, tone: str, seconds: int, speakers: list[str], cta: str,
-               audience: str, emotion_tags: bool) -> dict:
+def llm_script(
+    topic: str,
+    brief: str,
+    kind: str,
+    tone: str,
+    seconds: int,
+    speakers: list[str],
+    cta: str,
+    audience: str,
+    emotion_tags: bool,
+) -> dict:
     budget = int(seconds * WORDS_PER_SECOND)
     system = (
         f"You write {KINDS[kind].lower()} scripts for voice actors. Tone: {tone}. Target about {budget} spoken words "
         f"(plus or minus 15%). Use only these speaker names, exactly: {', '.join(speakers)}. "
         "Write for the ear: short sentences, natural speech, numbers and symbols written as words. No stage directions, "
         "no markdown, no emojis. You may use [pause 1s] for a beat. "
-        + (f"You may sparingly use these sound tags where a person would make the sound: {' '.join(CLONE_TAGS)}. "
-           if emotion_tags else "Do not use any other square-bracket tags. ")
-        + 'Reply with ONLY JSON: {"title": "...", "lines": [{"speaker": "...", "text": "..."}]}.')
-    user = (f"Topic: {topic or 'unspecified'}\nDetails: {brief or 'none'}\nAudience: {audience or 'general'}\n"
-            f"Call to action: {cta or 'none'}")
+        + (
+            f"You may sparingly use these sound tags where a person would make the sound: {' '.join(CLONE_TAGS)}. "
+            if emotion_tags
+            else "Do not use any other square-bracket tags. "
+        )
+        + 'Reply with ONLY JSON: {"title": "...", "lines": [{"speaker": "...", "text": "..."}]}.'
+    )
+    user = (
+        f"Topic: {topic or 'unspecified'}\nDetails: {brief or 'none'}\nAudience: {audience or 'general'}\n"
+        f"Call to action: {cta or 'none'}"
+    )
     raw = rewrite.chat(system, user, temperature=0.8)
     title, lines = _parse(raw, speakers)
     allowed = set(speakers)
-    for l in lines:  # keep speaker names to the cast the user chose
-        if l["speaker"] not in allowed:
-            l["speaker"] = speakers[0]
-    return {"title": title or topic[:80], "lines": lines, "engine": "language model",
-            "notes": ["Written by a language model. Read it through before you record."]}
+    for line in lines:  # keep speaker names to the cast the user chose
+        if line["speaker"] not in allowed:
+            line["speaker"] = speakers[0]
+    return {
+        "title": title or topic[:80],
+        "lines": lines,
+        "engine": "language model",
+        "notes": ["Written by a language model. Read it through before you record."],
+    }
 
 
-def generate(topic: str = "", brief: str = "", kind: str = "ad", tone: str = "friendly", seconds: int = 30,
-             speakers: list[str] | None = None, cta: str = "", audience: str = "", mode: str = "auto",
-             emotion_tags: bool = False) -> dict:
+def generate(
+    topic: str = "",
+    brief: str = "",
+    kind: str = "ad",
+    tone: str = "friendly",
+    seconds: int = 30,
+    speakers: list[str] | None = None,
+    cta: str = "",
+    audience: str = "",
+    mode: str = "auto",
+    emotion_tags: bool = False,
+) -> dict:
     if kind not in KINDS:
         raise ValueError("Unknown script type.")
     if tone not in TONES:
@@ -182,9 +265,10 @@ def generate(topic: str = "", brief: str = "", kind: str = "ad", tone: str = "fr
         if fallback_note:
             out["notes"].insert(0, fallback_note)
     # Spell numbers/symbols for speech on every line (tags are protected by the rewrite engine).
-    for l in out["lines"]:
-        l["text"] = rewrite.rule_rewrite(l["text"])["text"]
-    words = sum(len(l["text"].split()) for l in out["lines"])
-    out.update(words=words, estimated_seconds=round(words / WORDS_PER_SECOND, 1), speakers=speakers,
-               kind=kind, tone=tone)
+    for line in out["lines"]:
+        line["text"] = rewrite.rule_rewrite(line["text"])["text"]
+    words = sum(len(line["text"].split()) for line in out["lines"])
+    out.update(
+        words=words, estimated_seconds=round(words / WORDS_PER_SECOND, 1), speakers=speakers, kind=kind, tone=tone
+    )
     return out
