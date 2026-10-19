@@ -1,0 +1,14 @@
+[project]
+name = "voice-studio-media-engine"
+version = "0.1.0"
+description = "Isolated local speaker detection and background separation"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "sherpa-onnx==1.13.8",
+    "sherpa-onnx-core==1.13.8",
+    "numpy==2.2.6",
+    "yt-dlp==2026.8.19",
+]
+
+[tool.uv]
+package = false

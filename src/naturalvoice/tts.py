@@ -41,20 +41,6 @@ def voices() -> list[str]:
     return sorted(_kokoro().get_voices())
 
 
-def _lang_for(voice: str) -> str:
-    return {
-        "a": "en-us",
-        "b": "en-gb",
-        "e": "es",
-        "f": "fr-fr",
-        "h": "hi",
-        "i": "it",
-        "p": "pt-br",
-        "j": "ja",
-        "z": "cmn",
-    }.get(voice[:1], "en-us")
-
-
 def split_chunks(text: str) -> list[tuple[str, float]]:
     """Split into (phrase, pause_after_seconds)."""
     text = re.sub(r"[ \t]+", " ", text.strip())

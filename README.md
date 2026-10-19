@@ -19,6 +19,9 @@ unless you choose to connect an AI service for script writing.
 - **Cloning:** zero-shot voice cloning from 5-60 seconds of audio, emotion tags (`[laugh]`, `[sigh]`...), a
   voice changer that re-voices your own performance, and cloned speech in Spanish, French, Italian and
   Portuguese. Consent is required. ([guide](docs/cloning.md))
+- **Voice sample collections:** import recordings or one public YouTube video, detect speakers locally, save
+  approved samples per person, and build new reference versions of a cloned voice without replacing old ones.
+  This is reference selection, not model training. ([guide](docs/sample-collections.md))
 
 Text-to-speech uses [Kokoro](https://github.com/hexgrad/kokoro) (Apache-2.0) and cloning uses
 [Chatterbox-Turbo](https://github.com/resemble-ai/chatterbox) (MIT), both on the CPU. No GPU is needed.
@@ -50,6 +53,16 @@ scripts/setup_clone_engine.sh
 
 Cloned speech takes roughly 4-5 seconds of computing per second of audio on a 4-core Intel CPU, plus about 20
 seconds to warm up the first time.
+
+**Optional: voice sample collections** (about 100 MB of models downloaded, about 185 MB on disk, plus an
+isolated Python environment of about 80 MB, all inside the project folder):
+
+```sh
+scripts/setup_media_engine.sh
+```
+
+Building and previewing reference versions also needs the cloning engine above. See
+[docs/sample-collections.md](docs/sample-collections.md).
 
 ## Connect an AI for script writing (optional)
 

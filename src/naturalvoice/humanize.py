@@ -81,10 +81,6 @@ def _istft(Z: np.ndarray, sr: int, length: int) -> np.ndarray:
     return x.astype(np.float32)
 
 
-def _db(x):
-    return 20 * np.log10(np.maximum(x, 1e-10))
-
-
 # --------------------------------------------------------------------------- stages
 
 

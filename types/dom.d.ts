@@ -239,4 +239,43 @@ export interface VoiceLabElements {
   "tab-library": HTMLElementTagNameMap["button"];
   "tab-match": HTMLElementTagNameMap["button"];
 }
+export interface SampleElements {
+  "buildVersion": HTMLElementTagNameMap["button"];
+  "collectionHeading": HTMLElementTagNameMap["h2"];
+  "collectionName": HTMLElementTagNameMap["p"];
+  "destination": HTMLElementTagNameMap["p"];
+  "dialogueAudio": HTMLElementTagNameMap["audio"];
+  "importButton": HTMLElementTagNameMap["button"];
+  "importForm": HTMLElementTagNameMap["form"];
+  "importHeading": HTMLElementTagNameMap["h2"];
+  "importProgress": HTMLElementTagNameMap["progress"];
+  "listen": HTMLElementTagNameMap["button"];
+  "main": HTMLElementTagNameMap["main"];
+  "mediaFile": HTMLElementTagNameMap["input"];
+  "mediaUrl": HTMLElementTagNameMap["input"];
+  "originalAudio": HTMLElementTagNameMap["audio"];
+  "peopleHeading": HTMLElementTagNameMap["h2"];
+  "personForm": HTMLElementTagNameMap["form"];
+  "personName": HTMLElementTagNameMap["input"];
+  "personSelect": HTMLElementTagNameMap["select"];
+  "previewText": HTMLElementTagNameMap["textarea"];
+  "refresh": HTMLElementTagNameMap["button"];
+  "retry": HTMLElementTagNameMap["button"];
+  "review": HTMLElementTagNameMap["div"];
+  "reviewHeading": HTMLElementTagNameMap["h2"];
+  "sampleConsent": HTMLElementTagNameMap["input"];
+  "sampleEnd": HTMLElementTagNameMap["input"];
+  "sampleForm": HTMLElementTagNameMap["form"];
+  "sampleStart": HTMLElementTagNameMap["input"];
+  "samples": HTMLElementTagNameMap["ul"];
+  "saveSample": HTMLElementTagNameMap["button"];
+  "selectionAudio": HTMLElementTagNameMap["audio"];
+  "selectionTotal": HTMLElementTagNameMap["p"];
+  "sourceSelect": HTMLElementTagNameMap["select"];
+  "sourceStatus": HTMLElementTagNameMap["p"];
+  "status": HTMLElementTagNameMap["p"];
+  "turns": HTMLElementTagNameMap["div"];
+  "useCleaned": HTMLElementTagNameMap["input"];
+  "versions": HTMLElementTagNameMap["ul"];
+}
 export type ElementFor<M, K extends string> = K extends keyof M ? M[K] : HTMLElement;

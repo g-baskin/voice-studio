@@ -227,12 +227,15 @@ def speak(
 
 
 # Feature routers must be registered before the static mount, which catches everything else.
-from . import clone_api, llm_api, rewrite_api, scriptgen_api, studio_api, voicelab_api  # noqa: E402
+from . import clone_api, llm_api, rewrite_api, sample_library_api, scriptgen_api, studio_api, voicelab_api  # noqa: E402
+
+app.add_middleware(sample_library_api.SampleUploadLimit)
 
 for _r in (
     voicelab_api.router,
     studio_api.router,
     clone_api.router,
+    sample_library_api.router,
     rewrite_api.router,
     scriptgen_api.router,
     llm_api.router,

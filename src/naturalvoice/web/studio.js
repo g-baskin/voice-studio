@@ -604,38 +604,7 @@ function move(i, d) {
   return true;
 }
 
-function card(line, i) {
-  const c = el('article', { class: 'linecard', 'data-id': line.id, 'aria-label': `Line ${i + 1}` });
-  const tid = `text-${line.id}`;
-  const warn = el('p', { class: 'warn', text: lineWarnings(line.text) });
-  const err = el('p', { class: 'err', role: 'alert' });
-  const ta = el('textarea', { id: tid, maxlength: '5000', placeholder: 'What this line says…' });
-  ta.value = line.text;
-  ta.addEventListener('input', () => {
-    line.text = ta.value;
-    warn.textContent = lineWarnings(ta.value);
-    changed();
-  });
-
-  const spk = el('input', {
-    type: 'text',
-    maxlength: '60',
-    placeholder: 'Speaker',
-    'aria-label': `Line ${i + 1} speaker`,
-    style: 'width:9em',
-  });
-  spk.value = line.speaker;
-  spk.addEventListener('input', () => {
-    line.speaker = spk.value;
-    changed();
-  });
-  const vs = voiceSelect(line.voice, `Line ${i + 1} voice`);
-  vs.addEventListener('change', () => {
-    const wasClone = line.voice.startsWith('clone:');
-    line.voice = vs.value;
-    changed();
-    if (wasClone !== line.voice.startsWith('clone:')) renderLines(line.id, 'select[aria-label$=" voice"]');
-  });
+function lineDeliveryControl(line, i) {
   const ds = el('select', { 'aria-label': `Line ${i + 1} delivery` });
   const gb = el('optgroup', { label: 'Built-in' });
   for (const [k, v] of Object.entries(DELIVERY))
@@ -684,16 +653,10 @@ function card(line, i) {
       line.delivery === 'custom' && line.style ? styleDesc(line.style) : deliveryInfo[line.delivery] || '';
     changed();
   });
+  return { ds, dHint };
+}
 
-  const btn = (text, label, fn, cls = 'btn secondary small') =>
-    el('button', { type: 'button', class: cls, text, 'aria-label': label, on: { click: fn } });
-  const audio = el('audio', { controls: true, hidden: true, preload: 'none' });
-  if (previews.has(line.id)) {
-    audio.src = previews.get(line.id);
-    audio.hidden = false;
-  }
-  const prev = btn('▶ Preview', `Preview line ${i + 1}`, () => {});
-
+function lineTakeControls(line, i, audio, err) {
   // takes: each is a seed for natural variation + a tiny voice-style perturbation
   const takeBox = el('div', { class: 'takes', role: 'radiogroup', 'aria-label': `Line ${i + 1} takes` });
   const playTake = async (t, b) => {
@@ -766,6 +729,83 @@ function card(line, i) {
   if (!Array.isArray(line.takes) || !line.takes.length) line.takes = [0];
   if (!line.takes.includes(line.take)) line.take = line.takes[0];
   drawTakes();
+  return takeBox;
+}
+
+function bindLinePreview(prev, line, audio, err) {
+  prev.addEventListener('click', async () => {
+    if (!line.text.trim()) {
+      err.textContent = 'Type something to preview.';
+      return;
+    }
+    err.textContent = '';
+    prev.disabled = true;
+    prev.textContent = 'Rendering…';
+    try {
+      const r = await api('/preview', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ line, dictionary: payload().dictionary, polish: $('polish').checked }),
+      });
+      const url = URL.createObjectURL(await r.blob());
+      if (previews.has(line.id)) URL.revokeObjectURL(previews.get(line.id));
+      previews.set(line.id, url);
+      audio.src = url;
+      audio.hidden = false;
+      audio.play().catch(() => {});
+    } catch (e) {
+      err.textContent = e.message;
+    } finally {
+      prev.disabled = false;
+      prev.textContent = '▶ Preview';
+    }
+  });
+}
+
+function card(line, i) {
+  const c = el('article', { class: 'linecard', 'data-id': line.id, 'aria-label': `Line ${i + 1}` });
+  const tid = `text-${line.id}`;
+  const warn = el('p', { class: 'warn', text: lineWarnings(line.text) });
+  const err = el('p', { class: 'err', role: 'alert' });
+  const ta = el('textarea', { id: tid, maxlength: '5000', placeholder: 'What this line says…' });
+  ta.value = line.text;
+  ta.addEventListener('input', () => {
+    line.text = ta.value;
+    warn.textContent = lineWarnings(ta.value);
+    changed();
+  });
+
+  const spk = el('input', {
+    type: 'text',
+    maxlength: '60',
+    placeholder: 'Speaker',
+    'aria-label': `Line ${i + 1} speaker`,
+    style: 'width:9em',
+  });
+  spk.value = line.speaker;
+  spk.addEventListener('input', () => {
+    line.speaker = spk.value;
+    changed();
+  });
+  const vs = voiceSelect(line.voice, `Line ${i + 1} voice`);
+  vs.addEventListener('change', () => {
+    const wasClone = line.voice.startsWith('clone:');
+    line.voice = vs.value;
+    changed();
+    if (wasClone !== line.voice.startsWith('clone:')) renderLines(line.id, 'select[aria-label$=" voice"]');
+  });
+  const { ds, dHint } = lineDeliveryControl(line, i);
+
+  const btn = (text, label, fn, cls = 'btn secondary small') =>
+    el('button', { type: 'button', class: cls, text, 'aria-label': label, on: { click: fn } });
+  const audio = el('audio', { controls: true, hidden: true, preload: 'none' });
+  if (previews.has(line.id)) {
+    audio.src = previews.get(line.id);
+    audio.hidden = false;
+  }
+  const prev = btn('▶ Preview', `Preview line ${i + 1}`, () => {});
+
+  const takeBox = lineTakeControls(line, i, audio, err);
   const tgtId = `target-${line.id}`;
   const tgt = el('input', {
     type: 'number',
@@ -856,33 +896,7 @@ function card(line, i) {
     audio,
     err,
   );
-  prev.addEventListener('click', async () => {
-    if (!line.text.trim()) {
-      err.textContent = 'Type something to preview.';
-      return;
-    }
-    err.textContent = '';
-    prev.disabled = true;
-    prev.textContent = 'Rendering…';
-    try {
-      const r = await api('/preview', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ line, dictionary: payload().dictionary, polish: $('polish').checked }),
-      });
-      const url = URL.createObjectURL(await r.blob());
-      if (previews.has(line.id)) URL.revokeObjectURL(previews.get(line.id));
-      previews.set(line.id, url);
-      audio.src = url;
-      audio.hidden = false;
-      audio.play().catch(() => {});
-    } catch (e) {
-      err.textContent = e.message;
-    } finally {
-      prev.disabled = false;
-      prev.textContent = '▶ Preview';
-    }
-  });
+  bindLinePreview(prev, line, audio, err);
   return c;
 }
 

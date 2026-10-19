@@ -1,6 +1,23 @@
 {
   "version": 1,
   "items": {
+    "agent-setup": {
+      "checkedAt": "2026-10-18T21:30:54.357Z",
+      "commit": "1a9df1c",
+      "uncommittedChanges": true,
+      "result": "pass",
+      "summary": "Root AGENTS.md refreshed with a bounded replaceable block; commands and invariants verified against source/config/tests. Installed global skills cover recurring Python, browser and shell work.",
+      "findings": [],
+      "evidence": [
+        "Scope: context precedence, preserved local policies, generated context accuracy/budget and recurring-work skill availability; three parallel read-only researchers.",
+        "Read AGENTS.md, CLAUDE.md, CONTEXT.md, manifests, clone/voices/voicelab sources, audio loader, CLI, browser script, Studio/release tests and setup/type-generation scripts.",
+        "AGENTS.md: 3288 bytes; generated block 2692 bytes; root plus known parent context files total 3746 bytes. Exact single fence pair asserted; final file re-read.",
+        "git diff --check passed. Removed three redundant command/policy lines; replaced three setup/tooling lines with focused prerequisite guidance.",
+        "gh workflow list --all confirmed CI disabled_manually; preserved owner opt-out and commit-workflow pointer.",
+        "Read installed global python-stinger, browser-automation-stinger and terminal-bash-stinger skill definitions; repository-local skill/agent directories empty, global skills available.",
+        "Not checked: runtime tests, fresh installs, browser execution, skill invocation or deployment; documentation-only update, no application code changed by this task."
+      ]
+    },
     "build-release": {
       "checkedAt": "2026-10-18T17:50:26.462Z",
       "commit": "1aa1c11",
@@ -20,6 +37,49 @@
         "Skill: changelog-release-notes-stinger loaded; its Hivemind-specific automation does not apply here. Used honest unreleased changelog categories only."
       ]
     },
+    "ci": {
+      "checkedAt": "2026-10-18T20:23:58.612Z",
+      "commit": "028696f",
+      "uncommittedChanges": false,
+      "result": "pass",
+      "summary": "Reviewed with owner's explicit CI opt-out: workflow remains disabled; no active CI coverage claimed. Dormant workflow hardening checks passed. Full quality checks remain local, not part of the dormant shell-only lint step.",
+      "findings": [],
+      "accepted": [
+        "CI is disabled and automatic build/lint/tests are not required, per owner's explicit 'dont use ci - turn it off' instruction. AGENTS.md:11 keeps checks local; do not re-enable without approval."
+      ],
+      "evidence": [
+        "Scope: sole tracked CI workflow, its called setup scripts, GitHub activation state/history and documented owner exception; no settings or code changed.",
+        "Profile: Python/uv voice app with browser JS/macOS launcher, local audio/projects and optional provider APIs; no hosted application deployment in this workflow.",
+        "Read .github/workflows/ci.yml:1-44, package.json, AGENTS.md and tracked workflow inventory; build/pytest/ShellCheck specified, while complete quality checks remain local.",
+        "GitHub workflows API confirmed CI disabled_manually and Dependabot Updates active. No workflow was triggered or enabled.",
+        "Read-only Python/YAML assertions passed: main push/PR triggers, 40-character action pins, contents:read, no retained credentials, one bounded Ubuntu job, no run-step expression interpolation.",
+        "Official action tag API lookups matched both pinned SHAs: actions/checkout v7.0.1 and astral-sh/setup-uv v10.3.0.",
+        "shellcheck scripts/*.sh: standalone run passed, exit 0.",
+        "gh run list --workflow 388678787 --all: four historical successes on main/dev pushes and Dependabot PRs; these predate current changes, not proof of current execution.",
+        "Not checked: new hosted run, fresh dependency install/build/test execution, action implementation audit or dynamic Dependabot internals; no installs or project-output writes.",
+        "Skills: none loaded for this review, as requested. Owner opt-out carried into accepted; only checklist record written."
+      ]
+    },
+    "code-health": {
+      "checkedAt": "2026-10-18T21:06:13.115Z",
+      "commit": "1a9df1c",
+      "uncommittedChanges": true,
+      "result": "pass",
+      "summary": "All three recorded findings addressed: extracted rendering/UI responsibilities and removed two unused private helpers. Full tests, existing browser interactions, lint/types/format and build pass; re-check limited to these hotspots.",
+      "findings": [],
+      "evidence": [
+        "Scope: re-check only render_project/card responsibilities and the two unused private helpers; no broad restructuring or new features.",
+        "Baseline on unchanged source: uv run --locked pytest -ra passed 140/140; existing browser_studio.cjs passed using installed Playwright and isolated local server data.",
+        "Removed unused _db/_lang_for; active voices.lang_for retained. Core/Voice Lab suite passed 25/25 immediately after removal.",
+        "Extracted Python rendering, placement, track mixing and mastering stages. Relevant Studio tests passed after each extraction; render_project reduced 267 to 109 lines.",
+        "Extracted UI delivery controls, take controls and preview binding; existing Studio browser suite passed after each extraction. card reduced 281 to 137 lines.",
+        "Final uv run --locked pytest -ra: 140 passed, no skips; npm run check passed lint/format/types; uv build --offline produced sdist/wheel; git diff --check passed.",
+        "Final browser_studio.cjs passed against freshly started modified backend on localhost:8773: preview/takes, styles, reorder, rendering, captions, ZIP, save/reload and desktop/mobile checks.",
+        "Reviewed complete source diff for error, arithmetic, ordering, state and boundary drift; no tests, dependency/config files or public signatures changed.",
+        "Not checked: exhaustive input equivalence, external private-helper consumers or other browser suites/platforms. Verification servers remain on localhost:8772/8773 with temporary data.",
+        "Skill: refactoring with smells/agent-pitfalls guidance; small verified steps, tests unchanged. Owner chose uncommitted work on dev; no commits or pushes."
+      ]
+    },
     "commit-gate": {
       "checkedAt": "2026-10-18T20:01:05.070Z",
       "commit": "9f0eac7",
@@ -35,6 +95,20 @@
         "Standalone git diff --check exited 0; no chained commands could mask its failure.",
         "Not checked: automatic hook enforcement or end-to-end workflow execution at this re-check. Later /commit request is handled separately.",
         "Skills: none newly loaded. This re-check changed only the checklist record; no commit/push performed as part of the re-check."
+      ]
+    },
+    "dependencies": {
+      "checkedAt": "2026-10-18T22:13:58.093Z",
+      "commit": "1a9df1c",
+      "uncommittedChanges": true,
+      "result": "pass",
+      "summary": "Approved unused-dependency removal verified with direct pytest invocation: 140 tests passed. Re-check limited to the recorded nara-wpe removal, not a new dependency audit.",
+      "findings": [],
+      "evidence": [
+        "Scope: bounded verification of the approved nara-wpe removal and resulting lockfile cleanup; no additional dependency findings reviewed.",
+        ".venv/bin/pytest -q: exit 0, 140 passed in 258.07 seconds, no skips or failures.",
+        "No fixes were needed after the direct test run; no source or dependency files changed during this re-check.",
+        "Not checked: vulnerability and maintenance scans, native binaries, model provenance, browser suite and distribution build were not rerun."
       ]
     },
     "docs": {

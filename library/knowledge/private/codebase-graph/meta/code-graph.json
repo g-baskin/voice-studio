@@ -1,0 +1,6907 @@
+{
+ "edges": [
+  {
+   "kind": "defines",
+   "source": "module:engines.chatterbox.worker",
+   "target": "symbol:engines.chatterbox.worker.Engine"
+  },
+  {
+   "kind": "defines",
+   "source": "module:engines.chatterbox.worker",
+   "target": "symbol:engines.chatterbox.worker._sess"
+  },
+  {
+   "kind": "defines",
+   "source": "module:engines.chatterbox.worker",
+   "target": "symbol:engines.chatterbox.worker.log"
+  },
+  {
+   "kind": "defines",
+   "source": "module:engines.chatterbox.worker",
+   "target": "symbol:engines.chatterbox.worker.main"
+  },
+  {
+   "kind": "defines",
+   "source": "module:engines.media.worker",
+   "target": "symbol:engines.media.worker.analyze"
+  },
+  {
+   "kind": "defines",
+   "source": "module:engines.media.worker",
+   "target": "symbol:engines.media.worker.main"
+  },
+  {
+   "kind": "defines",
+   "source": "module:engines.media.worker",
+   "target": "symbol:engines.media.worker.read_audio"
+  },
+  {
+   "kind": "defines",
+   "source": "module:engines.media.worker",
+   "target": "symbol:engines.media.worker.separate"
+  },
+  {
+   "kind": "defines",
+   "source": "module:engines.media.worker",
+   "target": "symbol:engines.media.worker.write_audio"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.analyze",
+   "target": "module:naturalvoice.humanize"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.analyze",
+   "target": "module:naturalvoice.quality"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.analyze",
+   "target": "symbol:naturalvoice.analyze.echo_db"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.analyze",
+   "target": "symbol:naturalvoice.analyze.harshness_db"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.analyze",
+   "target": "symbol:naturalvoice.analyze.listener_score"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.analyze",
+   "target": "symbol:naturalvoice.analyze.metallic"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.analyze",
+   "target": "symbol:naturalvoice.analyze.report"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.audio",
+   "target": "symbol:naturalvoice.audio._ffmpeg"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.audio",
+   "target": "symbol:naturalvoice.audio.is_video"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.audio",
+   "target": "symbol:naturalvoice.audio.load"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.audio",
+   "target": "symbol:naturalvoice.audio.remux_video"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.audio",
+   "target": "symbol:naturalvoice.audio.save"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.bench",
+   "target": "module:naturalvoice.analyze"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.bench",
+   "target": "module:naturalvoice.audio"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.bench",
+   "target": "module:naturalvoice.enhance"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.bench",
+   "target": "module:naturalvoice.humanize"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.bench",
+   "target": "module:naturalvoice.quality"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.bench",
+   "target": "module:naturalvoice.tts"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.bench",
+   "target": "symbol:naturalvoice.bench._codec"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.bench",
+   "target": "symbol:naturalvoice.bench._fmt"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.bench",
+   "target": "symbol:naturalvoice.bench._frames_db"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.bench",
+   "target": "symbol:naturalvoice.bench._griffin_lim"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.bench",
+   "target": "symbol:naturalvoice.bench._mean"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.bench",
+   "target": "symbol:naturalvoice.bench._resonances"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.bench",
+   "target": "symbol:naturalvoice.bench._reverb"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.bench",
+   "target": "symbol:naturalvoice.bench._room"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.bench",
+   "target": "symbol:naturalvoice.bench.methods"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.bench",
+   "target": "symbol:naturalvoice.bench.references"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.bench",
+   "target": "symbol:naturalvoice.bench.render"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.bench",
+   "target": "symbol:naturalvoice.bench.run"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.bench",
+   "target": "symbol:naturalvoice.bench.score"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.bench",
+   "target": "symbol:naturalvoice.bench.summarize"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.cli",
+   "target": "module:naturalvoice.analyze"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.cli",
+   "target": "module:naturalvoice.audio"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.cli",
+   "target": "module:naturalvoice.bench"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.cli",
+   "target": "module:naturalvoice.humanize"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.cli",
+   "target": "module:naturalvoice.studio"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.cli",
+   "target": "module:naturalvoice.tts"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.cli",
+   "target": "module:naturalvoice.voices"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.cli",
+   "target": "symbol:naturalvoice.cli._settings"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.cli",
+   "target": "symbol:naturalvoice.cli._settings_args"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.cli",
+   "target": "symbol:naturalvoice.cli.clean_file"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.cli",
+   "target": "symbol:naturalvoice.cli.main"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.clone",
+   "target": "module:naturalvoice.audio"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.clone",
+   "target": "module:naturalvoice.humanize"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.clone",
+   "target": "module:naturalvoice.tts"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.clone",
+   "target": "module:naturalvoice.voices"
+  },
+  {
+   "kind": "spawns",
+   "source": "module:naturalvoice.clone",
+   "target": "process:engines/chatterbox/worker.py"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.clone",
+   "target": "symbol:naturalvoice.clone.EngineMissing"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.clone",
+   "target": "symbol:naturalvoice.clone._Worker"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.clone",
+   "target": "symbol:naturalvoice.clone._cut_points"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.clone",
+   "target": "symbol:naturalvoice.clone._dtype"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.clone",
+   "target": "symbol:naturalvoice.clone._median_f0"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.clone",
+   "target": "symbol:naturalvoice.clone._python"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.clone",
+   "target": "symbol:naturalvoice.clone._resample"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.clone",
+   "target": "symbol:naturalvoice.clone._trim"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.clone",
+   "target": "symbol:naturalvoice.clone.clean_tags"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.clone",
+   "target": "symbol:naturalvoice.clone.clone_gender"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.clone",
+   "target": "symbol:naturalvoice.clone.convert"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.clone",
+   "target": "symbol:naturalvoice.clone.crossfade"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.clone",
+   "target": "symbol:naturalvoice.clone.fade"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.clone",
+   "target": "symbol:naturalvoice.clone.installed"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.clone",
+   "target": "symbol:naturalvoice.clone.prepare_reference"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.clone",
+   "target": "symbol:naturalvoice.clone.prepare_source"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.clone",
+   "target": "symbol:naturalvoice.clone.speak"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.clone",
+   "target": "symbol:naturalvoice.clone.speak_language"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.clone",
+   "target": "symbol:naturalvoice.clone.split_sentences"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.clone",
+   "target": "symbol:naturalvoice.clone.status"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.clone",
+   "target": "symbol:naturalvoice.clone.stop"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.clone_api",
+   "target": "module:naturalvoice.audio"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.clone_api",
+   "target": "module:naturalvoice.clone"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.clone_api",
+   "target": "module:naturalvoice.server"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.clone_api",
+   "target": "module:naturalvoice.voices"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.clone_api",
+   "target": "symbol:naturalvoice.clone_api._check_voice"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.clone_api",
+   "target": "symbol:naturalvoice.clone_api._job"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.clone_api",
+   "target": "symbol:naturalvoice.clone_api._start_job"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.clone_api",
+   "target": "symbol:naturalvoice.clone_api._truthy"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.clone_api",
+   "target": "symbol:naturalvoice.clone_api.convert"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.clone_api",
+   "target": "symbol:naturalvoice.clone_api.create_voice"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.clone_api",
+   "target": "symbol:naturalvoice.clone_api.preview"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.clone_api",
+   "target": "symbol:naturalvoice.clone_api.preview_audio"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.clone_api",
+   "target": "symbol:naturalvoice.clone_api.preview_status"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.clone_api",
+   "target": "symbol:naturalvoice.clone_api.status"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.enhance",
+   "target": "module:naturalvoice.quality"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.enhance",
+   "target": "module:naturalvoice.tts"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.enhance",
+   "target": "symbol:naturalvoice.enhance._session"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.enhance",
+   "target": "symbol:naturalvoice.enhance._stft16"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.enhance",
+   "target": "symbol:naturalvoice.enhance.ai_clean"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.enhance",
+   "target": "symbol:naturalvoice.enhance.available"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.enhance",
+   "target": "symbol:naturalvoice.enhance.gain_mask"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.humanize",
+   "target": "module:naturalvoice.enhance"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.humanize",
+   "target": "symbol:naturalvoice.humanize.Settings"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.humanize",
+   "target": "symbol:naturalvoice.humanize._istft"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.humanize",
+   "target": "symbol:naturalvoice.humanize._stft"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.humanize",
+   "target": "symbol:naturalvoice.humanize._stft_params"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.humanize",
+   "target": "symbol:naturalvoice.humanize.add_room_tone"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.humanize",
+   "target": "symbol:naturalvoice.humanize.deharsh"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.humanize",
+   "target": "symbol:naturalvoice.humanize.demetal"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.humanize",
+   "target": "symbol:naturalvoice.humanize.denoise"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.humanize",
+   "target": "symbol:naturalvoice.humanize.dereverb"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.humanize",
+   "target": "symbol:naturalvoice.humanize.estimate_rt60"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.humanize",
+   "target": "symbol:naturalvoice.humanize.find_resonances"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.humanize",
+   "target": "symbol:naturalvoice.humanize.get_settings"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.humanize",
+   "target": "symbol:naturalvoice.humanize.humanize"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.humanize",
+   "target": "symbol:naturalvoice.humanize.normalize"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.humanize",
+   "target": "symbol:naturalvoice.humanize.process_mono"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.humanize",
+   "target": "symbol:naturalvoice.humanize.soft_limit"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.humanize",
+   "target": "symbol:naturalvoice.humanize.tone"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.llm",
+   "target": "module:naturalvoice.voices"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.llm",
+   "target": "symbol:naturalvoice.llm._client"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.llm",
+   "target": "symbol:naturalvoice.llm._explain"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.llm",
+   "target": "symbol:naturalvoice.llm._mask"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.llm",
+   "target": "symbol:naturalvoice.llm._path"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.llm",
+   "target": "symbol:naturalvoice.llm._saved"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.llm",
+   "target": "symbol:naturalvoice.llm.chat"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.llm",
+   "target": "symbol:naturalvoice.llm.clear_key"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.llm",
+   "target": "symbol:naturalvoice.llm.config"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.llm",
+   "target": "symbol:naturalvoice.llm.connect"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.llm",
+   "target": "symbol:naturalvoice.llm.ollama_chat_models"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.llm",
+   "target": "symbol:naturalvoice.llm.save_key"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.llm",
+   "target": "symbol:naturalvoice.llm.status"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.llm_api",
+   "target": "module:naturalvoice.llm"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.llm_api",
+   "target": "symbol:naturalvoice.llm_api.KeyBody"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.llm_api",
+   "target": "symbol:naturalvoice.llm_api.delete_key"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.llm_api",
+   "target": "symbol:naturalvoice.llm_api.put_key"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.llm_api",
+   "target": "symbol:naturalvoice.llm_api.status"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.quality",
+   "target": "module:naturalvoice.tts"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.quality",
+   "target": "symbol:naturalvoice.quality._dnsmos_sessions"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.quality",
+   "target": "symbol:naturalvoice.quality._hz_to_mel"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.quality",
+   "target": "symbol:naturalvoice.quality._mel_basis"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.quality",
+   "target": "symbol:naturalvoice.quality._mel_to_hz"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.quality",
+   "target": "symbol:naturalvoice.quality.dnsmos"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.quality",
+   "target": "symbol:naturalvoice.quality.melspec_db"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.quality",
+   "target": "symbol:naturalvoice.quality.pesq_wb"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.quality",
+   "target": "symbol:naturalvoice.quality.to_16k"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.rewrite",
+   "target": "module:naturalvoice.llm"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.rewrite",
+   "target": "symbol:naturalvoice.rewrite._digits"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.rewrite",
+   "target": "symbol:naturalvoice.rewrite._num"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.rewrite",
+   "target": "symbol:naturalvoice.rewrite.chat"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.rewrite",
+   "target": "symbol:naturalvoice.rewrite.clean_symbols"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.rewrite",
+   "target": "symbol:naturalvoice.rewrite.expand_abbreviations"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.rewrite",
+   "target": "symbol:naturalvoice.rewrite.int_to_words"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.rewrite",
+   "target": "symbol:naturalvoice.rewrite.llm_available"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.rewrite",
+   "target": "symbol:naturalvoice.rewrite.llm_rewrite"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.rewrite",
+   "target": "symbol:naturalvoice.rewrite.ordinal_words"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.rewrite",
+   "target": "symbol:naturalvoice.rewrite.rule_rewrite"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.rewrite",
+   "target": "symbol:naturalvoice.rewrite.spell_numbers"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.rewrite",
+   "target": "symbol:naturalvoice.rewrite.split_long"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.rewrite",
+   "target": "symbol:naturalvoice.rewrite.year_words"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.rewrite_api",
+   "target": "module:naturalvoice.llm"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.rewrite_api",
+   "target": "module:naturalvoice.rewrite"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.rewrite_api",
+   "target": "symbol:naturalvoice.rewrite_api.Body"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.rewrite_api",
+   "target": "symbol:naturalvoice.rewrite_api.run"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.rewrite_api",
+   "target": "symbol:naturalvoice.rewrite_api.status"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.sample_library",
+   "target": "module:naturalvoice.voices"
+  },
+  {
+   "kind": "spawns",
+   "source": "module:naturalvoice.sample_library",
+   "target": "process:engines/media/download.py"
+  },
+  {
+   "kind": "spawns",
+   "source": "module:naturalvoice.sample_library",
+   "target": "process:engines/media/worker.py"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.sample_library",
+   "target": "symbol:naturalvoice.sample_library.activate"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.sample_library",
+   "target": "symbol:naturalvoice.sample_library.add_sample"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.sample_library",
+   "target": "symbol:naturalvoice.sample_library.atomic_json"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.sample_library",
+   "target": "symbol:naturalvoice.sample_library.build_version"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.sample_library",
+   "target": "symbol:naturalvoice.sample_library.capacity"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.sample_library",
+   "target": "symbol:naturalvoice.sample_library.create_person"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.sample_library",
+   "target": "symbol:naturalvoice.sample_library.decode"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.sample_library",
+   "target": "symbol:naturalvoice.sample_library.download"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.sample_library",
+   "target": "symbol:naturalvoice.sample_library.identifier"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.sample_library",
+   "target": "symbol:naturalvoice.sample_library.installed"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.sample_library",
+   "target": "symbol:naturalvoice.sample_library.location"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.sample_library",
+   "target": "symbol:naturalvoice.sample_library.process_source"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.sample_library",
+   "target": "symbol:naturalvoice.sample_library.public_source"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.sample_library",
+   "target": "symbol:naturalvoice.sample_library.read"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.sample_library",
+   "target": "symbol:naturalvoice.sample_library.records"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.sample_library",
+   "target": "symbol:naturalvoice.sample_library.root"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.sample_library",
+   "target": "symbol:naturalvoice.sample_library.validate_window"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.sample_library",
+   "target": "symbol:naturalvoice.sample_library.versions"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.sample_library",
+   "target": "symbol:naturalvoice.sample_library.writing"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.sample_library",
+   "target": "symbol:naturalvoice.sample_library.youtube_url"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.sample_library_api",
+   "target": "module:naturalvoice.sample_library"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.sample_library_api",
+   "target": "module:naturalvoice.server"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.sample_library_api",
+   "target": "symbol:naturalvoice.sample_library_api.Active"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.sample_library_api",
+   "target": "symbol:naturalvoice.sample_library_api.Person"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.sample_library_api",
+   "target": "symbol:naturalvoice.sample_library_api.Sample"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.sample_library_api",
+   "target": "symbol:naturalvoice.sample_library_api.SampleUploadLimit"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.sample_library_api",
+   "target": "symbol:naturalvoice.sample_library_api.Version"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.sample_library_api",
+   "target": "symbol:naturalvoice.sample_library_api.activate"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.sample_library_api",
+   "target": "symbol:naturalvoice.sample_library_api.add_sample"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.sample_library_api",
+   "target": "symbol:naturalvoice.sample_library_api.build"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.sample_library_api",
+   "target": "symbol:naturalvoice.sample_library_api.catalog"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.sample_library_api",
+   "target": "symbol:naturalvoice.sample_library_api.create_person"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.sample_library_api",
+   "target": "symbol:naturalvoice.sample_library_api.errors"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.sample_library_api",
+   "target": "symbol:naturalvoice.sample_library_api.import_source"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.sample_library_api",
+   "target": "symbol:naturalvoice.sample_library_api.launch"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.sample_library_api",
+   "target": "symbol:naturalvoice.sample_library_api.local_request"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.sample_library_api",
+   "target": "symbol:naturalvoice.sample_library_api.person"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.sample_library_api",
+   "target": "symbol:naturalvoice.sample_library_api.processing"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.sample_library_api",
+   "target": "symbol:naturalvoice.sample_library_api.retry"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.sample_library_api",
+   "target": "symbol:naturalvoice.sample_library_api.sample_audio"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.sample_library_api",
+   "target": "symbol:naturalvoice.sample_library_api.source"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.sample_library_api",
+   "target": "symbol:naturalvoice.sample_library_api.source_audio"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.scriptgen",
+   "target": "module:naturalvoice.rewrite"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.scriptgen",
+   "target": "symbol:naturalvoice.scriptgen._assign"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.scriptgen",
+   "target": "symbol:naturalvoice.scriptgen._parse"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.scriptgen",
+   "target": "symbol:naturalvoice.scriptgen._points"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.scriptgen",
+   "target": "symbol:naturalvoice.scriptgen._sentence"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.scriptgen",
+   "target": "symbol:naturalvoice.scriptgen.generate"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.scriptgen",
+   "target": "symbol:naturalvoice.scriptgen.llm_script"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.scriptgen",
+   "target": "symbol:naturalvoice.scriptgen.sample"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.scriptgen",
+   "target": "symbol:naturalvoice.scriptgen.template_script"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.scriptgen_api",
+   "target": "module:naturalvoice.llm"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.scriptgen_api",
+   "target": "module:naturalvoice.scriptgen"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.scriptgen_api",
+   "target": "symbol:naturalvoice.scriptgen_api.Brief"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.scriptgen_api",
+   "target": "symbol:naturalvoice.scriptgen_api.run"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.scriptgen_api",
+   "target": "symbol:naturalvoice.scriptgen_api.sample"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.scriptgen_api",
+   "target": "symbol:naturalvoice.scriptgen_api.status"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.server",
+   "target": "module:naturalvoice.audio"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.server",
+   "target": "module:naturalvoice.clone_api"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.server",
+   "target": "module:naturalvoice.humanize"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.server",
+   "target": "module:naturalvoice.llm_api"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.server",
+   "target": "module:naturalvoice.rewrite_api"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.server",
+   "target": "module:naturalvoice.sample_library_api"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.server",
+   "target": "module:naturalvoice.scriptgen_api"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.server",
+   "target": "module:naturalvoice.studio_api"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.server",
+   "target": "module:naturalvoice.tts"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.server",
+   "target": "module:naturalvoice.voicelab_api"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.server",
+   "target": "module:naturalvoice.voices"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.server",
+   "target": "module:naturalvoice.workflow"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.server",
+   "target": "symbol:naturalvoice.server.BatchDownload"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.server",
+   "target": "symbol:naturalvoice.server._settings_from_form"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.server",
+   "target": "symbol:naturalvoice.server.batch_download"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.server",
+   "target": "symbol:naturalvoice.server.clean"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.server",
+   "target": "symbol:naturalvoice.server.job_file"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.server",
+   "target": "symbol:naturalvoice.server.job_status"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.server",
+   "target": "symbol:naturalvoice.server.list_voices"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.server",
+   "target": "symbol:naturalvoice.server.presets"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.server",
+   "target": "symbol:naturalvoice.server.speak"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.studio",
+   "target": "module:naturalvoice.audio"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.studio",
+   "target": "module:naturalvoice.clone"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.studio",
+   "target": "module:naturalvoice.humanize"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.studio",
+   "target": "module:naturalvoice.studio_api"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.studio",
+   "target": "module:naturalvoice.tts"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.studio",
+   "target": "module:naturalvoice.voices"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio",
+   "target": "symbol:naturalvoice.studio.Cancelled"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio",
+   "target": "symbol:naturalvoice.studio.RenderOptions"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio",
+   "target": "symbol:naturalvoice.studio.StudioError"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio",
+   "target": "symbol:naturalvoice.studio._eq"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio",
+   "target": "symbol:naturalvoice.studio._kokoro_phrase"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio",
+   "target": "symbol:naturalvoice.studio._master_project_audio"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio",
+   "target": "symbol:naturalvoice.studio._mix_project_tracks"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio",
+   "target": "symbol:naturalvoice.studio._pitch"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio",
+   "target": "symbol:naturalvoice.studio._place_project_lines"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio",
+   "target": "symbol:naturalvoice.studio._render_project_lines"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio",
+   "target": "symbol:naturalvoice.studio._resample"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio",
+   "target": "symbol:naturalvoice.studio._safe"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio",
+   "target": "symbol:naturalvoice.studio._scale_phrases"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio",
+   "target": "symbol:naturalvoice.studio._sub_time"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio",
+   "target": "symbol:naturalvoice.studio._ts"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio",
+   "target": "symbol:naturalvoice.studio._wrap"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio",
+   "target": "symbol:naturalvoice.studio.caption_cues"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio",
+   "target": "symbol:naturalvoice.studio.cli_render"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio",
+   "target": "symbol:naturalvoice.studio.clone_emotion_tags"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio",
+   "target": "symbol:naturalvoice.studio.delivery_of"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio",
+   "target": "symbol:naturalvoice.studio.display_text"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio",
+   "target": "symbol:naturalvoice.studio.duck_gain"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio",
+   "target": "symbol:naturalvoice.studio.fit_line"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio",
+   "target": "symbol:naturalvoice.studio.fit_project"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio",
+   "target": "symbol:naturalvoice.studio.is_phoneme_entry"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio",
+   "target": "symbol:naturalvoice.studio.line_key"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio",
+   "target": "symbol:naturalvoice.studio.lint_project"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio",
+   "target": "symbol:naturalvoice.studio.load_styles"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio",
+   "target": "symbol:naturalvoice.studio.lufs"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio",
+   "target": "symbol:naturalvoice.studio.mark_dictionary"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio",
+   "target": "symbol:naturalvoice.studio.master"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio",
+   "target": "symbol:naturalvoice.studio.measure"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio",
+   "target": "symbol:naturalvoice.studio.music_bed"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio",
+   "target": "symbol:naturalvoice.studio.mux_video"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio",
+   "target": "symbol:naturalvoice.studio.new_line"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio",
+   "target": "symbol:naturalvoice.studio.noise_floor_db"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio",
+   "target": "symbol:naturalvoice.studio.original_bed"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio",
+   "target": "symbol:naturalvoice.studio.parse_inline"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio",
+   "target": "symbol:naturalvoice.studio.parse_note"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio",
+   "target": "symbol:naturalvoice.studio.parse_script"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio",
+   "target": "symbol:naturalvoice.studio.parse_subtitles"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio",
+   "target": "symbol:naturalvoice.studio.probe_duration"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio",
+   "target": "symbol:naturalvoice.studio.probe_streams"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio",
+   "target": "symbol:naturalvoice.studio.projects_dir"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio",
+   "target": "symbol:naturalvoice.studio.render_line"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio",
+   "target": "symbol:naturalvoice.studio.render_project"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio",
+   "target": "symbol:naturalvoice.studio.rms_db"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio",
+   "target": "symbol:naturalvoice.studio.room_tone"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio",
+   "target": "symbol:naturalvoice.studio.save_styles"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio",
+   "target": "symbol:naturalvoice.studio.spoken_text"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio",
+   "target": "symbol:naturalvoice.studio.style_from_line"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio",
+   "target": "symbol:naturalvoice.studio.styles_path"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio",
+   "target": "symbol:naturalvoice.studio.time_stretch"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio",
+   "target": "symbol:naturalvoice.studio.timed_slot"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio",
+   "target": "symbol:naturalvoice.studio.to_srt"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio",
+   "target": "symbol:naturalvoice.studio.to_vtt"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio",
+   "target": "symbol:naturalvoice.studio.true_peak_db"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio",
+   "target": "symbol:naturalvoice.studio.validate_style"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio",
+   "target": "symbol:naturalvoice.studio.write_audio"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.studio_api",
+   "target": "module:naturalvoice.audio"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.studio_api",
+   "target": "module:naturalvoice.server"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.studio_api",
+   "target": "module:naturalvoice.studio"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio_api",
+   "target": "symbol:naturalvoice.studio_api.Line"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio_api",
+   "target": "symbol:naturalvoice.studio_api.NoteIn"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio_api",
+   "target": "symbol:naturalvoice.studio_api.ParseRequest"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio_api",
+   "target": "symbol:naturalvoice.studio_api.PreviewRequest"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio_api",
+   "target": "symbol:naturalvoice.studio_api.Project"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio_api",
+   "target": "symbol:naturalvoice.studio_api.RenderRequest"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio_api",
+   "target": "symbol:naturalvoice.studio_api.StyleIn"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio_api",
+   "target": "symbol:naturalvoice.studio_api._busy"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio_api",
+   "target": "symbol:naturalvoice.studio_api._job"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio_api",
+   "target": "symbol:naturalvoice.studio_api._load"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio_api",
+   "target": "symbol:naturalvoice.studio_api._music_path"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio_api",
+   "target": "symbol:naturalvoice.studio_api._ppath"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio_api",
+   "target": "symbol:naturalvoice.studio_api._prune"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio_api",
+   "target": "symbol:naturalvoice.studio_api._save"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio_api",
+   "target": "symbol:naturalvoice.studio_api._scratch"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio_api",
+   "target": "symbol:naturalvoice.studio_api._stream"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio_api",
+   "target": "symbol:naturalvoice.studio_api._upload_path"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio_api",
+   "target": "symbol:naturalvoice.studio_api.create_project"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio_api",
+   "target": "symbol:naturalvoice.studio_api.delete_project"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio_api",
+   "target": "symbol:naturalvoice.studio_api.delete_style"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio_api",
+   "target": "symbol:naturalvoice.studio_api.duplicate_project"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio_api",
+   "target": "symbol:naturalvoice.studio_api.get_project"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio_api",
+   "target": "symbol:naturalvoice.studio_api.import_subtitles"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio_api",
+   "target": "symbol:naturalvoice.studio_api.lint"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio_api",
+   "target": "symbol:naturalvoice.studio_api.list_projects"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio_api",
+   "target": "symbol:naturalvoice.studio_api.list_styles"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio_api",
+   "target": "symbol:naturalvoice.studio_api.parse"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio_api",
+   "target": "symbol:naturalvoice.studio_api.presets"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio_api",
+   "target": "symbol:naturalvoice.studio_api.preview"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio_api",
+   "target": "symbol:naturalvoice.studio_api.render"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio_api",
+   "target": "symbol:naturalvoice.studio_api.render_cancel"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio_api",
+   "target": "symbol:naturalvoice.studio_api.render_file"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio_api",
+   "target": "symbol:naturalvoice.studio_api.render_status"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio_api",
+   "target": "symbol:naturalvoice.studio_api.renders"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio_api",
+   "target": "symbol:naturalvoice.studio_api.save_style"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio_api",
+   "target": "symbol:naturalvoice.studio_api.understand_note"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio_api",
+   "target": "symbol:naturalvoice.studio_api.update_project"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio_api",
+   "target": "symbol:naturalvoice.studio_api.upload_music"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.studio_api",
+   "target": "symbol:naturalvoice.studio_api.upload_video"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.tts",
+   "target": "module:naturalvoice.clone"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.tts",
+   "target": "module:naturalvoice.humanize"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.tts",
+   "target": "module:naturalvoice.voices"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.tts",
+   "target": "symbol:naturalvoice.tts._kokoro"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.tts",
+   "target": "symbol:naturalvoice.tts.speak"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.tts",
+   "target": "symbol:naturalvoice.tts.speak_elevenlabs"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.tts",
+   "target": "symbol:naturalvoice.tts.speak_kokoro"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.tts",
+   "target": "symbol:naturalvoice.tts.speak_openai"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.tts",
+   "target": "symbol:naturalvoice.tts.split_chunks"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.tts",
+   "target": "symbol:naturalvoice.tts.voices"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.voicelab",
+   "target": "module:naturalvoice.audio"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.voicelab",
+   "target": "module:naturalvoice.tts"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.voicelab",
+   "target": "module:naturalvoice.voices"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voicelab",
+   "target": "symbol:naturalvoice.voicelab.Cancelled"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voicelab",
+   "target": "symbol:naturalvoice.voicelab.ControlSpec"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voicelab",
+   "target": "symbol:naturalvoice.voicelab._axes"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voicelab",
+   "target": "symbol:naturalvoice.voicelab._load_npz"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voicelab",
+   "target": "symbol:naturalvoice.voicelab._mel_banks"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voicelab",
+   "target": "symbol:naturalvoice.voicelab._speaker_session"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voicelab",
+   "target": "symbol:naturalvoice.voicelab._stock_names"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voicelab",
+   "target": "symbol:naturalvoice.voicelab._variation"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voicelab",
+   "target": "symbol:naturalvoice.voicelab.blend"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voicelab",
+   "target": "symbol:naturalvoice.voicelab.brightness_hz"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voicelab",
+   "target": "symbol:naturalvoice.voicelab.build_style"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voicelab",
+   "target": "symbol:naturalvoice.voicelab.character_features"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voicelab",
+   "target": "symbol:naturalvoice.voicelab.cosine"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voicelab",
+   "target": "symbol:naturalvoice.voicelab.data_dir"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voicelab",
+   "target": "symbol:naturalvoice.voicelab.describe"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voicelab",
+   "target": "symbol:naturalvoice.voicelab.drop_preview"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voicelab",
+   "target": "symbol:naturalvoice.voicelab.embed"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voicelab",
+   "target": "symbol:naturalvoice.voicelab.fbank"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voicelab",
+   "target": "symbol:naturalvoice.voicelab.library"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voicelab",
+   "target": "symbol:naturalvoice.voicelab.match"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voicelab",
+   "target": "symbol:naturalvoice.voicelab.model_fingerprint"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voicelab",
+   "target": "symbol:naturalvoice.voicelab.normalise_weights"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voicelab",
+   "target": "symbol:naturalvoice.voicelab.pitch_hz"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voicelab",
+   "target": "symbol:naturalvoice.voicelab.preview_path"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voicelab",
+   "target": "symbol:naturalvoice.voicelab.render"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voicelab",
+   "target": "symbol:naturalvoice.voicelab.render_preview"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voicelab",
+   "target": "symbol:naturalvoice.voicelab.resample"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voicelab",
+   "target": "symbol:naturalvoice.voicelab.sample_text"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voicelab",
+   "target": "symbol:naturalvoice.voicelab.save_features"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voicelab",
+   "target": "symbol:naturalvoice.voicelab.stock_features"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voicelab",
+   "target": "symbol:naturalvoice.voicelab.trim_silence"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voicelab",
+   "target": "symbol:naturalvoice.voicelab.validate_recipe"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voicelab",
+   "target": "symbol:naturalvoice.voicelab.voice_lang"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.voicelab_api",
+   "target": "module:naturalvoice.audio"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.voicelab_api",
+   "target": "module:naturalvoice.server"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.voicelab_api",
+   "target": "module:naturalvoice.voicelab"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.voicelab_api",
+   "target": "module:naturalvoice.voices"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voicelab_api",
+   "target": "symbol:naturalvoice.voicelab_api.Describe"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voicelab_api",
+   "target": "symbol:naturalvoice.voicelab_api.Design"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voicelab_api",
+   "target": "symbol:naturalvoice.voicelab_api.Rename"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voicelab_api",
+   "target": "symbol:naturalvoice.voicelab_api.SaveMatch"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voicelab_api",
+   "target": "symbol:naturalvoice.voicelab_api.Star"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voicelab_api",
+   "target": "symbol:naturalvoice.voicelab_api._build"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voicelab_api",
+   "target": "symbol:naturalvoice.voicelab_api._busy"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voicelab_api",
+   "target": "symbol:naturalvoice.voicelab_api._check_text"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voicelab_api",
+   "target": "symbol:naturalvoice.voicelab_api._job"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voicelab_api",
+   "target": "symbol:naturalvoice.voicelab_api._known"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voicelab_api",
+   "target": "symbol:naturalvoice.voicelab_api._recipe_gender"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voicelab_api",
+   "target": "symbol:naturalvoice.voicelab_api._wav"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voicelab_api",
+   "target": "symbol:naturalvoice.voicelab_api.delete"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voicelab_api",
+   "target": "symbol:naturalvoice.voicelab_api.describe"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voicelab_api",
+   "target": "symbol:naturalvoice.voicelab_api.design_preview"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voicelab_api",
+   "target": "symbol:naturalvoice.voicelab_api.design_save"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voicelab_api",
+   "target": "symbol:naturalvoice.voicelab_api.library"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voicelab_api",
+   "target": "symbol:naturalvoice.voicelab_api.match_audio"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voicelab_api",
+   "target": "symbol:naturalvoice.voicelab_api.match_cancel"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voicelab_api",
+   "target": "symbol:naturalvoice.voicelab_api.match_save"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voicelab_api",
+   "target": "symbol:naturalvoice.voicelab_api.match_start"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voicelab_api",
+   "target": "symbol:naturalvoice.voicelab_api.match_status"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voicelab_api",
+   "target": "symbol:naturalvoice.voicelab_api.preview"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voicelab_api",
+   "target": "symbol:naturalvoice.voicelab_api.rename"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voicelab_api",
+   "target": "symbol:naturalvoice.voicelab_api.star"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voicelab_api",
+   "target": "symbol:naturalvoice.voicelab_api.voice"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.voices",
+   "target": "module:naturalvoice.tts"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voices",
+   "target": "symbol:naturalvoice.voices._fav_path"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voices",
+   "target": "symbol:naturalvoice.voices._paths"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voices",
+   "target": "symbol:naturalvoice.voices.catalog"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voices",
+   "target": "symbol:naturalvoice.voices.delete"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voices",
+   "target": "symbol:naturalvoice.voices.favorites"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voices",
+   "target": "symbol:naturalvoice.voices.get"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voices",
+   "target": "symbol:naturalvoice.voices.lang_for"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voices",
+   "target": "symbol:naturalvoice.voices.list_custom"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voices",
+   "target": "symbol:naturalvoice.voices.new_id"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voices",
+   "target": "symbol:naturalvoice.voices.reference_audio"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voices",
+   "target": "symbol:naturalvoice.voices.rename"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voices",
+   "target": "symbol:naturalvoice.voices.resolve"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voices",
+   "target": "symbol:naturalvoice.voices.save_clone"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voices",
+   "target": "symbol:naturalvoice.voices.save_custom"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voices",
+   "target": "symbol:naturalvoice.voices.set_starred"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voices",
+   "target": "symbol:naturalvoice.voices.stock_info"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.voices",
+   "target": "symbol:naturalvoice.voices.style_of"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.workflow",
+   "target": "module:naturalvoice.analyze"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.workflow",
+   "target": "module:naturalvoice.audio"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.workflow",
+   "target": "module:naturalvoice.humanize"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.workflow",
+   "target": "symbol:naturalvoice.workflow.matched_copies"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.workflow",
+   "target": "symbol:naturalvoice.workflow.process"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.workflow",
+   "target": "symbol:naturalvoice.workflow.recommend"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.workflow",
+   "target": "symbol:naturalvoice.workflow.segment"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.workflow",
+   "target": "symbol:naturalvoice.workflow.warnings"
+  },
+  {
+   "kind": "runs",
+   "source": "process:engines/chatterbox/worker.py",
+   "target": "module:engines.chatterbox.worker"
+  },
+  {
+   "kind": "runs",
+   "source": "process:engines/media/download.py",
+   "target": "module:engines.media.download"
+  },
+  {
+   "kind": "runs",
+   "source": "process:engines/media/worker.py",
+   "target": "module:engines.media.worker"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.analyze.listener_score",
+   "target": "symbol:naturalvoice.quality.dnsmos"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.analyze.report",
+   "target": "symbol:naturalvoice.quality.dnsmos"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.bench._codec",
+   "target": "symbol:naturalvoice.audio.load"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.bench._codec",
+   "target": "symbol:naturalvoice.audio.save"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.bench.methods",
+   "target": "symbol:naturalvoice.enhance.ai_clean"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.bench.methods",
+   "target": "symbol:naturalvoice.enhance.available"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.bench.methods",
+   "target": "symbol:naturalvoice.humanize.get_settings"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.bench.methods",
+   "target": "symbol:naturalvoice.humanize.humanize"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.bench.methods",
+   "target": "symbol:naturalvoice.humanize.normalize"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.bench.references",
+   "target": "symbol:naturalvoice.audio.load"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.bench.references",
+   "target": "symbol:naturalvoice.audio.save"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.bench.references",
+   "target": "symbol:naturalvoice.tts.speak"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.bench.run",
+   "target": "symbol:naturalvoice.audio.save"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.bench.score",
+   "target": "symbol:naturalvoice.analyze.metallic"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.bench.score",
+   "target": "symbol:naturalvoice.quality.dnsmos"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.bench.score",
+   "target": "symbol:naturalvoice.quality.pesq_wb"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.cli.clean_file",
+   "target": "symbol:naturalvoice.analyze.report"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.cli.clean_file",
+   "target": "symbol:naturalvoice.audio.is_video"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.cli.clean_file",
+   "target": "symbol:naturalvoice.audio.load"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.cli.clean_file",
+   "target": "symbol:naturalvoice.audio.remux_video"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.cli.clean_file",
+   "target": "symbol:naturalvoice.audio.save"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.cli.main",
+   "target": "symbol:naturalvoice.analyze.report"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.cli.main",
+   "target": "symbol:naturalvoice.audio.load"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.cli.main",
+   "target": "symbol:naturalvoice.audio.save"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.cli.main",
+   "target": "symbol:naturalvoice.bench.render"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.cli.main",
+   "target": "symbol:naturalvoice.bench.run"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.cli.main",
+   "target": "symbol:naturalvoice.studio.cli_render"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.cli.main",
+   "target": "symbol:naturalvoice.tts.speak"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.cli.main",
+   "target": "symbol:naturalvoice.voices.catalog"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.clone.clone_gender",
+   "target": "symbol:naturalvoice.voices.get"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.clone.clone_gender",
+   "target": "symbol:naturalvoice.voices.reference_audio"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.clone.convert",
+   "target": "symbol:naturalvoice.voices.get"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.clone.convert",
+   "target": "symbol:naturalvoice.voices.reference_audio"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.clone.prepare_reference",
+   "target": "symbol:naturalvoice.audio.load"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.clone.prepare_reference",
+   "target": "symbol:naturalvoice.humanize.normalize"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.clone.prepare_source",
+   "target": "symbol:naturalvoice.audio.load"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.clone.speak",
+   "target": "symbol:naturalvoice.voices.get"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.clone.speak",
+   "target": "symbol:naturalvoice.voices.reference_audio"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.clone.speak_language",
+   "target": "symbol:naturalvoice.tts._kokoro"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.clone.speak_language",
+   "target": "symbol:naturalvoice.voices.get"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.clone_api._check_voice",
+   "target": "symbol:naturalvoice.clone.installed"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.clone_api._check_voice",
+   "target": "symbol:naturalvoice.voices.get"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.clone_api._start_job",
+   "target": "symbol:naturalvoice.audio.save"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.clone_api.convert",
+   "target": "route:POST /api/clone/convert"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.clone_api.convert",
+   "target": "symbol:naturalvoice.clone.convert"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.clone_api.convert",
+   "target": "symbol:naturalvoice.clone.prepare_source"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.clone_api.create_voice",
+   "target": "route:POST /api/clone/voices"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.clone_api.create_voice",
+   "target": "symbol:naturalvoice.clone.prepare_reference"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.clone_api.create_voice",
+   "target": "symbol:naturalvoice.voices.save_clone"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.clone_api.preview",
+   "target": "route:POST /api/clone/preview"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.clone_api.preview",
+   "target": "symbol:naturalvoice.clone.clean_tags"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.clone_api.preview",
+   "target": "symbol:naturalvoice.clone.speak"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.clone_api.preview",
+   "target": "symbol:naturalvoice.clone.speak_language"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.clone_api.preview_audio",
+   "target": "route:GET /api/clone/convert/{job}/audio"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.clone_api.preview_audio",
+   "target": "route:GET /api/clone/preview/{job}/audio"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.clone_api.preview_status",
+   "target": "route:GET /api/clone/convert/{job}"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.clone_api.preview_status",
+   "target": "route:GET /api/clone/preview/{job}"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.clone_api.status",
+   "target": "route:GET /api/clone/status"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.clone_api.status",
+   "target": "symbol:naturalvoice.clone.status"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.humanize.process_mono",
+   "target": "symbol:naturalvoice.enhance.ai_clean"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.humanize.process_mono",
+   "target": "symbol:naturalvoice.enhance.available"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.llm_api.delete_key",
+   "target": "route:DELETE /api/llm/key"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.llm_api.delete_key",
+   "target": "symbol:naturalvoice.llm.clear_key"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.llm_api.delete_key",
+   "target": "symbol:naturalvoice.llm.status"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.llm_api.put_key",
+   "target": "route:PUT /api/llm/key"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.llm_api.put_key",
+   "target": "symbol:naturalvoice.llm.connect"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.llm_api.status",
+   "target": "route:GET /api/llm/status"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.llm_api.status",
+   "target": "symbol:naturalvoice.llm.status"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.rewrite.chat",
+   "target": "symbol:naturalvoice.llm.chat"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.rewrite.llm_available",
+   "target": "symbol:naturalvoice.llm.status"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.rewrite_api.run",
+   "target": "route:POST /api/rewrite"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.rewrite_api.run",
+   "target": "symbol:naturalvoice.rewrite.llm_rewrite"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.rewrite_api.run",
+   "target": "symbol:naturalvoice.rewrite.rule_rewrite"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.rewrite_api.status",
+   "target": "route:GET /api/rewrite/status"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.rewrite_api.status",
+   "target": "symbol:naturalvoice.llm.status"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.sample_library.build_version",
+   "target": "symbol:naturalvoice.voices.save_clone"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.sample_library.versions",
+   "target": "symbol:naturalvoice.voices.list_custom"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.sample_library_api.activate",
+   "target": "route:POST /api/samples/people/{key}/active"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.sample_library_api.activate",
+   "target": "symbol:naturalvoice.sample_library.activate"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.sample_library_api.add_sample",
+   "target": "route:POST /api/samples/people/{key}/samples"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.sample_library_api.add_sample",
+   "target": "symbol:naturalvoice.sample_library.add_sample"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.sample_library_api.build",
+   "target": "route:POST /api/samples/people/{key}/versions"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.sample_library_api.build",
+   "target": "symbol:naturalvoice.sample_library.build_version"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.sample_library_api.catalog",
+   "target": "route:GET /api/samples"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.sample_library_api.catalog",
+   "target": "symbol:naturalvoice.sample_library.installed"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.sample_library_api.catalog",
+   "target": "symbol:naturalvoice.sample_library.public_source"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.sample_library_api.catalog",
+   "target": "symbol:naturalvoice.sample_library.records"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.sample_library_api.create_person",
+   "target": "route:POST /api/samples/people"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.sample_library_api.create_person",
+   "target": "symbol:naturalvoice.sample_library.create_person"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.sample_library_api.import_source",
+   "target": "route:POST /api/samples/sources"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.sample_library_api.import_source",
+   "target": "symbol:naturalvoice.sample_library.atomic_json"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.sample_library_api.import_source",
+   "target": "symbol:naturalvoice.sample_library.capacity"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.sample_library_api.import_source",
+   "target": "symbol:naturalvoice.sample_library.installed"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.sample_library_api.import_source",
+   "target": "symbol:naturalvoice.sample_library.location"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.sample_library_api.import_source",
+   "target": "symbol:naturalvoice.sample_library.validate_window"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.sample_library_api.import_source",
+   "target": "symbol:naturalvoice.sample_library.youtube_url"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.sample_library_api.launch",
+   "target": "symbol:naturalvoice.sample_library.process_source"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.sample_library_api.person",
+   "target": "route:GET /api/samples/people/{key}"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.sample_library_api.person",
+   "target": "symbol:naturalvoice.sample_library.read"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.sample_library_api.person",
+   "target": "symbol:naturalvoice.sample_library.records"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.sample_library_api.person",
+   "target": "symbol:naturalvoice.sample_library.versions"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.sample_library_api.retry",
+   "target": "route:POST /api/samples/sources/{key}/retry"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.sample_library_api.retry",
+   "target": "symbol:naturalvoice.sample_library.atomic_json"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.sample_library_api.retry",
+   "target": "symbol:naturalvoice.sample_library.capacity"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.sample_library_api.retry",
+   "target": "symbol:naturalvoice.sample_library.installed"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.sample_library_api.retry",
+   "target": "symbol:naturalvoice.sample_library.location"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.sample_library_api.retry",
+   "target": "symbol:naturalvoice.sample_library.public_source"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.sample_library_api.retry",
+   "target": "symbol:naturalvoice.sample_library.read"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.sample_library_api.sample_audio",
+   "target": "route:GET /api/samples/audio/{key}"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.sample_library_api.sample_audio",
+   "target": "symbol:naturalvoice.sample_library.location"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.sample_library_api.sample_audio",
+   "target": "symbol:naturalvoice.sample_library.read"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.sample_library_api.source",
+   "target": "route:GET /api/samples/sources/{key}"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.sample_library_api.source",
+   "target": "symbol:naturalvoice.sample_library.public_source"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.sample_library_api.source",
+   "target": "symbol:naturalvoice.sample_library.read"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.sample_library_api.source_audio",
+   "target": "route:GET /api/samples/sources/{key}/audio/{kind}"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.sample_library_api.source_audio",
+   "target": "symbol:naturalvoice.sample_library.location"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.sample_library_api.source_audio",
+   "target": "symbol:naturalvoice.sample_library.read"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.scriptgen.generate",
+   "target": "symbol:naturalvoice.rewrite.llm_available"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.scriptgen.generate",
+   "target": "symbol:naturalvoice.rewrite.rule_rewrite"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.scriptgen.llm_script",
+   "target": "symbol:naturalvoice.rewrite.chat"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.scriptgen_api.run",
+   "target": "route:POST /api/scriptgen"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.scriptgen_api.run",
+   "target": "symbol:naturalvoice.scriptgen.generate"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.scriptgen_api.sample",
+   "target": "route:GET /api/scriptgen/sample"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.scriptgen_api.sample",
+   "target": "symbol:naturalvoice.scriptgen.sample"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.scriptgen_api.status",
+   "target": "route:GET /api/scriptgen/status"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.scriptgen_api.status",
+   "target": "symbol:naturalvoice.llm.status"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.server._settings_from_form",
+   "target": "symbol:naturalvoice.humanize.get_settings"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.server.batch_download",
+   "target": "route:POST /api/batch-download"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.server.clean",
+   "target": "route:POST /api/clean"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.server.clean",
+   "target": "symbol:naturalvoice.audio.is_video"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.server.job_file",
+   "target": "route:GET /api/jobs/{job}/{which}"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.server.job_status",
+   "target": "route:GET /api/jobs/{job}"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.server.list_voices",
+   "target": "route:GET /api/voices"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.server.list_voices",
+   "target": "symbol:naturalvoice.voices.catalog"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.server.presets",
+   "target": "route:GET /api/presets"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.server.speak",
+   "target": "route:POST /api/speak"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.server.speak",
+   "target": "symbol:naturalvoice.audio.save"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.server.speak",
+   "target": "symbol:naturalvoice.tts.speak"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.studio.clone_emotion_tags",
+   "target": "symbol:naturalvoice.clone.status"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.studio.master",
+   "target": "symbol:naturalvoice.humanize.soft_limit"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.studio.music_bed",
+   "target": "symbol:naturalvoice.audio.load"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.studio.mux_video",
+   "target": "symbol:naturalvoice.audio._ffmpeg"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.studio.original_bed",
+   "target": "symbol:naturalvoice.audio.load"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.studio.probe_duration",
+   "target": "symbol:naturalvoice.audio._ffmpeg"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.studio.probe_streams",
+   "target": "symbol:naturalvoice.audio._ffmpeg"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.studio.render_line",
+   "target": "symbol:naturalvoice.humanize.get_settings"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.studio.render_line",
+   "target": "symbol:naturalvoice.humanize.humanize"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.studio.render_line",
+   "target": "symbol:naturalvoice.tts._kokoro"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.studio.render_line",
+   "target": "symbol:naturalvoice.tts.speak"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.studio.render_line",
+   "target": "symbol:naturalvoice.tts.split_chunks"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.studio.render_line",
+   "target": "symbol:naturalvoice.voices.resolve"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.studio.render_line",
+   "target": "symbol:naturalvoice.voices.style_of"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.studio.write_audio",
+   "target": "symbol:naturalvoice.audio._ffmpeg"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.studio.write_audio",
+   "target": "symbol:naturalvoice.audio.save"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.studio_api.Line",
+   "target": "symbol:naturalvoice.studio.validate_style"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.studio_api._ppath",
+   "target": "symbol:naturalvoice.studio.projects_dir"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.studio_api._save",
+   "target": "symbol:naturalvoice.studio.projects_dir"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.studio_api.create_project",
+   "target": "route:POST /api/studio/projects"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.studio_api.delete_project",
+   "target": "route:DELETE /api/studio/projects/{pid}"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.studio_api.delete_style",
+   "target": "route:DELETE /api/studio/styles/{sid}"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.studio_api.delete_style",
+   "target": "symbol:naturalvoice.studio.load_styles"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.studio_api.delete_style",
+   "target": "symbol:naturalvoice.studio.save_styles"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.studio_api.duplicate_project",
+   "target": "route:POST /api/studio/projects/{pid}/duplicate"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.studio_api.get_project",
+   "target": "route:GET /api/studio/projects/{pid}"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.studio_api.import_subtitles",
+   "target": "route:POST /api/studio/subtitles"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.studio_api.import_subtitles",
+   "target": "symbol:naturalvoice.studio.parse_subtitles"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.studio_api.lint",
+   "target": "route:POST /api/studio/lint"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.studio_api.lint",
+   "target": "symbol:naturalvoice.studio.lint_project"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.studio_api.list_projects",
+   "target": "route:GET /api/studio/projects"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.studio_api.list_projects",
+   "target": "symbol:naturalvoice.studio.projects_dir"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.studio_api.list_styles",
+   "target": "route:GET /api/studio/styles"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.studio_api.list_styles",
+   "target": "symbol:naturalvoice.studio.load_styles"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.studio_api.parse",
+   "target": "route:POST /api/studio/parse"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.studio_api.parse",
+   "target": "symbol:naturalvoice.studio.lint_project"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.studio_api.parse",
+   "target": "symbol:naturalvoice.studio.parse_script"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.studio_api.presets",
+   "target": "route:GET /api/studio/presets"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.studio_api.preview",
+   "target": "route:POST /api/studio/preview"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.studio_api.preview",
+   "target": "symbol:naturalvoice.studio.line_key"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.studio_api.preview",
+   "target": "symbol:naturalvoice.studio.render_line"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.studio_api.render",
+   "target": "route:POST /api/studio/render"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.studio_api.render",
+   "target": "symbol:naturalvoice.studio.RenderOptions"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.studio_api.render",
+   "target": "symbol:naturalvoice.studio.render_project"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.studio_api.render_cancel",
+   "target": "route:POST /api/studio/render/{job}/cancel"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.studio_api.render_file",
+   "target": "route:GET /api/studio/render/{job}/file/{name}"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.studio_api.render_status",
+   "target": "route:GET /api/studio/render/{job}"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.studio_api.renders",
+   "target": "route:GET /api/studio/renders"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.studio_api.save_style",
+   "target": "route:POST /api/studio/styles"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.studio_api.save_style",
+   "target": "symbol:naturalvoice.studio.load_styles"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.studio_api.save_style",
+   "target": "symbol:naturalvoice.studio.save_styles"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.studio_api.save_style",
+   "target": "symbol:naturalvoice.studio.style_from_line"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.studio_api.save_style",
+   "target": "symbol:naturalvoice.studio.validate_style"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.studio_api.understand_note",
+   "target": "route:POST /api/studio/note"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.studio_api.understand_note",
+   "target": "symbol:naturalvoice.studio.clone_emotion_tags"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.studio_api.understand_note",
+   "target": "symbol:naturalvoice.studio.parse_note"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.studio_api.update_project",
+   "target": "route:PUT /api/studio/projects/{pid}"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.studio_api.upload_music",
+   "target": "route:POST /api/studio/music"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.studio_api.upload_music",
+   "target": "symbol:naturalvoice.audio.load"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.studio_api.upload_video",
+   "target": "route:POST /api/studio/video"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.studio_api.upload_video",
+   "target": "symbol:naturalvoice.studio.probe_duration"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.studio_api.upload_video",
+   "target": "symbol:naturalvoice.studio.probe_streams"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.tts.speak",
+   "target": "symbol:naturalvoice.clone.speak"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.tts.speak",
+   "target": "symbol:naturalvoice.humanize.get_settings"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.tts.speak",
+   "target": "symbol:naturalvoice.humanize.humanize"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.tts.speak_kokoro",
+   "target": "symbol:naturalvoice.voices.resolve"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.voicelab._axes",
+   "target": "symbol:naturalvoice.voices.style_of"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.voicelab._variation",
+   "target": "symbol:naturalvoice.voices.style_of"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.voicelab.build_style",
+   "target": "symbol:naturalvoice.voices.style_of"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.voicelab.describe",
+   "target": "symbol:naturalvoice.voices.stock_info"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.voicelab.library",
+   "target": "symbol:naturalvoice.voices.catalog"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.voicelab.match",
+   "target": "symbol:naturalvoice.voices.style_of"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.voicelab.render_preview",
+   "target": "symbol:naturalvoice.audio.save"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.voicelab.render_preview",
+   "target": "symbol:naturalvoice.voices.resolve"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.voicelab.render_preview",
+   "target": "symbol:naturalvoice.voices.style_of"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.voicelab.stock_features",
+   "target": "symbol:naturalvoice.voices.style_of"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.voicelab.validate_recipe",
+   "target": "symbol:naturalvoice.voices.get"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.voicelab.voice_lang",
+   "target": "symbol:naturalvoice.voices.get"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.voicelab.voice_lang",
+   "target": "symbol:naturalvoice.voices.lang_for"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.voicelab_api._build",
+   "target": "symbol:naturalvoice.voicelab.build_style"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.voicelab_api._check_text",
+   "target": "symbol:naturalvoice.voicelab.sample_text"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.voicelab_api._known",
+   "target": "symbol:naturalvoice.voicelab._stock_names"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.voicelab_api._known",
+   "target": "symbol:naturalvoice.voices.get"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.voicelab_api._known",
+   "target": "symbol:naturalvoice.voices.stock_info"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.voicelab_api._recipe_gender",
+   "target": "symbol:naturalvoice.voices.stock_info"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.voicelab_api._wav",
+   "target": "symbol:naturalvoice.audio.save"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.voicelab_api.delete",
+   "target": "route:DELETE /api/voicelab/voices/{voice_id}"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.voicelab_api.delete",
+   "target": "symbol:naturalvoice.voicelab.drop_preview"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.voicelab_api.delete",
+   "target": "symbol:naturalvoice.voices.delete"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.voicelab_api.describe",
+   "target": "route:POST /api/voicelab/describe"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.voicelab_api.describe",
+   "target": "symbol:naturalvoice.voicelab.describe"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.voicelab_api.design_preview",
+   "target": "route:POST /api/voicelab/design/preview"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.voicelab_api.design_preview",
+   "target": "symbol:naturalvoice.voicelab.render"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.voicelab_api.design_save",
+   "target": "route:POST /api/voicelab/design/save"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.voicelab_api.design_save",
+   "target": "symbol:naturalvoice.voicelab.validate_recipe"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.voicelab_api.design_save",
+   "target": "symbol:naturalvoice.voices.save_custom"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.voicelab_api.library",
+   "target": "route:GET /api/voicelab/library"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.voicelab_api.library",
+   "target": "symbol:naturalvoice.voicelab.library"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.voicelab_api.match_audio",
+   "target": "route:GET /api/voicelab/match/{job}/audio"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.voicelab_api.match_audio",
+   "target": "symbol:naturalvoice.voicelab.render"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.voicelab_api.match_audio",
+   "target": "symbol:naturalvoice.voicelab.sample_text"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.voicelab_api.match_cancel",
+   "target": "route:POST /api/voicelab/match/{job}/cancel"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.voicelab_api.match_save",
+   "target": "route:POST /api/voicelab/match/{job}/save"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.voicelab_api.match_save",
+   "target": "symbol:naturalvoice.voices.save_custom"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.voicelab_api.match_start",
+   "target": "route:POST /api/voicelab/match"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.voicelab_api.match_start",
+   "target": "symbol:naturalvoice.audio.load"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.voicelab_api.match_start",
+   "target": "symbol:naturalvoice.voicelab.match"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.voicelab_api.match_status",
+   "target": "route:GET /api/voicelab/match/{job}"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.voicelab_api.preview",
+   "target": "route:GET /api/voicelab/preview"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.voicelab_api.preview",
+   "target": "symbol:naturalvoice.voicelab.preview_path"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.voicelab_api.preview",
+   "target": "symbol:naturalvoice.voicelab.render_preview"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.voicelab_api.rename",
+   "target": "route:POST /api/voicelab/voices/{voice_id}/rename"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.voicelab_api.rename",
+   "target": "symbol:naturalvoice.voices.rename"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.voicelab_api.star",
+   "target": "route:PUT /api/voicelab/voices/{voice_id}/star"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.voicelab_api.star",
+   "target": "symbol:naturalvoice.voices.set_starred"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.voicelab_api.voice",
+   "target": "route:GET /api/voicelab/voices/{voice_id}"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.workflow.process",
+   "target": "symbol:naturalvoice.analyze.report"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.workflow.process",
+   "target": "symbol:naturalvoice.audio.is_video"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.workflow.process",
+   "target": "symbol:naturalvoice.audio.load"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.workflow.process",
+   "target": "symbol:naturalvoice.audio.remux_video"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.workflow.process",
+   "target": "symbol:naturalvoice.audio.save"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.workflow.process",
+   "target": "symbol:naturalvoice.humanize.humanize"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.workflow.recommend",
+   "target": "symbol:naturalvoice.analyze.echo_db"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.workflow.recommend",
+   "target": "symbol:naturalvoice.analyze.metallic"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.workflow.recommend",
+   "target": "symbol:naturalvoice.humanize._stft"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.workflow.recommend",
+   "target": "symbol:naturalvoice.humanize.estimate_rt60"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.workflow.segment",
+   "target": "symbol:naturalvoice.audio._ffmpeg"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.workflow.segment",
+   "target": "symbol:naturalvoice.audio.load"
+  },
+  {
+   "kind": "requests",
+   "source": "web:clone.js",
+   "target": "route:GET /api/clone/convert/{job}"
+  },
+  {
+   "kind": "requests",
+   "source": "web:clone.js",
+   "target": "route:GET /api/clone/convert/{job}/audio"
+  },
+  {
+   "kind": "requests",
+   "source": "web:clone.js",
+   "target": "route:GET /api/clone/preview/{job}"
+  },
+  {
+   "kind": "requests",
+   "source": "web:clone.js",
+   "target": "route:GET /api/clone/preview/{job}/audio"
+  },
+  {
+   "kind": "requests",
+   "source": "web:clone.js",
+   "target": "route:GET /api/clone/status"
+  },
+  {
+   "kind": "requests",
+   "source": "web:clone.js",
+   "target": "route:GET /api/voices"
+  },
+  {
+   "kind": "requests",
+   "source": "web:clone.js",
+   "target": "route:POST /api/clone/convert"
+  },
+  {
+   "kind": "requests",
+   "source": "web:clone.js",
+   "target": "route:POST /api/clone/preview"
+  },
+  {
+   "kind": "requests",
+   "source": "web:clone.js",
+   "target": "route:POST /api/clone/voices"
+  },
+  {
+   "kind": "requests",
+   "source": "web:index.html",
+   "target": "route:GET /api/presets"
+  },
+  {
+   "kind": "requests",
+   "source": "web:index.html",
+   "target": "route:GET /api/voices"
+  },
+  {
+   "kind": "requests",
+   "source": "web:index.html",
+   "target": "route:POST /api/speak"
+  },
+  {
+   "kind": "loads",
+   "source": "web:index.html",
+   "target": "web:workflow.js"
+  },
+  {
+   "kind": "loads",
+   "source": "web:samples.html",
+   "target": "web:samples.js"
+  },
+  {
+   "kind": "requests",
+   "source": "web:samples.js",
+   "target": "route:GET /api/clone/preview/{job}"
+  },
+  {
+   "kind": "requests",
+   "source": "web:samples.js",
+   "target": "route:GET /api/clone/preview/{job}/audio"
+  },
+  {
+   "kind": "requests",
+   "source": "web:samples.js",
+   "target": "route:GET /api/samples"
+  },
+  {
+   "kind": "requests",
+   "source": "web:samples.js",
+   "target": "route:GET /api/samples/audio/{key}"
+  },
+  {
+   "kind": "requests",
+   "source": "web:samples.js",
+   "target": "route:GET /api/samples/people/{key}"
+  },
+  {
+   "kind": "requests",
+   "source": "web:samples.js",
+   "target": "route:GET /api/samples/sources/{key}"
+  },
+  {
+   "kind": "requests",
+   "source": "web:samples.js",
+   "target": "route:POST /api/clone/preview"
+  },
+  {
+   "kind": "requests",
+   "source": "web:samples.js",
+   "target": "route:POST /api/samples/people"
+  },
+  {
+   "kind": "requests",
+   "source": "web:samples.js",
+   "target": "route:POST /api/samples/people/{key}/active"
+  },
+  {
+   "kind": "requests",
+   "source": "web:samples.js",
+   "target": "route:POST /api/samples/people/{key}/samples"
+  },
+  {
+   "kind": "requests",
+   "source": "web:samples.js",
+   "target": "route:POST /api/samples/people/{key}/versions"
+  },
+  {
+   "kind": "requests",
+   "source": "web:samples.js",
+   "target": "route:POST /api/samples/sources"
+  },
+  {
+   "kind": "requests",
+   "source": "web:samples.js",
+   "target": "route:POST /api/samples/sources/{key}/retry"
+  },
+  {
+   "kind": "loads",
+   "source": "web:studio.html",
+   "target": "web:studio.js"
+  },
+  {
+   "kind": "requests",
+   "source": "web:studio.js",
+   "target": "route:DELETE /api/llm/key"
+  },
+  {
+   "kind": "requests",
+   "source": "web:studio.js",
+   "target": "route:DELETE /api/studio/projects/{pid}"
+  },
+  {
+   "kind": "requests",
+   "source": "web:studio.js",
+   "target": "route:GET /api/clone/status"
+  },
+  {
+   "kind": "requests",
+   "source": "web:studio.js",
+   "target": "route:GET /api/rewrite/status"
+  },
+  {
+   "kind": "requests",
+   "source": "web:studio.js",
+   "target": "route:GET /api/scriptgen/sample"
+  },
+  {
+   "kind": "requests",
+   "source": "web:studio.js",
+   "target": "route:GET /api/scriptgen/status"
+  },
+  {
+   "kind": "requests",
+   "source": "web:studio.js",
+   "target": "route:GET /api/studio/presets"
+  },
+  {
+   "kind": "requests",
+   "source": "web:studio.js",
+   "target": "route:GET /api/studio/projects"
+  },
+  {
+   "kind": "requests",
+   "source": "web:studio.js",
+   "target": "route:GET /api/studio/projects/{pid}"
+  },
+  {
+   "kind": "requests",
+   "source": "web:studio.js",
+   "target": "route:GET /api/studio/render/{job}"
+  },
+  {
+   "kind": "requests",
+   "source": "web:studio.js",
+   "target": "route:GET /api/studio/render/{job}/file/{name}"
+  },
+  {
+   "kind": "requests",
+   "source": "web:studio.js",
+   "target": "route:GET /api/studio/renders"
+  },
+  {
+   "kind": "requests",
+   "source": "web:studio.js",
+   "target": "route:GET /api/studio/styles"
+  },
+  {
+   "kind": "requests",
+   "source": "web:studio.js",
+   "target": "route:GET /api/voices"
+  },
+  {
+   "kind": "requests",
+   "source": "web:studio.js",
+   "target": "route:POST /api/rewrite"
+  },
+  {
+   "kind": "requests",
+   "source": "web:studio.js",
+   "target": "route:POST /api/scriptgen"
+  },
+  {
+   "kind": "requests",
+   "source": "web:studio.js",
+   "target": "route:POST /api/studio/music"
+  },
+  {
+   "kind": "requests",
+   "source": "web:studio.js",
+   "target": "route:POST /api/studio/note"
+  },
+  {
+   "kind": "requests",
+   "source": "web:studio.js",
+   "target": "route:POST /api/studio/parse"
+  },
+  {
+   "kind": "requests",
+   "source": "web:studio.js",
+   "target": "route:POST /api/studio/preview"
+  },
+  {
+   "kind": "requests",
+   "source": "web:studio.js",
+   "target": "route:POST /api/studio/projects"
+  },
+  {
+   "kind": "requests",
+   "source": "web:studio.js",
+   "target": "route:POST /api/studio/projects/{pid}/duplicate"
+  },
+  {
+   "kind": "requests",
+   "source": "web:studio.js",
+   "target": "route:POST /api/studio/render"
+  },
+  {
+   "kind": "requests",
+   "source": "web:studio.js",
+   "target": "route:POST /api/studio/render/{job}/cancel"
+  },
+  {
+   "kind": "requests",
+   "source": "web:studio.js",
+   "target": "route:POST /api/studio/styles"
+  },
+  {
+   "kind": "requests",
+   "source": "web:studio.js",
+   "target": "route:POST /api/studio/subtitles"
+  },
+  {
+   "kind": "requests",
+   "source": "web:studio.js",
+   "target": "route:POST /api/studio/video"
+  },
+  {
+   "kind": "requests",
+   "source": "web:studio.js",
+   "target": "route:PUT /api/llm/key"
+  },
+  {
+   "kind": "requests",
+   "source": "web:studio.js",
+   "target": "route:PUT /api/studio/projects/{pid}"
+  },
+  {
+   "kind": "loads",
+   "source": "web:voicelab.html",
+   "target": "web:clone.js"
+  },
+  {
+   "kind": "loads",
+   "source": "web:voicelab.html",
+   "target": "web:voicelab.js"
+  },
+  {
+   "kind": "requests",
+   "source": "web:voicelab.js",
+   "target": "route:DELETE /api/voicelab/voices/{voice_id}"
+  },
+  {
+   "kind": "requests",
+   "source": "web:voicelab.js",
+   "target": "route:GET /api/voicelab/library"
+  },
+  {
+   "kind": "requests",
+   "source": "web:voicelab.js",
+   "target": "route:GET /api/voicelab/preview"
+  },
+  {
+   "kind": "requests",
+   "source": "web:voicelab.js",
+   "target": "route:GET /api/voicelab/voices/{voice_id}"
+  },
+  {
+   "kind": "requests",
+   "source": "web:voicelab.js",
+   "target": "route:POST /api/voicelab/describe"
+  },
+  {
+   "kind": "requests",
+   "source": "web:voicelab.js",
+   "target": "route:POST /api/voicelab/design/preview"
+  },
+  {
+   "kind": "requests",
+   "source": "web:voicelab.js",
+   "target": "route:POST /api/voicelab/design/save"
+  },
+  {
+   "kind": "requests",
+   "source": "web:voicelab.js",
+   "target": "route:POST /api/voicelab/match"
+  },
+  {
+   "kind": "requests",
+   "source": "web:workflow.js",
+   "target": "route:GET /api/jobs/{job}"
+  },
+  {
+   "kind": "requests",
+   "source": "web:workflow.js",
+   "target": "route:GET /api/jobs/{job}/{which}"
+  },
+  {
+   "kind": "requests",
+   "source": "web:workflow.js",
+   "target": "route:POST /api/batch-download"
+  },
+  {
+   "kind": "requests",
+   "source": "web:workflow.js",
+   "target": "route:POST /api/clean"
+  }
+ ],
+ "generator": "scripts/code_graph.py",
+ "nodes": [
+  {
+   "file": "engines/chatterbox/worker.py",
+   "id": "module:engines.chatterbox.worker",
+   "kind": "module",
+   "line": 1
+  },
+  {
+   "file": "engines/media/download.py",
+   "id": "module:engines.media.download",
+   "kind": "module",
+   "line": 1
+  },
+  {
+   "file": "engines/media/worker.py",
+   "id": "module:engines.media.worker",
+   "kind": "module",
+   "line": 1
+  },
+  {
+   "file": "src/naturalvoice/__init__.py",
+   "id": "module:naturalvoice",
+   "kind": "module",
+   "line": 1
+  },
+  {
+   "file": "src/naturalvoice/analyze.py",
+   "id": "module:naturalvoice.analyze",
+   "kind": "module",
+   "line": 1
+  },
+  {
+   "file": "src/naturalvoice/audio.py",
+   "id": "module:naturalvoice.audio",
+   "kind": "module",
+   "line": 1
+  },
+  {
+   "file": "src/naturalvoice/bench.py",
+   "id": "module:naturalvoice.bench",
+   "kind": "module",
+   "line": 1
+  },
+  {
+   "file": "src/naturalvoice/cli.py",
+   "id": "module:naturalvoice.cli",
+   "kind": "module",
+   "line": 1
+  },
+  {
+   "file": "src/naturalvoice/clone.py",
+   "id": "module:naturalvoice.clone",
+   "kind": "module",
+   "line": 1
+  },
+  {
+   "file": "src/naturalvoice/clone_api.py",
+   "id": "module:naturalvoice.clone_api",
+   "kind": "module",
+   "line": 1
+  },
+  {
+   "file": "src/naturalvoice/enhance.py",
+   "id": "module:naturalvoice.enhance",
+   "kind": "module",
+   "line": 1
+  },
+  {
+   "file": "src/naturalvoice/humanize.py",
+   "id": "module:naturalvoice.humanize",
+   "kind": "module",
+   "line": 1
+  },
+  {
+   "file": "src/naturalvoice/llm.py",
+   "id": "module:naturalvoice.llm",
+   "kind": "module",
+   "line": 1
+  },
+  {
+   "file": "src/naturalvoice/llm_api.py",
+   "id": "module:naturalvoice.llm_api",
+   "kind": "module",
+   "line": 1
+  },
+  {
+   "file": "src/naturalvoice/quality.py",
+   "id": "module:naturalvoice.quality",
+   "kind": "module",
+   "line": 1
+  },
+  {
+   "file": "src/naturalvoice/rewrite.py",
+   "id": "module:naturalvoice.rewrite",
+   "kind": "module",
+   "line": 1
+  },
+  {
+   "file": "src/naturalvoice/rewrite_api.py",
+   "id": "module:naturalvoice.rewrite_api",
+   "kind": "module",
+   "line": 1
+  },
+  {
+   "file": "src/naturalvoice/sample_library.py",
+   "id": "module:naturalvoice.sample_library",
+   "kind": "module",
+   "line": 1
+  },
+  {
+   "file": "src/naturalvoice/sample_library_api.py",
+   "id": "module:naturalvoice.sample_library_api",
+   "kind": "module",
+   "line": 1
+  },
+  {
+   "file": "src/naturalvoice/scriptgen.py",
+   "id": "module:naturalvoice.scriptgen",
+   "kind": "module",
+   "line": 1
+  },
+  {
+   "file": "src/naturalvoice/scriptgen_api.py",
+   "id": "module:naturalvoice.scriptgen_api",
+   "kind": "module",
+   "line": 1
+  },
+  {
+   "file": "src/naturalvoice/server.py",
+   "id": "module:naturalvoice.server",
+   "kind": "module",
+   "line": 1
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "module:naturalvoice.studio",
+   "kind": "module",
+   "line": 1
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "module:naturalvoice.studio_api",
+   "kind": "module",
+   "line": 1
+  },
+  {
+   "file": "src/naturalvoice/tts.py",
+   "id": "module:naturalvoice.tts",
+   "kind": "module",
+   "line": 1
+  },
+  {
+   "file": "src/naturalvoice/voicelab.py",
+   "id": "module:naturalvoice.voicelab",
+   "kind": "module",
+   "line": 1
+  },
+  {
+   "file": "src/naturalvoice/voicelab_api.py",
+   "id": "module:naturalvoice.voicelab_api",
+   "kind": "module",
+   "line": 1
+  },
+  {
+   "file": "src/naturalvoice/voices.py",
+   "id": "module:naturalvoice.voices",
+   "kind": "module",
+   "line": 1
+  },
+  {
+   "file": "src/naturalvoice/workflow.py",
+   "id": "module:naturalvoice.workflow",
+   "kind": "module",
+   "line": 1
+  },
+  {
+   "file": "engines/chatterbox/worker.py",
+   "id": "process:engines/chatterbox/worker.py",
+   "kind": "process",
+   "line": 1
+  },
+  {
+   "file": "engines/media/download.py",
+   "id": "process:engines/media/download.py",
+   "kind": "process",
+   "line": 1
+  },
+  {
+   "file": "engines/media/worker.py",
+   "id": "process:engines/media/worker.py",
+   "kind": "process",
+   "line": 1
+  },
+  {
+   "file": "src/naturalvoice/llm_api.py",
+   "id": "route:DELETE /api/llm/key",
+   "kind": "route",
+   "line": 34
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "route:DELETE /api/studio/projects/{pid}",
+   "kind": "route",
+   "line": 624
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "route:DELETE /api/studio/styles/{sid}",
+   "kind": "route",
+   "line": 262
+  },
+  {
+   "file": "src/naturalvoice/voicelab_api.py",
+   "id": "route:DELETE /api/voicelab/voices/{voice_id}",
+   "kind": "route",
+   "line": 154
+  },
+  {
+   "file": "src/naturalvoice/clone_api.py",
+   "id": "route:GET /api/clone/convert/{job}",
+   "kind": "route",
+   "line": 259
+  },
+  {
+   "file": "src/naturalvoice/clone_api.py",
+   "id": "route:GET /api/clone/convert/{job}/audio",
+   "kind": "route",
+   "line": 265
+  },
+  {
+   "file": "src/naturalvoice/clone_api.py",
+   "id": "route:GET /api/clone/preview/{job}",
+   "kind": "route",
+   "line": 259
+  },
+  {
+   "file": "src/naturalvoice/clone_api.py",
+   "id": "route:GET /api/clone/preview/{job}/audio",
+   "kind": "route",
+   "line": 265
+  },
+  {
+   "file": "src/naturalvoice/clone_api.py",
+   "id": "route:GET /api/clone/status",
+   "kind": "route",
+   "line": 41
+  },
+  {
+   "file": "src/naturalvoice/server.py",
+   "id": "route:GET /api/jobs/{job}",
+   "kind": "route",
+   "line": 145
+  },
+  {
+   "file": "src/naturalvoice/server.py",
+   "id": "route:GET /api/jobs/{job}/{which}",
+   "kind": "route",
+   "line": 153
+  },
+  {
+   "file": "src/naturalvoice/llm_api.py",
+   "id": "route:GET /api/llm/status",
+   "kind": "route",
+   "line": 19
+  },
+  {
+   "file": "src/naturalvoice/server.py",
+   "id": "route:GET /api/presets",
+   "kind": "route",
+   "line": 42
+  },
+  {
+   "file": "src/naturalvoice/rewrite_api.py",
+   "id": "route:GET /api/rewrite/status",
+   "kind": "route",
+   "line": 22
+  },
+  {
+   "file": "src/naturalvoice/sample_library_api.py",
+   "id": "route:GET /api/samples",
+   "kind": "route",
+   "line": 116
+  },
+  {
+   "file": "src/naturalvoice/sample_library_api.py",
+   "id": "route:GET /api/samples/audio/{key}",
+   "kind": "route",
+   "line": 282
+  },
+  {
+   "file": "src/naturalvoice/sample_library_api.py",
+   "id": "route:GET /api/samples/people/{key}",
+   "kind": "route",
+   "line": 257
+  },
+  {
+   "file": "src/naturalvoice/sample_library_api.py",
+   "id": "route:GET /api/samples/sources/{key}",
+   "kind": "route",
+   "line": 209
+  },
+  {
+   "file": "src/naturalvoice/sample_library_api.py",
+   "id": "route:GET /api/samples/sources/{key}/audio/{kind}",
+   "kind": "route",
+   "line": 237
+  },
+  {
+   "file": "src/naturalvoice/scriptgen_api.py",
+   "id": "route:GET /api/scriptgen/sample",
+   "kind": "route",
+   "line": 38
+  },
+  {
+   "file": "src/naturalvoice/scriptgen_api.py",
+   "id": "route:GET /api/scriptgen/status",
+   "kind": "route",
+   "line": 27
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "route:GET /api/studio/presets",
+   "kind": "route",
+   "line": 181
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "route:GET /api/studio/projects",
+   "kind": "route",
+   "line": 580
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "route:GET /api/studio/projects/{pid}",
+   "kind": "route",
+   "line": 606
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "route:GET /api/studio/render/{job}",
+   "kind": "route",
+   "line": 497
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "route:GET /api/studio/render/{job}/file/{name}",
+   "kind": "route",
+   "line": 527
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "route:GET /api/studio/renders",
+   "kind": "route",
+   "line": 511
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "route:GET /api/studio/styles",
+   "kind": "route",
+   "line": 235
+  },
+  {
+   "file": "src/naturalvoice/voicelab_api.py",
+   "id": "route:GET /api/voicelab/library",
+   "kind": "route",
+   "line": 68
+  },
+  {
+   "file": "src/naturalvoice/voicelab_api.py",
+   "id": "route:GET /api/voicelab/match/{job}",
+   "kind": "route",
+   "line": 331
+  },
+  {
+   "file": "src/naturalvoice/voicelab_api.py",
+   "id": "route:GET /api/voicelab/match/{job}/audio",
+   "kind": "route",
+   "line": 346
+  },
+  {
+   "file": "src/naturalvoice/voicelab_api.py",
+   "id": "route:GET /api/voicelab/preview",
+   "kind": "route",
+   "line": 110
+  },
+  {
+   "file": "src/naturalvoice/voicelab_api.py",
+   "id": "route:GET /api/voicelab/voices/{voice_id}",
+   "kind": "route",
+   "line": 164
+  },
+  {
+   "file": "src/naturalvoice/server.py",
+   "id": "route:GET /api/voices",
+   "kind": "route",
+   "line": 47
+  },
+  {
+   "file": "src/naturalvoice/server.py",
+   "id": "route:POST /api/batch-download",
+   "kind": "route",
+   "line": 181
+  },
+  {
+   "file": "src/naturalvoice/server.py",
+   "id": "route:POST /api/clean",
+   "kind": "route",
+   "line": 59
+  },
+  {
+   "file": "src/naturalvoice/clone_api.py",
+   "id": "route:POST /api/clone/convert",
+   "kind": "route",
+   "line": 204
+  },
+  {
+   "file": "src/naturalvoice/clone_api.py",
+   "id": "route:POST /api/clone/preview",
+   "kind": "route",
+   "line": 103
+  },
+  {
+   "file": "src/naturalvoice/clone_api.py",
+   "id": "route:POST /api/clone/voices",
+   "kind": "route",
+   "line": 52
+  },
+  {
+   "file": "src/naturalvoice/rewrite_api.py",
+   "id": "route:POST /api/rewrite",
+   "kind": "route",
+   "line": 27
+  },
+  {
+   "file": "src/naturalvoice/sample_library_api.py",
+   "id": "route:POST /api/samples/people",
+   "kind": "route",
+   "line": 251
+  },
+  {
+   "file": "src/naturalvoice/sample_library_api.py",
+   "id": "route:POST /api/samples/people/{key}/active",
+   "kind": "route",
+   "line": 303
+  },
+  {
+   "file": "src/naturalvoice/sample_library_api.py",
+   "id": "route:POST /api/samples/people/{key}/samples",
+   "kind": "route",
+   "line": 276
+  },
+  {
+   "file": "src/naturalvoice/sample_library_api.py",
+   "id": "route:POST /api/samples/people/{key}/versions",
+   "kind": "route",
+   "line": 293
+  },
+  {
+   "file": "src/naturalvoice/sample_library_api.py",
+   "id": "route:POST /api/samples/sources",
+   "kind": "route",
+   "line": 127
+  },
+  {
+   "file": "src/naturalvoice/sample_library_api.py",
+   "id": "route:POST /api/samples/sources/{key}/retry",
+   "kind": "route",
+   "line": 215
+  },
+  {
+   "file": "src/naturalvoice/scriptgen_api.py",
+   "id": "route:POST /api/scriptgen",
+   "kind": "route",
+   "line": 43
+  },
+  {
+   "file": "src/naturalvoice/server.py",
+   "id": "route:POST /api/speak",
+   "kind": "route",
+   "line": 207
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "route:POST /api/studio/lint",
+   "kind": "route",
+   "line": 200
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "route:POST /api/studio/music",
+   "kind": "route",
+   "line": 289
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "route:POST /api/studio/note",
+   "kind": "route",
+   "line": 281
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "route:POST /api/studio/parse",
+   "kind": "route",
+   "line": 190
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "route:POST /api/studio/preview",
+   "kind": "route",
+   "line": 205
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "route:POST /api/studio/projects",
+   "kind": "route",
+   "line": 601
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "route:POST /api/studio/projects/{pid}/duplicate",
+   "kind": "route",
+   "line": 617
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "route:POST /api/studio/render",
+   "kind": "route",
+   "line": 419
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "route:POST /api/studio/render/{job}/cancel",
+   "kind": "route",
+   "line": 502
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "route:POST /api/studio/styles",
+   "kind": "route",
+   "line": 240
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "route:POST /api/studio/subtitles",
+   "kind": "route",
+   "line": 385
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "route:POST /api/studio/video",
+   "kind": "route",
+   "line": 356
+  },
+  {
+   "file": "src/naturalvoice/voicelab_api.py",
+   "id": "route:POST /api/voicelab/describe",
+   "kind": "route",
+   "line": 232
+  },
+  {
+   "file": "src/naturalvoice/voicelab_api.py",
+   "id": "route:POST /api/voicelab/design/preview",
+   "kind": "route",
+   "line": 188
+  },
+  {
+   "file": "src/naturalvoice/voicelab_api.py",
+   "id": "route:POST /api/voicelab/design/save",
+   "kind": "route",
+   "line": 203
+  },
+  {
+   "file": "src/naturalvoice/voicelab_api.py",
+   "id": "route:POST /api/voicelab/match",
+   "kind": "route",
+   "line": 254
+  },
+  {
+   "file": "src/naturalvoice/voicelab_api.py",
+   "id": "route:POST /api/voicelab/match/{job}/cancel",
+   "kind": "route",
+   "line": 339
+  },
+  {
+   "file": "src/naturalvoice/voicelab_api.py",
+   "id": "route:POST /api/voicelab/match/{job}/save",
+   "kind": "route",
+   "line": 366
+  },
+  {
+   "file": "src/naturalvoice/voicelab_api.py",
+   "id": "route:POST /api/voicelab/voices/{voice_id}/rename",
+   "kind": "route",
+   "line": 132
+  },
+  {
+   "file": "src/naturalvoice/llm_api.py",
+   "id": "route:PUT /api/llm/key",
+   "kind": "route",
+   "line": 24
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "route:PUT /api/studio/projects/{pid}",
+   "kind": "route",
+   "line": 611
+  },
+  {
+   "file": "src/naturalvoice/voicelab_api.py",
+   "id": "route:PUT /api/voicelab/voices/{voice_id}/star",
+   "kind": "route",
+   "line": 147
+  },
+  {
+   "file": "engines/chatterbox/worker.py",
+   "id": "symbol:engines.chatterbox.worker.Engine",
+   "kind": "class",
+   "line": 44
+  },
+  {
+   "file": "engines/chatterbox/worker.py",
+   "id": "symbol:engines.chatterbox.worker._sess",
+   "kind": "function",
+   "line": 36
+  },
+  {
+   "file": "engines/chatterbox/worker.py",
+   "id": "symbol:engines.chatterbox.worker.log",
+   "kind": "function",
+   "line": 32
+  },
+  {
+   "file": "engines/chatterbox/worker.py",
+   "id": "symbol:engines.chatterbox.worker.main",
+   "kind": "function",
+   "line": 126
+  },
+  {
+   "file": "engines/media/worker.py",
+   "id": "symbol:engines.media.worker.analyze",
+   "kind": "function",
+   "line": 65
+  },
+  {
+   "file": "engines/media/worker.py",
+   "id": "symbol:engines.media.worker.main",
+   "kind": "function",
+   "line": 107
+  },
+  {
+   "file": "engines/media/worker.py",
+   "id": "symbol:engines.media.worker.read_audio",
+   "kind": "function",
+   "line": 16
+  },
+  {
+   "file": "engines/media/worker.py",
+   "id": "symbol:engines.media.worker.separate",
+   "kind": "function",
+   "line": 35
+  },
+  {
+   "file": "engines/media/worker.py",
+   "id": "symbol:engines.media.worker.write_audio",
+   "kind": "function",
+   "line": 27
+  },
+  {
+   "file": "src/naturalvoice/analyze.py",
+   "id": "symbol:naturalvoice.analyze.echo_db",
+   "kind": "function",
+   "line": 16
+  },
+  {
+   "file": "src/naturalvoice/analyze.py",
+   "id": "symbol:naturalvoice.analyze.harshness_db",
+   "kind": "function",
+   "line": 32
+  },
+  {
+   "file": "src/naturalvoice/analyze.py",
+   "id": "symbol:naturalvoice.analyze.listener_score",
+   "kind": "function",
+   "line": 40
+  },
+  {
+   "file": "src/naturalvoice/analyze.py",
+   "id": "symbol:naturalvoice.analyze.metallic",
+   "kind": "function",
+   "line": 27
+  },
+  {
+   "file": "src/naturalvoice/analyze.py",
+   "id": "symbol:naturalvoice.analyze.report",
+   "kind": "function",
+   "line": 50
+  },
+  {
+   "file": "src/naturalvoice/audio.py",
+   "id": "symbol:naturalvoice.audio._ffmpeg",
+   "kind": "function",
+   "line": 20
+  },
+  {
+   "file": "src/naturalvoice/audio.py",
+   "id": "symbol:naturalvoice.audio.is_video",
+   "kind": "function",
+   "line": 16
+  },
+  {
+   "file": "src/naturalvoice/audio.py",
+   "id": "symbol:naturalvoice.audio.load",
+   "kind": "function",
+   "line": 27
+  },
+  {
+   "file": "src/naturalvoice/audio.py",
+   "id": "symbol:naturalvoice.audio.remux_video",
+   "kind": "function",
+   "line": 55
+  },
+  {
+   "file": "src/naturalvoice/audio.py",
+   "id": "symbol:naturalvoice.audio.save",
+   "kind": "function",
+   "line": 43
+  },
+  {
+   "file": "src/naturalvoice/bench.py",
+   "id": "symbol:naturalvoice.bench._codec",
+   "kind": "function",
+   "line": 111
+  },
+  {
+   "file": "src/naturalvoice/bench.py",
+   "id": "symbol:naturalvoice.bench._fmt",
+   "kind": "function",
+   "line": 265
+  },
+  {
+   "file": "src/naturalvoice/bench.py",
+   "id": "symbol:naturalvoice.bench._frames_db",
+   "kind": "function",
+   "line": 164
+  },
+  {
+   "file": "src/naturalvoice/bench.py",
+   "id": "symbol:naturalvoice.bench._griffin_lim",
+   "kind": "function",
+   "line": 88
+  },
+  {
+   "file": "src/naturalvoice/bench.py",
+   "id": "symbol:naturalvoice.bench._mean",
+   "kind": "function",
+   "line": 244
+  },
+  {
+   "file": "src/naturalvoice/bench.py",
+   "id": "symbol:naturalvoice.bench._resonances",
+   "kind": "function",
+   "line": 104
+  },
+  {
+   "file": "src/naturalvoice/bench.py",
+   "id": "symbol:naturalvoice.bench._reverb",
+   "kind": "function",
+   "line": 75
+  },
+  {
+   "file": "src/naturalvoice/bench.py",
+   "id": "symbol:naturalvoice.bench._room",
+   "kind": "function",
+   "line": 55
+  },
+  {
+   "file": "src/naturalvoice/bench.py",
+   "id": "symbol:naturalvoice.bench.methods",
+   "kind": "function",
+   "line": 145
+  },
+  {
+   "file": "src/naturalvoice/bench.py",
+   "id": "symbol:naturalvoice.bench.references",
+   "kind": "function",
+   "line": 203
+  },
+  {
+   "file": "src/naturalvoice/bench.py",
+   "id": "symbol:naturalvoice.bench.render",
+   "kind": "function",
+   "line": 269
+  },
+  {
+   "file": "src/naturalvoice/bench.py",
+   "id": "symbol:naturalvoice.bench.run",
+   "kind": "function",
+   "line": 218
+  },
+  {
+   "file": "src/naturalvoice/bench.py",
+   "id": "symbol:naturalvoice.bench.score",
+   "kind": "function",
+   "line": 170
+  },
+  {
+   "file": "src/naturalvoice/bench.py",
+   "id": "symbol:naturalvoice.bench.summarize",
+   "kind": "function",
+   "line": 249
+  },
+  {
+   "file": "src/naturalvoice/cli.py",
+   "id": "symbol:naturalvoice.cli._settings",
+   "kind": "function",
+   "line": 18
+  },
+  {
+   "file": "src/naturalvoice/cli.py",
+   "id": "symbol:naturalvoice.cli._settings_args",
+   "kind": "function",
+   "line": 11
+  },
+  {
+   "file": "src/naturalvoice/cli.py",
+   "id": "symbol:naturalvoice.cli.clean_file",
+   "kind": "function",
+   "line": 34
+  },
+  {
+   "file": "src/naturalvoice/cli.py",
+   "id": "symbol:naturalvoice.cli.main",
+   "kind": "function",
+   "line": 48
+  },
+  {
+   "file": "src/naturalvoice/clone.py",
+   "id": "symbol:naturalvoice.clone.EngineMissing",
+   "kind": "class",
+   "line": 70
+  },
+  {
+   "file": "src/naturalvoice/clone.py",
+   "id": "symbol:naturalvoice.clone._Worker",
+   "kind": "class",
+   "line": 97
+  },
+  {
+   "file": "src/naturalvoice/clone.py",
+   "id": "symbol:naturalvoice.clone._cut_points",
+   "kind": "function",
+   "line": 419
+  },
+  {
+   "file": "src/naturalvoice/clone.py",
+   "id": "symbol:naturalvoice.clone._dtype",
+   "kind": "function",
+   "line": 78
+  },
+  {
+   "file": "src/naturalvoice/clone.py",
+   "id": "symbol:naturalvoice.clone._median_f0",
+   "kind": "function",
+   "line": 484
+  },
+  {
+   "file": "src/naturalvoice/clone.py",
+   "id": "symbol:naturalvoice.clone._python",
+   "kind": "function",
+   "line": 74
+  },
+  {
+   "file": "src/naturalvoice/clone.py",
+   "id": "symbol:naturalvoice.clone._resample",
+   "kind": "function",
+   "line": 225
+  },
+  {
+   "file": "src/naturalvoice/clone.py",
+   "id": "symbol:naturalvoice.clone._trim",
+   "kind": "function",
+   "line": 236
+  },
+  {
+   "file": "src/naturalvoice/clone.py",
+   "id": "symbol:naturalvoice.clone.clean_tags",
+   "kind": "function",
+   "line": 51
+  },
+  {
+   "file": "src/naturalvoice/clone.py",
+   "id": "symbol:naturalvoice.clone.clone_gender",
+   "kind": "function",
+   "line": 499
+  },
+  {
+   "file": "src/naturalvoice/clone.py",
+   "id": "symbol:naturalvoice.clone.convert",
+   "kind": "function",
+   "line": 432
+  },
+  {
+   "file": "src/naturalvoice/clone.py",
+   "id": "symbol:naturalvoice.clone.crossfade",
+   "kind": "function",
+   "line": 296
+  },
+  {
+   "file": "src/naturalvoice/clone.py",
+   "id": "symbol:naturalvoice.clone.fade",
+   "kind": "function",
+   "line": 285
+  },
+  {
+   "file": "src/naturalvoice/clone.py",
+   "id": "symbol:naturalvoice.clone.installed",
+   "kind": "function",
+   "line": 83
+  },
+  {
+   "file": "src/naturalvoice/clone.py",
+   "id": "symbol:naturalvoice.clone.prepare_reference",
+   "kind": "function",
+   "line": 252
+  },
+  {
+   "file": "src/naturalvoice/clone.py",
+   "id": "symbol:naturalvoice.clone.prepare_source",
+   "kind": "function",
+   "line": 393
+  },
+  {
+   "file": "src/naturalvoice/clone.py",
+   "id": "symbol:naturalvoice.clone.speak",
+   "kind": "function",
+   "line": 343
+  },
+  {
+   "file": "src/naturalvoice/clone.py",
+   "id": "symbol:naturalvoice.clone.speak_language",
+   "kind": "function",
+   "line": 513
+  },
+  {
+   "file": "src/naturalvoice/clone.py",
+   "id": "symbol:naturalvoice.clone.split_sentences",
+   "kind": "function",
+   "line": 309
+  },
+  {
+   "file": "src/naturalvoice/clone.py",
+   "id": "symbol:naturalvoice.clone.status",
+   "kind": "function",
+   "line": 207
+  },
+  {
+   "file": "src/naturalvoice/clone.py",
+   "id": "symbol:naturalvoice.clone.stop",
+   "kind": "function",
+   "line": 203
+  },
+  {
+   "file": "src/naturalvoice/clone_api.py",
+   "id": "symbol:naturalvoice.clone_api._check_voice",
+   "kind": "function",
+   "line": 132
+  },
+  {
+   "file": "src/naturalvoice/clone_api.py",
+   "id": "symbol:naturalvoice.clone_api._job",
+   "kind": "function",
+   "line": 250
+  },
+  {
+   "file": "src/naturalvoice/clone_api.py",
+   "id": "symbol:naturalvoice.clone_api._start_job",
+   "kind": "function",
+   "line": 147
+  },
+  {
+   "file": "src/naturalvoice/clone_api.py",
+   "id": "symbol:naturalvoice.clone_api._truthy",
+   "kind": "function",
+   "line": 47
+  },
+  {
+   "file": "src/naturalvoice/clone_api.py",
+   "id": "symbol:naturalvoice.clone_api.convert",
+   "kind": "function",
+   "line": 204
+  },
+  {
+   "file": "src/naturalvoice/clone_api.py",
+   "id": "symbol:naturalvoice.clone_api.create_voice",
+   "kind": "function",
+   "line": 52
+  },
+  {
+   "file": "src/naturalvoice/clone_api.py",
+   "id": "symbol:naturalvoice.clone_api.preview",
+   "kind": "function",
+   "line": 103
+  },
+  {
+   "file": "src/naturalvoice/clone_api.py",
+   "id": "symbol:naturalvoice.clone_api.preview_audio",
+   "kind": "function",
+   "line": 265
+  },
+  {
+   "file": "src/naturalvoice/clone_api.py",
+   "id": "symbol:naturalvoice.clone_api.preview_status",
+   "kind": "function",
+   "line": 259
+  },
+  {
+   "file": "src/naturalvoice/clone_api.py",
+   "id": "symbol:naturalvoice.clone_api.status",
+   "kind": "function",
+   "line": 41
+  },
+  {
+   "file": "src/naturalvoice/enhance.py",
+   "id": "symbol:naturalvoice.enhance._session",
+   "kind": "function",
+   "line": 30
+  },
+  {
+   "file": "src/naturalvoice/enhance.py",
+   "id": "symbol:naturalvoice.enhance._stft16",
+   "kind": "function",
+   "line": 42
+  },
+  {
+   "file": "src/naturalvoice/enhance.py",
+   "id": "symbol:naturalvoice.enhance.ai_clean",
+   "kind": "function",
+   "line": 68
+  },
+  {
+   "file": "src/naturalvoice/enhance.py",
+   "id": "symbol:naturalvoice.enhance.available",
+   "kind": "function",
+   "line": 25
+  },
+  {
+   "file": "src/naturalvoice/enhance.py",
+   "id": "symbol:naturalvoice.enhance.gain_mask",
+   "kind": "function",
+   "line": 49
+  },
+  {
+   "file": "src/naturalvoice/humanize.py",
+   "id": "symbol:naturalvoice.humanize.Settings",
+   "kind": "class",
+   "line": 26
+  },
+  {
+   "file": "src/naturalvoice/humanize.py",
+   "id": "symbol:naturalvoice.humanize._istft",
+   "kind": "function",
+   "line": 75
+  },
+  {
+   "file": "src/naturalvoice/humanize.py",
+   "id": "symbol:naturalvoice.humanize._stft",
+   "kind": "function",
+   "line": 69
+  },
+  {
+   "file": "src/naturalvoice/humanize.py",
+   "id": "symbol:naturalvoice.humanize._stft_params",
+   "kind": "function",
+   "line": 64
+  },
+  {
+   "file": "src/naturalvoice/humanize.py",
+   "id": "symbol:naturalvoice.humanize.add_room_tone",
+   "kind": "function",
+   "line": 273
+  },
+  {
+   "file": "src/naturalvoice/humanize.py",
+   "id": "symbol:naturalvoice.humanize.deharsh",
+   "kind": "function",
+   "line": 218
+  },
+  {
+   "file": "src/naturalvoice/humanize.py",
+   "id": "symbol:naturalvoice.humanize.demetal",
+   "kind": "function",
+   "line": 194
+  },
+  {
+   "file": "src/naturalvoice/humanize.py",
+   "id": "symbol:naturalvoice.humanize.denoise",
+   "kind": "function",
+   "line": 264
+  },
+  {
+   "file": "src/naturalvoice/humanize.py",
+   "id": "symbol:naturalvoice.humanize.dereverb",
+   "kind": "function",
+   "line": 122
+  },
+  {
+   "file": "src/naturalvoice/humanize.py",
+   "id": "symbol:naturalvoice.humanize.estimate_rt60",
+   "kind": "function",
+   "line": 87
+  },
+  {
+   "file": "src/naturalvoice/humanize.py",
+   "id": "symbol:naturalvoice.humanize.find_resonances",
+   "kind": "function",
+   "line": 166
+  },
+  {
+   "file": "src/naturalvoice/humanize.py",
+   "id": "symbol:naturalvoice.humanize.get_settings",
+   "kind": "function",
+   "line": 54
+  },
+  {
+   "file": "src/naturalvoice/humanize.py",
+   "id": "symbol:naturalvoice.humanize.humanize",
+   "kind": "function",
+   "line": 355
+  },
+  {
+   "file": "src/naturalvoice/humanize.py",
+   "id": "symbol:naturalvoice.humanize.normalize",
+   "kind": "function",
+   "line": 310
+  },
+  {
+   "file": "src/naturalvoice/humanize.py",
+   "id": "symbol:naturalvoice.humanize.process_mono",
+   "kind": "function",
+   "line": 332
+  },
+  {
+   "file": "src/naturalvoice/humanize.py",
+   "id": "symbol:naturalvoice.humanize.soft_limit",
+   "kind": "function",
+   "line": 286
+  },
+  {
+   "file": "src/naturalvoice/humanize.py",
+   "id": "symbol:naturalvoice.humanize.tone",
+   "kind": "function",
+   "line": 244
+  },
+  {
+   "file": "src/naturalvoice/llm.py",
+   "id": "symbol:naturalvoice.llm._client",
+   "kind": "function",
+   "line": 154
+  },
+  {
+   "file": "src/naturalvoice/llm.py",
+   "id": "symbol:naturalvoice.llm._explain",
+   "kind": "function",
+   "line": 166
+  },
+  {
+   "file": "src/naturalvoice/llm.py",
+   "id": "symbol:naturalvoice.llm._mask",
+   "kind": "function",
+   "line": 64
+  },
+  {
+   "file": "src/naturalvoice/llm.py",
+   "id": "symbol:naturalvoice.llm._path",
+   "kind": "function",
+   "line": 33
+  },
+  {
+   "file": "src/naturalvoice/llm.py",
+   "id": "symbol:naturalvoice.llm._saved",
+   "kind": "function",
+   "line": 37
+  },
+  {
+   "file": "src/naturalvoice/llm.py",
+   "id": "symbol:naturalvoice.llm.chat",
+   "kind": "function",
+   "line": 183
+  },
+  {
+   "file": "src/naturalvoice/llm.py",
+   "id": "symbol:naturalvoice.llm.clear_key",
+   "kind": "function",
+   "line": 60
+  },
+  {
+   "file": "src/naturalvoice/llm.py",
+   "id": "symbol:naturalvoice.llm.config",
+   "kind": "function",
+   "line": 88
+  },
+  {
+   "file": "src/naturalvoice/llm.py",
+   "id": "symbol:naturalvoice.llm.connect",
+   "kind": "function",
+   "line": 203
+  },
+  {
+   "file": "src/naturalvoice/llm.py",
+   "id": "symbol:naturalvoice.llm.ollama_chat_models",
+   "kind": "function",
+   "line": 68
+  },
+  {
+   "file": "src/naturalvoice/llm.py",
+   "id": "symbol:naturalvoice.llm.save_key",
+   "kind": "function",
+   "line": 45
+  },
+  {
+   "file": "src/naturalvoice/llm.py",
+   "id": "symbol:naturalvoice.llm.status",
+   "kind": "function",
+   "line": 137
+  },
+  {
+   "file": "src/naturalvoice/llm_api.py",
+   "id": "symbol:naturalvoice.llm_api.KeyBody",
+   "kind": "class",
+   "line": 13
+  },
+  {
+   "file": "src/naturalvoice/llm_api.py",
+   "id": "symbol:naturalvoice.llm_api.delete_key",
+   "kind": "function",
+   "line": 34
+  },
+  {
+   "file": "src/naturalvoice/llm_api.py",
+   "id": "symbol:naturalvoice.llm_api.put_key",
+   "kind": "function",
+   "line": 24
+  },
+  {
+   "file": "src/naturalvoice/llm_api.py",
+   "id": "symbol:naturalvoice.llm_api.status",
+   "kind": "function",
+   "line": 19
+  },
+  {
+   "file": "src/naturalvoice/quality.py",
+   "id": "symbol:naturalvoice.quality._dnsmos_sessions",
+   "kind": "function",
+   "line": 83
+  },
+  {
+   "file": "src/naturalvoice/quality.py",
+   "id": "symbol:naturalvoice.quality._hz_to_mel",
+   "kind": "function",
+   "line": 39
+  },
+  {
+   "file": "src/naturalvoice/quality.py",
+   "id": "symbol:naturalvoice.quality._mel_basis",
+   "kind": "function",
+   "line": 54
+  },
+  {
+   "file": "src/naturalvoice/quality.py",
+   "id": "symbol:naturalvoice.quality._mel_to_hz",
+   "kind": "function",
+   "line": 46
+  },
+  {
+   "file": "src/naturalvoice/quality.py",
+   "id": "symbol:naturalvoice.quality.dnsmos",
+   "kind": "function",
+   "line": 96
+  },
+  {
+   "file": "src/naturalvoice/quality.py",
+   "id": "symbol:naturalvoice.quality.melspec_db",
+   "kind": "function",
+   "line": 66
+  },
+  {
+   "file": "src/naturalvoice/quality.py",
+   "id": "symbol:naturalvoice.quality.pesq_wb",
+   "kind": "function",
+   "line": 128
+  },
+  {
+   "file": "src/naturalvoice/quality.py",
+   "id": "symbol:naturalvoice.quality.to_16k",
+   "kind": "function",
+   "line": 27
+  },
+  {
+   "file": "src/naturalvoice/rewrite.py",
+   "id": "symbol:naturalvoice.rewrite._digits",
+   "kind": "function",
+   "line": 135
+  },
+  {
+   "file": "src/naturalvoice/rewrite.py",
+   "id": "symbol:naturalvoice.rewrite._num",
+   "kind": "function",
+   "line": 139
+  },
+  {
+   "file": "src/naturalvoice/rewrite.py",
+   "id": "symbol:naturalvoice.rewrite.chat",
+   "kind": "function",
+   "line": 305
+  },
+  {
+   "file": "src/naturalvoice/rewrite.py",
+   "id": "symbol:naturalvoice.rewrite.clean_symbols",
+   "kind": "function",
+   "line": 197
+  },
+  {
+   "file": "src/naturalvoice/rewrite.py",
+   "id": "symbol:naturalvoice.rewrite.expand_abbreviations",
+   "kind": "function",
+   "line": 224
+  },
+  {
+   "file": "src/naturalvoice/rewrite.py",
+   "id": "symbol:naturalvoice.rewrite.int_to_words",
+   "kind": "function",
+   "line": 99
+  },
+  {
+   "file": "src/naturalvoice/rewrite.py",
+   "id": "symbol:naturalvoice.rewrite.llm_available",
+   "kind": "function",
+   "line": 299
+  },
+  {
+   "file": "src/naturalvoice/rewrite.py",
+   "id": "symbol:naturalvoice.rewrite.llm_rewrite",
+   "kind": "function",
+   "line": 309
+  },
+  {
+   "file": "src/naturalvoice/rewrite.py",
+   "id": "symbol:naturalvoice.rewrite.ordinal_words",
+   "kind": "function",
+   "line": 115
+  },
+  {
+   "file": "src/naturalvoice/rewrite.py",
+   "id": "symbol:naturalvoice.rewrite.rule_rewrite",
+   "kind": "function",
+   "line": 251
+  },
+  {
+   "file": "src/naturalvoice/rewrite.py",
+   "id": "symbol:naturalvoice.rewrite.spell_numbers",
+   "kind": "function",
+   "line": 147
+  },
+  {
+   "file": "src/naturalvoice/rewrite.py",
+   "id": "symbol:naturalvoice.rewrite.split_long",
+   "kind": "function",
+   "line": 232
+  },
+  {
+   "file": "src/naturalvoice/rewrite.py",
+   "id": "symbol:naturalvoice.rewrite.year_words",
+   "kind": "function",
+   "line": 128
+  },
+  {
+   "file": "src/naturalvoice/rewrite_api.py",
+   "id": "symbol:naturalvoice.rewrite_api.Body",
+   "kind": "class",
+   "line": 13
+  },
+  {
+   "file": "src/naturalvoice/rewrite_api.py",
+   "id": "symbol:naturalvoice.rewrite_api.run",
+   "kind": "function",
+   "line": 27
+  },
+  {
+   "file": "src/naturalvoice/rewrite_api.py",
+   "id": "symbol:naturalvoice.rewrite_api.status",
+   "kind": "function",
+   "line": 22
+  },
+  {
+   "file": "src/naturalvoice/sample_library.py",
+   "id": "symbol:naturalvoice.sample_library.activate",
+   "kind": "function",
+   "line": 375
+  },
+  {
+   "file": "src/naturalvoice/sample_library.py",
+   "id": "symbol:naturalvoice.sample_library.add_sample",
+   "kind": "function",
+   "line": 281
+  },
+  {
+   "file": "src/naturalvoice/sample_library.py",
+   "id": "symbol:naturalvoice.sample_library.atomic_json",
+   "kind": "function",
+   "line": 53
+  },
+  {
+   "file": "src/naturalvoice/sample_library.py",
+   "id": "symbol:naturalvoice.sample_library.build_version",
+   "kind": "function",
+   "line": 334
+  },
+  {
+   "file": "src/naturalvoice/sample_library.py",
+   "id": "symbol:naturalvoice.sample_library.capacity",
+   "kind": "function",
+   "line": 92
+  },
+  {
+   "file": "src/naturalvoice/sample_library.py",
+   "id": "symbol:naturalvoice.sample_library.create_person",
+   "kind": "function",
+   "line": 267
+  },
+  {
+   "file": "src/naturalvoice/sample_library.py",
+   "id": "symbol:naturalvoice.sample_library.decode",
+   "kind": "function",
+   "line": 141
+  },
+  {
+   "file": "src/naturalvoice/sample_library.py",
+   "id": "symbol:naturalvoice.sample_library.download",
+   "kind": "function",
+   "line": 179
+  },
+  {
+   "file": "src/naturalvoice/sample_library.py",
+   "id": "symbol:naturalvoice.sample_library.identifier",
+   "kind": "function",
+   "line": 41
+  },
+  {
+   "file": "src/naturalvoice/sample_library.py",
+   "id": "symbol:naturalvoice.sample_library.installed",
+   "kind": "function",
+   "line": 103
+  },
+  {
+   "file": "src/naturalvoice/sample_library.py",
+   "id": "symbol:naturalvoice.sample_library.location",
+   "kind": "function",
+   "line": 47
+  },
+  {
+   "file": "src/naturalvoice/sample_library.py",
+   "id": "symbol:naturalvoice.sample_library.process_source",
+   "kind": "function",
+   "line": 220
+  },
+  {
+   "file": "src/naturalvoice/sample_library.py",
+   "id": "symbol:naturalvoice.sample_library.public_source",
+   "kind": "function",
+   "line": 260
+  },
+  {
+   "file": "src/naturalvoice/sample_library.py",
+   "id": "symbol:naturalvoice.sample_library.read",
+   "kind": "function",
+   "line": 66
+  },
+  {
+   "file": "src/naturalvoice/sample_library.py",
+   "id": "symbol:naturalvoice.sample_library.records",
+   "kind": "function",
+   "line": 73
+  },
+  {
+   "file": "src/naturalvoice/sample_library.py",
+   "id": "symbol:naturalvoice.sample_library.root",
+   "kind": "function",
+   "line": 37
+  },
+  {
+   "file": "src/naturalvoice/sample_library.py",
+   "id": "symbol:naturalvoice.sample_library.validate_window",
+   "kind": "function",
+   "line": 134
+  },
+  {
+   "file": "src/naturalvoice/sample_library.py",
+   "id": "symbol:naturalvoice.sample_library.versions",
+   "kind": "function",
+   "line": 329
+  },
+  {
+   "file": "src/naturalvoice/sample_library.py",
+   "id": "symbol:naturalvoice.sample_library.writing",
+   "kind": "function",
+   "line": 81
+  },
+  {
+   "file": "src/naturalvoice/sample_library.py",
+   "id": "symbol:naturalvoice.sample_library.youtube_url",
+   "kind": "function",
+   "line": 110
+  },
+  {
+   "file": "src/naturalvoice/sample_library_api.py",
+   "id": "symbol:naturalvoice.sample_library_api.Active",
+   "kind": "class",
+   "line": 298
+  },
+  {
+   "file": "src/naturalvoice/sample_library_api.py",
+   "id": "symbol:naturalvoice.sample_library_api.Person",
+   "kind": "class",
+   "line": 245
+  },
+  {
+   "file": "src/naturalvoice/sample_library_api.py",
+   "id": "symbol:naturalvoice.sample_library_api.Sample",
+   "kind": "class",
+   "line": 267
+  },
+  {
+   "file": "src/naturalvoice/sample_library_api.py",
+   "id": "symbol:naturalvoice.sample_library_api.SampleUploadLimit",
+   "kind": "class",
+   "line": 37
+  },
+  {
+   "file": "src/naturalvoice/sample_library_api.py",
+   "id": "symbol:naturalvoice.sample_library_api.Version",
+   "kind": "class",
+   "line": 288
+  },
+  {
+   "file": "src/naturalvoice/sample_library_api.py",
+   "id": "symbol:naturalvoice.sample_library_api.activate",
+   "kind": "function",
+   "line": 303
+  },
+  {
+   "file": "src/naturalvoice/sample_library_api.py",
+   "id": "symbol:naturalvoice.sample_library_api.add_sample",
+   "kind": "function",
+   "line": 276
+  },
+  {
+   "file": "src/naturalvoice/sample_library_api.py",
+   "id": "symbol:naturalvoice.sample_library_api.build",
+   "kind": "function",
+   "line": 293
+  },
+  {
+   "file": "src/naturalvoice/sample_library_api.py",
+   "id": "symbol:naturalvoice.sample_library_api.catalog",
+   "kind": "function",
+   "line": 116
+  },
+  {
+   "file": "src/naturalvoice/sample_library_api.py",
+   "id": "symbol:naturalvoice.sample_library_api.create_person",
+   "kind": "function",
+   "line": 251
+  },
+  {
+   "file": "src/naturalvoice/sample_library_api.py",
+   "id": "symbol:naturalvoice.sample_library_api.errors",
+   "kind": "function",
+   "line": 87
+  },
+  {
+   "file": "src/naturalvoice/sample_library_api.py",
+   "id": "symbol:naturalvoice.sample_library_api.import_source",
+   "kind": "function",
+   "line": 127
+  },
+  {
+   "file": "src/naturalvoice/sample_library_api.py",
+   "id": "symbol:naturalvoice.sample_library_api.launch",
+   "kind": "function",
+   "line": 104
+  },
+  {
+   "file": "src/naturalvoice/sample_library_api.py",
+   "id": "symbol:naturalvoice.sample_library_api.local_request",
+   "kind": "function",
+   "line": 23
+  },
+  {
+   "file": "src/naturalvoice/sample_library_api.py",
+   "id": "symbol:naturalvoice.sample_library_api.person",
+   "kind": "function",
+   "line": 257
+  },
+  {
+   "file": "src/naturalvoice/sample_library_api.py",
+   "id": "symbol:naturalvoice.sample_library_api.processing",
+   "kind": "function",
+   "line": 98
+  },
+  {
+   "file": "src/naturalvoice/sample_library_api.py",
+   "id": "symbol:naturalvoice.sample_library_api.retry",
+   "kind": "function",
+   "line": 215
+  },
+  {
+   "file": "src/naturalvoice/sample_library_api.py",
+   "id": "symbol:naturalvoice.sample_library_api.sample_audio",
+   "kind": "function",
+   "line": 282
+  },
+  {
+   "file": "src/naturalvoice/sample_library_api.py",
+   "id": "symbol:naturalvoice.sample_library_api.source",
+   "kind": "function",
+   "line": 209
+  },
+  {
+   "file": "src/naturalvoice/sample_library_api.py",
+   "id": "symbol:naturalvoice.sample_library_api.source_audio",
+   "kind": "function",
+   "line": 237
+  },
+  {
+   "file": "src/naturalvoice/scriptgen.py",
+   "id": "symbol:naturalvoice.scriptgen._assign",
+   "kind": "function",
+   "line": 97
+  },
+  {
+   "file": "src/naturalvoice/scriptgen.py",
+   "id": "symbol:naturalvoice.scriptgen._parse",
+   "kind": "function",
+   "line": 163
+  },
+  {
+   "file": "src/naturalvoice/scriptgen.py",
+   "id": "symbol:naturalvoice.scriptgen._points",
+   "kind": "function",
+   "line": 77
+  },
+  {
+   "file": "src/naturalvoice/scriptgen.py",
+   "id": "symbol:naturalvoice.scriptgen._sentence",
+   "kind": "function",
+   "line": 82
+  },
+  {
+   "file": "src/naturalvoice/scriptgen.py",
+   "id": "symbol:naturalvoice.scriptgen.generate",
+   "kind": "function",
+   "line": 230
+  },
+  {
+   "file": "src/naturalvoice/scriptgen.py",
+   "id": "symbol:naturalvoice.scriptgen.llm_script",
+   "kind": "function",
+   "line": 188
+  },
+  {
+   "file": "src/naturalvoice/scriptgen.py",
+   "id": "symbol:naturalvoice.scriptgen.sample",
+   "kind": "function",
+   "line": 71
+  },
+  {
+   "file": "src/naturalvoice/scriptgen.py",
+   "id": "symbol:naturalvoice.scriptgen.template_script",
+   "kind": "function",
+   "line": 101
+  },
+  {
+   "file": "src/naturalvoice/scriptgen_api.py",
+   "id": "symbol:naturalvoice.scriptgen_api.Brief",
+   "kind": "class",
+   "line": 13
+  },
+  {
+   "file": "src/naturalvoice/scriptgen_api.py",
+   "id": "symbol:naturalvoice.scriptgen_api.run",
+   "kind": "function",
+   "line": 43
+  },
+  {
+   "file": "src/naturalvoice/scriptgen_api.py",
+   "id": "symbol:naturalvoice.scriptgen_api.sample",
+   "kind": "function",
+   "line": 38
+  },
+  {
+   "file": "src/naturalvoice/scriptgen_api.py",
+   "id": "symbol:naturalvoice.scriptgen_api.status",
+   "kind": "function",
+   "line": 27
+  },
+  {
+   "file": "src/naturalvoice/server.py",
+   "id": "symbol:naturalvoice.server.BatchDownload",
+   "kind": "class",
+   "line": 176
+  },
+  {
+   "file": "src/naturalvoice/server.py",
+   "id": "symbol:naturalvoice.server._settings_from_form",
+   "kind": "function",
+   "line": 34
+  },
+  {
+   "file": "src/naturalvoice/server.py",
+   "id": "symbol:naturalvoice.server.batch_download",
+   "kind": "function",
+   "line": 181
+  },
+  {
+   "file": "src/naturalvoice/server.py",
+   "id": "symbol:naturalvoice.server.clean",
+   "kind": "function",
+   "line": 59
+  },
+  {
+   "file": "src/naturalvoice/server.py",
+   "id": "symbol:naturalvoice.server.job_file",
+   "kind": "function",
+   "line": 153
+  },
+  {
+   "file": "src/naturalvoice/server.py",
+   "id": "symbol:naturalvoice.server.job_status",
+   "kind": "function",
+   "line": 145
+  },
+  {
+   "file": "src/naturalvoice/server.py",
+   "id": "symbol:naturalvoice.server.list_voices",
+   "kind": "function",
+   "line": 47
+  },
+  {
+   "file": "src/naturalvoice/server.py",
+   "id": "symbol:naturalvoice.server.presets",
+   "kind": "function",
+   "line": 42
+  },
+  {
+   "file": "src/naturalvoice/server.py",
+   "id": "symbol:naturalvoice.server.speak",
+   "kind": "function",
+   "line": 207
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "symbol:naturalvoice.studio.Cancelled",
+   "kind": "class",
+   "line": 1111
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "symbol:naturalvoice.studio.RenderOptions",
+   "kind": "class",
+   "line": 1083
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "symbol:naturalvoice.studio.StudioError",
+   "kind": "class",
+   "line": 121
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "symbol:naturalvoice.studio._eq",
+   "kind": "function",
+   "line": 626
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "symbol:naturalvoice.studio._kokoro_phrase",
+   "kind": "function",
+   "line": 665
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "symbol:naturalvoice.studio._master_project_audio",
+   "kind": "function",
+   "line": 1335
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "symbol:naturalvoice.studio._mix_project_tracks",
+   "kind": "function",
+   "line": 1296
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "symbol:naturalvoice.studio._pitch",
+   "kind": "function",
+   "line": 636
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "symbol:naturalvoice.studio._place_project_lines",
+   "kind": "function",
+   "line": 1206
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "symbol:naturalvoice.studio._render_project_lines",
+   "kind": "function",
+   "line": 1155
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "symbol:naturalvoice.studio._resample",
+   "kind": "function",
+   "line": 1148
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "symbol:naturalvoice.studio._safe",
+   "kind": "function",
+   "line": 1115
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "symbol:naturalvoice.studio._scale_phrases",
+   "kind": "function",
+   "line": 773
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "symbol:naturalvoice.studio._sub_time",
+   "kind": "function",
+   "line": 215
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "symbol:naturalvoice.studio._ts",
+   "kind": "function",
+   "line": 1002
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "symbol:naturalvoice.studio._wrap",
+   "kind": "function",
+   "line": 1010
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "symbol:naturalvoice.studio.caption_cues",
+   "kind": "function",
+   "line": 1025
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "symbol:naturalvoice.studio.cli_render",
+   "kind": "function",
+   "line": 1636
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "symbol:naturalvoice.studio.clone_emotion_tags",
+   "kind": "function",
+   "line": 134
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "symbol:naturalvoice.studio.delivery_of",
+   "kind": "function",
+   "line": 402
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "symbol:naturalvoice.studio.display_text",
+   "kind": "function",
+   "line": 198
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "symbol:naturalvoice.studio.duck_gain",
+   "kind": "function",
+   "line": 934
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "symbol:naturalvoice.studio.fit_line",
+   "kind": "function",
+   "line": 777
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "symbol:naturalvoice.studio.fit_project",
+   "kind": "function",
+   "line": 1558
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "symbol:naturalvoice.studio.is_phoneme_entry",
+   "kind": "function",
+   "line": 178
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "symbol:naturalvoice.studio.line_key",
+   "kind": "function",
+   "line": 645
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "symbol:naturalvoice.studio.lint_project",
+   "kind": "function",
+   "line": 338
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "symbol:naturalvoice.studio.load_styles",
+   "kind": "function",
+   "line": 439
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "symbol:naturalvoice.studio.lufs",
+   "kind": "function",
+   "line": 827
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "symbol:naturalvoice.studio.mark_dictionary",
+   "kind": "function",
+   "line": 182
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "symbol:naturalvoice.studio.master",
+   "kind": "function",
+   "line": 863
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "symbol:naturalvoice.studio.measure",
+   "kind": "function",
+   "line": 850
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "symbol:naturalvoice.studio.music_bed",
+   "kind": "function",
+   "line": 967
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "symbol:naturalvoice.studio.mux_video",
+   "kind": "function",
+   "line": 1524
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "symbol:naturalvoice.studio.new_line",
+   "kind": "function",
+   "line": 319
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "symbol:naturalvoice.studio.noise_floor_db",
+   "kind": "function",
+   "line": 841
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "symbol:naturalvoice.studio.original_bed",
+   "kind": "function",
+   "line": 1512
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "symbol:naturalvoice.studio.parse_inline",
+   "kind": "function",
+   "line": 148
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "symbol:naturalvoice.studio.parse_note",
+   "kind": "function",
+   "line": 544
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "symbol:naturalvoice.studio.parse_script",
+   "kind": "function",
+   "line": 284
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "symbol:naturalvoice.studio.parse_subtitles",
+   "kind": "function",
+   "line": 223
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "symbol:naturalvoice.studio.probe_duration",
+   "kind": "function",
+   "line": 1495
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "symbol:naturalvoice.studio.probe_streams",
+   "kind": "function",
+   "line": 1504
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "symbol:naturalvoice.studio.projects_dir",
+   "kind": "function",
+   "line": 1629
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "symbol:naturalvoice.studio.render_line",
+   "kind": "function",
+   "line": 685
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "symbol:naturalvoice.studio.render_project",
+   "kind": "function",
+   "line": 1360
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "symbol:naturalvoice.studio.rms_db",
+   "kind": "function",
+   "line": 837
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "symbol:naturalvoice.studio.room_tone",
+   "kind": "function",
+   "line": 807
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "symbol:naturalvoice.studio.save_styles",
+   "kind": "function",
+   "line": 456
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "symbol:naturalvoice.studio.spoken_text",
+   "kind": "function",
+   "line": 202
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "symbol:naturalvoice.studio.style_from_line",
+   "kind": "function",
+   "line": 417
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "symbol:naturalvoice.studio.styles_path",
+   "kind": "function",
+   "line": 433
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "symbol:naturalvoice.studio.time_stretch",
+   "kind": "function",
+   "line": 762
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "symbol:naturalvoice.studio.timed_slot",
+   "kind": "function",
+   "line": 1471
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "symbol:naturalvoice.studio.to_srt",
+   "kind": "function",
+   "line": 1069
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "symbol:naturalvoice.studio.to_vtt",
+   "kind": "function",
+   "line": 1075
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "symbol:naturalvoice.studio.true_peak_db",
+   "kind": "function",
+   "line": 819
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "symbol:naturalvoice.studio.validate_style",
+   "kind": "function",
+   "line": 359
+  },
+  {
+   "file": "src/naturalvoice/studio.py",
+   "id": "symbol:naturalvoice.studio.write_audio",
+   "kind": "function",
+   "line": 1119
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "symbol:naturalvoice.studio_api.Line",
+   "kind": "class",
+   "line": 37
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "symbol:naturalvoice.studio_api.NoteIn",
+   "kind": "class",
+   "line": 275
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "symbol:naturalvoice.studio_api.ParseRequest",
+   "kind": "class",
+   "line": 166
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "symbol:naturalvoice.studio_api.PreviewRequest",
+   "kind": "class",
+   "line": 154
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "symbol:naturalvoice.studio_api.Project",
+   "kind": "class",
+   "line": 87
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "symbol:naturalvoice.studio_api.RenderRequest",
+   "kind": "class",
+   "line": 126
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "symbol:naturalvoice.studio_api.StyleIn",
+   "kind": "class",
+   "line": 224
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "symbol:naturalvoice.studio_api._busy",
+   "kind": "function",
+   "line": 171
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "symbol:naturalvoice.studio_api._job",
+   "kind": "function",
+   "line": 489
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "symbol:naturalvoice.studio_api._load",
+   "kind": "function",
+   "line": 557
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "symbol:naturalvoice.studio_api._music_path",
+   "kind": "function",
+   "line": 404
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "symbol:naturalvoice.studio_api._ppath",
+   "kind": "function",
+   "line": 551
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "symbol:naturalvoice.studio_api._prune",
+   "kind": "function",
+   "line": 411
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "symbol:naturalvoice.studio_api._save",
+   "kind": "function",
+   "line": 569
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "symbol:naturalvoice.studio_api._scratch",
+   "kind": "function",
+   "line": 327
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "symbol:naturalvoice.studio_api._stream",
+   "kind": "function",
+   "line": 342
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "symbol:naturalvoice.studio_api._upload_path",
+   "kind": "function",
+   "line": 336
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "symbol:naturalvoice.studio_api.create_project",
+   "kind": "function",
+   "line": 601
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "symbol:naturalvoice.studio_api.delete_project",
+   "kind": "function",
+   "line": 624
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "symbol:naturalvoice.studio_api.delete_style",
+   "kind": "function",
+   "line": 262
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "symbol:naturalvoice.studio_api.duplicate_project",
+   "kind": "function",
+   "line": 617
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "symbol:naturalvoice.studio_api.get_project",
+   "kind": "function",
+   "line": 606
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "symbol:naturalvoice.studio_api.import_subtitles",
+   "kind": "function",
+   "line": 385
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "symbol:naturalvoice.studio_api.lint",
+   "kind": "function",
+   "line": 200
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "symbol:naturalvoice.studio_api.list_projects",
+   "kind": "function",
+   "line": 580
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "symbol:naturalvoice.studio_api.list_styles",
+   "kind": "function",
+   "line": 235
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "symbol:naturalvoice.studio_api.parse",
+   "kind": "function",
+   "line": 190
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "symbol:naturalvoice.studio_api.presets",
+   "kind": "function",
+   "line": 181
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "symbol:naturalvoice.studio_api.preview",
+   "kind": "function",
+   "line": 205
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "symbol:naturalvoice.studio_api.render",
+   "kind": "function",
+   "line": 419
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "symbol:naturalvoice.studio_api.render_cancel",
+   "kind": "function",
+   "line": 502
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "symbol:naturalvoice.studio_api.render_file",
+   "kind": "function",
+   "line": 527
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "symbol:naturalvoice.studio_api.render_status",
+   "kind": "function",
+   "line": 497
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "symbol:naturalvoice.studio_api.renders",
+   "kind": "function",
+   "line": 511
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "symbol:naturalvoice.studio_api.save_style",
+   "kind": "function",
+   "line": 240
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "symbol:naturalvoice.studio_api.understand_note",
+   "kind": "function",
+   "line": 281
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "symbol:naturalvoice.studio_api.update_project",
+   "kind": "function",
+   "line": 611
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "symbol:naturalvoice.studio_api.upload_music",
+   "kind": "function",
+   "line": 289
+  },
+  {
+   "file": "src/naturalvoice/studio_api.py",
+   "id": "symbol:naturalvoice.studio_api.upload_video",
+   "kind": "function",
+   "line": 356
+  },
+  {
+   "file": "src/naturalvoice/tts.py",
+   "id": "symbol:naturalvoice.tts._kokoro",
+   "kind": "function",
+   "line": 29
+  },
+  {
+   "file": "src/naturalvoice/tts.py",
+   "id": "symbol:naturalvoice.tts.speak",
+   "kind": "function",
+   "line": 113
+  },
+  {
+   "file": "src/naturalvoice/tts.py",
+   "id": "symbol:naturalvoice.tts.speak_elevenlabs",
+   "kind": "function",
+   "line": 89
+  },
+  {
+   "file": "src/naturalvoice/tts.py",
+   "id": "symbol:naturalvoice.tts.speak_kokoro",
+   "kind": "function",
+   "line": 71
+  },
+  {
+   "file": "src/naturalvoice/tts.py",
+   "id": "symbol:naturalvoice.tts.speak_openai",
+   "kind": "function",
+   "line": 100
+  },
+  {
+   "file": "src/naturalvoice/tts.py",
+   "id": "symbol:naturalvoice.tts.split_chunks",
+   "kind": "function",
+   "line": 44
+  },
+  {
+   "file": "src/naturalvoice/tts.py",
+   "id": "symbol:naturalvoice.tts.voices",
+   "kind": "function",
+   "line": 40
+  },
+  {
+   "file": "src/naturalvoice/voicelab.py",
+   "id": "symbol:naturalvoice.voicelab.Cancelled",
+   "kind": "class",
+   "line": 586
+  },
+  {
+   "file": "src/naturalvoice/voicelab.py",
+   "id": "symbol:naturalvoice.voicelab.ControlSpec",
+   "kind": "class",
+   "line": 305
+  },
+  {
+   "file": "src/naturalvoice/voicelab.py",
+   "id": "symbol:naturalvoice.voicelab._axes",
+   "kind": "function",
+   "line": 325
+  },
+  {
+   "file": "src/naturalvoice/voicelab.py",
+   "id": "symbol:naturalvoice.voicelab._load_npz",
+   "kind": "function",
+   "line": 227
+  },
+  {
+   "file": "src/naturalvoice/voicelab.py",
+   "id": "symbol:naturalvoice.voicelab._mel_banks",
+   "kind": "function",
+   "line": 117
+  },
+  {
+   "file": "src/naturalvoice/voicelab.py",
+   "id": "symbol:naturalvoice.voicelab._speaker_session",
+   "kind": "function",
+   "line": 155
+  },
+  {
+   "file": "src/naturalvoice/voicelab.py",
+   "id": "symbol:naturalvoice.voicelab._stock_names",
+   "kind": "function",
+   "line": 203
+  },
+  {
+   "file": "src/naturalvoice/voicelab.py",
+   "id": "symbol:naturalvoice.voicelab._variation",
+   "kind": "function",
+   "line": 336
+  },
+  {
+   "file": "src/naturalvoice/voicelab.py",
+   "id": "symbol:naturalvoice.voicelab.blend",
+   "kind": "function",
+   "line": 293
+  },
+  {
+   "file": "src/naturalvoice/voicelab.py",
+   "id": "symbol:naturalvoice.voicelab.brightness_hz",
+   "kind": "function",
+   "line": 100
+  },
+  {
+   "file": "src/naturalvoice/voicelab.py",
+   "id": "symbol:naturalvoice.voicelab.build_style",
+   "kind": "function",
+   "line": 400
+  },
+  {
+   "file": "src/naturalvoice/voicelab.py",
+   "id": "symbol:naturalvoice.voicelab.character_features",
+   "kind": "function",
+   "line": 469
+  },
+  {
+   "file": "src/naturalvoice/voicelab.py",
+   "id": "symbol:naturalvoice.voicelab.cosine",
+   "kind": "function",
+   "line": 196
+  },
+  {
+   "file": "src/naturalvoice/voicelab.py",
+   "id": "symbol:naturalvoice.voicelab.data_dir",
+   "kind": "function",
+   "line": 53
+  },
+  {
+   "file": "src/naturalvoice/voicelab.py",
+   "id": "symbol:naturalvoice.voicelab.describe",
+   "kind": "function",
+   "line": 507
+  },
+  {
+   "file": "src/naturalvoice/voicelab.py",
+   "id": "symbol:naturalvoice.voicelab.drop_preview",
+   "kind": "function",
+   "line": 460
+  },
+  {
+   "file": "src/naturalvoice/voicelab.py",
+   "id": "symbol:naturalvoice.voicelab.embed",
+   "kind": "function",
+   "line": 188
+  },
+  {
+   "file": "src/naturalvoice/voicelab.py",
+   "id": "symbol:naturalvoice.voicelab.fbank",
+   "kind": "function",
+   "line": 133
+  },
+  {
+   "file": "src/naturalvoice/voicelab.py",
+   "id": "symbol:naturalvoice.voicelab.library",
+   "kind": "function",
+   "line": 422
+  },
+  {
+   "file": "src/naturalvoice/voicelab.py",
+   "id": "symbol:naturalvoice.voicelab.match",
+   "kind": "function",
+   "line": 590
+  },
+  {
+   "file": "src/naturalvoice/voicelab.py",
+   "id": "symbol:naturalvoice.voicelab.model_fingerprint",
+   "kind": "function",
+   "line": 213
+  },
+  {
+   "file": "src/naturalvoice/voicelab.py",
+   "id": "symbol:naturalvoice.voicelab.normalise_weights",
+   "kind": "function",
+   "line": 286
+  },
+  {
+   "file": "src/naturalvoice/voicelab.py",
+   "id": "symbol:naturalvoice.voicelab.pitch_hz",
+   "kind": "function",
+   "line": 78
+  },
+  {
+   "file": "src/naturalvoice/voicelab.py",
+   "id": "symbol:naturalvoice.voicelab.preview_path",
+   "kind": "function",
+   "line": 439
+  },
+  {
+   "file": "src/naturalvoice/voicelab.py",
+   "id": "symbol:naturalvoice.voicelab.render",
+   "kind": "function",
+   "line": 60
+  },
+  {
+   "file": "src/naturalvoice/voicelab.py",
+   "id": "symbol:naturalvoice.voicelab.render_preview",
+   "kind": "function",
+   "line": 444
+  },
+  {
+   "file": "src/naturalvoice/voicelab.py",
+   "id": "symbol:naturalvoice.voicelab.resample",
+   "kind": "function",
+   "line": 67
+  },
+  {
+   "file": "src/naturalvoice/voicelab.py",
+   "id": "symbol:naturalvoice.voicelab.sample_text",
+   "kind": "function",
+   "line": 435
+  },
+  {
+   "file": "src/naturalvoice/voicelab.py",
+   "id": "symbol:naturalvoice.voicelab.save_features",
+   "kind": "function",
+   "line": 240
+  },
+  {
+   "file": "src/naturalvoice/voicelab.py",
+   "id": "symbol:naturalvoice.voicelab.stock_features",
+   "kind": "function",
+   "line": 254
+  },
+  {
+   "file": "src/naturalvoice/voicelab.py",
+   "id": "symbol:naturalvoice.voicelab.trim_silence",
+   "kind": "function",
+   "line": 173
+  },
+  {
+   "file": "src/naturalvoice/voicelab.py",
+   "id": "symbol:naturalvoice.voicelab.validate_recipe",
+   "kind": "function",
+   "line": 345
+  },
+  {
+   "file": "src/naturalvoice/voicelab.py",
+   "id": "symbol:naturalvoice.voicelab.voice_lang",
+   "kind": "function",
+   "line": 413
+  },
+  {
+   "file": "src/naturalvoice/voicelab_api.py",
+   "id": "symbol:naturalvoice.voicelab_api.Describe",
+   "kind": "class",
+   "line": 222
+  },
+  {
+   "file": "src/naturalvoice/voicelab_api.py",
+   "id": "symbol:naturalvoice.voicelab_api.Design",
+   "kind": "class",
+   "line": 171
+  },
+  {
+   "file": "src/naturalvoice/voicelab_api.py",
+   "id": "symbol:naturalvoice.voicelab_api.Rename",
+   "kind": "class",
+   "line": 127
+  },
+  {
+   "file": "src/naturalvoice/voicelab_api.py",
+   "id": "symbol:naturalvoice.voicelab_api.SaveMatch",
+   "kind": "class",
+   "line": 361
+  },
+  {
+   "file": "src/naturalvoice/voicelab_api.py",
+   "id": "symbol:naturalvoice.voicelab_api.Star",
+   "kind": "class",
+   "line": 142
+  },
+  {
+   "file": "src/naturalvoice/voicelab_api.py",
+   "id": "symbol:naturalvoice.voicelab_api._build",
+   "kind": "function",
+   "line": 178
+  },
+  {
+   "file": "src/naturalvoice/voicelab_api.py",
+   "id": "symbol:naturalvoice.voicelab_api._busy",
+   "kind": "function",
+   "line": 31
+  },
+  {
+   "file": "src/naturalvoice/voicelab_api.py",
+   "id": "symbol:naturalvoice.voicelab_api._check_text",
+   "kind": "function",
+   "line": 48
+  },
+  {
+   "file": "src/naturalvoice/voicelab_api.py",
+   "id": "symbol:naturalvoice.voicelab_api._job",
+   "kind": "function",
+   "line": 323
+  },
+  {
+   "file": "src/naturalvoice/voicelab_api.py",
+   "id": "symbol:naturalvoice.voicelab_api._known",
+   "kind": "function",
+   "line": 94
+  },
+  {
+   "file": "src/naturalvoice/voicelab_api.py",
+   "id": "symbol:naturalvoice.voicelab_api._recipe_gender",
+   "kind": "function",
+   "line": 55
+  },
+  {
+   "file": "src/naturalvoice/voicelab_api.py",
+   "id": "symbol:naturalvoice.voicelab_api._wav",
+   "kind": "function",
+   "line": 39
+  },
+  {
+   "file": "src/naturalvoice/voicelab_api.py",
+   "id": "symbol:naturalvoice.voicelab_api.delete",
+   "kind": "function",
+   "line": 154
+  },
+  {
+   "file": "src/naturalvoice/voicelab_api.py",
+   "id": "symbol:naturalvoice.voicelab_api.describe",
+   "kind": "function",
+   "line": 232
+  },
+  {
+   "file": "src/naturalvoice/voicelab_api.py",
+   "id": "symbol:naturalvoice.voicelab_api.design_preview",
+   "kind": "function",
+   "line": 188
+  },
+  {
+   "file": "src/naturalvoice/voicelab_api.py",
+   "id": "symbol:naturalvoice.voicelab_api.design_save",
+   "kind": "function",
+   "line": 203
+  },
+  {
+   "file": "src/naturalvoice/voicelab_api.py",
+   "id": "symbol:naturalvoice.voicelab_api.library",
+   "kind": "function",
+   "line": 68
+  },
+  {
+   "file": "src/naturalvoice/voicelab_api.py",
+   "id": "symbol:naturalvoice.voicelab_api.match_audio",
+   "kind": "function",
+   "line": 346
+  },
+  {
+   "file": "src/naturalvoice/voicelab_api.py",
+   "id": "symbol:naturalvoice.voicelab_api.match_cancel",
+   "kind": "function",
+   "line": 339
+  },
+  {
+   "file": "src/naturalvoice/voicelab_api.py",
+   "id": "symbol:naturalvoice.voicelab_api.match_save",
+   "kind": "function",
+   "line": 366
+  },
+  {
+   "file": "src/naturalvoice/voicelab_api.py",
+   "id": "symbol:naturalvoice.voicelab_api.match_start",
+   "kind": "function",
+   "line": 254
+  },
+  {
+   "file": "src/naturalvoice/voicelab_api.py",
+   "id": "symbol:naturalvoice.voicelab_api.match_status",
+   "kind": "function",
+   "line": 331
+  },
+  {
+   "file": "src/naturalvoice/voicelab_api.py",
+   "id": "symbol:naturalvoice.voicelab_api.preview",
+   "kind": "function",
+   "line": 110
+  },
+  {
+   "file": "src/naturalvoice/voicelab_api.py",
+   "id": "symbol:naturalvoice.voicelab_api.rename",
+   "kind": "function",
+   "line": 132
+  },
+  {
+   "file": "src/naturalvoice/voicelab_api.py",
+   "id": "symbol:naturalvoice.voicelab_api.star",
+   "kind": "function",
+   "line": 147
+  },
+  {
+   "file": "src/naturalvoice/voicelab_api.py",
+   "id": "symbol:naturalvoice.voicelab_api.voice",
+   "kind": "function",
+   "line": 164
+  },
+  {
+   "file": "src/naturalvoice/voices.py",
+   "id": "symbol:naturalvoice.voices._fav_path",
+   "kind": "function",
+   "line": 187
+  },
+  {
+   "file": "src/naturalvoice/voices.py",
+   "id": "symbol:naturalvoice.voices._paths",
+   "kind": "function",
+   "line": 58
+  },
+  {
+   "file": "src/naturalvoice/voices.py",
+   "id": "symbol:naturalvoice.voices.catalog",
+   "kind": "function",
+   "line": 210
+  },
+  {
+   "file": "src/naturalvoice/voices.py",
+   "id": "symbol:naturalvoice.voices.delete",
+   "kind": "function",
+   "line": 147
+  },
+  {
+   "file": "src/naturalvoice/voices.py",
+   "id": "symbol:naturalvoice.voices.favorites",
+   "kind": "function",
+   "line": 191
+  },
+  {
+   "file": "src/naturalvoice/voices.py",
+   "id": "symbol:naturalvoice.voices.get",
+   "kind": "function",
+   "line": 127
+  },
+  {
+   "file": "src/naturalvoice/voices.py",
+   "id": "symbol:naturalvoice.voices.lang_for",
+   "kind": "function",
+   "line": 43
+  },
+  {
+   "file": "src/naturalvoice/voices.py",
+   "id": "symbol:naturalvoice.voices.list_custom",
+   "kind": "function",
+   "line": 113
+  },
+  {
+   "file": "src/naturalvoice/voices.py",
+   "id": "symbol:naturalvoice.voices.new_id",
+   "kind": "function",
+   "line": 64
+  },
+  {
+   "file": "src/naturalvoice/voices.py",
+   "id": "symbol:naturalvoice.voices.reference_audio",
+   "kind": "function",
+   "line": 170
+  },
+  {
+   "file": "src/naturalvoice/voices.py",
+   "id": "symbol:naturalvoice.voices.rename",
+   "kind": "function",
+   "line": 137
+  },
+  {
+   "file": "src/naturalvoice/voices.py",
+   "id": "symbol:naturalvoice.voices.resolve",
+   "kind": "function",
+   "line": 180
+  },
+  {
+   "file": "src/naturalvoice/voices.py",
+   "id": "symbol:naturalvoice.voices.save_clone",
+   "kind": "function",
+   "line": 92
+  },
+  {
+   "file": "src/naturalvoice/voices.py",
+   "id": "symbol:naturalvoice.voices.save_custom",
+   "kind": "function",
+   "line": 68
+  },
+  {
+   "file": "src/naturalvoice/voices.py",
+   "id": "symbol:naturalvoice.voices.set_starred",
+   "kind": "function",
+   "line": 200
+  },
+  {
+   "file": "src/naturalvoice/voices.py",
+   "id": "symbol:naturalvoice.voices.stock_info",
+   "kind": "function",
+   "line": 47
+  },
+  {
+   "file": "src/naturalvoice/voices.py",
+   "id": "symbol:naturalvoice.voices.style_of",
+   "kind": "function",
+   "line": 155
+  },
+  {
+   "file": "src/naturalvoice/workflow.py",
+   "id": "symbol:naturalvoice.workflow.matched_copies",
+   "kind": "function",
+   "line": 105
+  },
+  {
+   "file": "src/naturalvoice/workflow.py",
+   "id": "symbol:naturalvoice.workflow.process",
+   "kind": "function",
+   "line": 138
+  },
+  {
+   "file": "src/naturalvoice/workflow.py",
+   "id": "symbol:naturalvoice.workflow.recommend",
+   "kind": "function",
+   "line": 47
+  },
+  {
+   "file": "src/naturalvoice/workflow.py",
+   "id": "symbol:naturalvoice.workflow.segment",
+   "kind": "function",
+   "line": 14
+  },
+  {
+   "file": "src/naturalvoice/workflow.py",
+   "id": "symbol:naturalvoice.workflow.warnings",
+   "kind": "function",
+   "line": 84
+  },
+  {
+   "file": "src/naturalvoice/web/clone.js",
+   "id": "web:clone.js",
+   "kind": "script",
+   "line": 1
+  },
+  {
+   "file": "src/naturalvoice/web/index.html",
+   "id": "web:index.html",
+   "kind": "page",
+   "line": 1
+  },
+  {
+   "file": "src/naturalvoice/web/samples.html",
+   "id": "web:samples.html",
+   "kind": "page",
+   "line": 1
+  },
+  {
+   "file": "src/naturalvoice/web/samples.js",
+   "id": "web:samples.js",
+   "kind": "script",
+   "line": 1
+  },
+  {
+   "file": "src/naturalvoice/web/studio.html",
+   "id": "web:studio.html",
+   "kind": "page",
+   "line": 1
+  },
+  {
+   "file": "src/naturalvoice/web/studio.js",
+   "id": "web:studio.js",
+   "kind": "script",
+   "line": 1
+  },
+  {
+   "file": "src/naturalvoice/web/sw.js",
+   "id": "web:sw.js",
+   "kind": "script",
+   "line": 1
+  },
+  {
+   "file": "src/naturalvoice/web/voicelab.html",
+   "id": "web:voicelab.html",
+   "kind": "page",
+   "line": 1
+  },
+  {
+   "file": "src/naturalvoice/web/voicelab.js",
+   "id": "web:voicelab.js",
+   "kind": "script",
+   "line": 1
+  },
+  {
+   "file": "src/naturalvoice/web/workflow.js",
+   "id": "web:workflow.js",
+   "kind": "script",
+   "line": 1
+  }
+ ],
+ "note": "Static source graph. Regenerate with: uv run python scripts/code_graph.py --write"
+}
