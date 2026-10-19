@@ -147,6 +147,24 @@
         "Skills: no additional skill loaded; change limited to explicitly requested CI shutdown and preventing a disabled-check merge blocker."
       ]
     },
+    "motion-consistency": {
+      "checkedAt": "2026-10-19T15:52:50.471Z",
+      "commit": "63d7a43",
+      "uncommittedChanges": true,
+      "result": "pass",
+      "summary": "Both recorded motion fixes remain verified in current dev; standalone checks, all 174 Python tests, build and Chromium motion regression passed.",
+      "findings": [],
+      "evidence": [
+        "Scope: verification of the same two fixed motion findings in current dev; shared transitions and static sample-import loading feedback. Feature worktree excluded.",
+        "node tests/browser_motion.cjs: exit 0; four shared transitions, reduced-motion overrides, static screenshots, preference changes and desktop/mobile loading states passed.",
+        "npm run lint: exit 0, Ruff/ESLint/shellcheck passed. npm run format:check: exit 0, Ruff/Prettier/shfmt passed. Both ran standalone, unpiped, without syncing dependencies.",
+        "npm run typecheck: exit 0; DOM/code graph, mypy (47 files) and three TypeScript configurations passed.",
+        "uv run --locked --no-sync pytest -ra: exit 0, 174 passed in 375.15s, disposable NATURALVOICE_DATA; no skips.",
+        "uv build --offline: exit 0, wheel and source distribution built. git diff --check: exit 0. No source fixes were needed during this rerun.",
+        "Evidence-led-ui bounded re-check; app.css shared motion variables and samples.html static fallback remain unchanged since the verified fixes.",
+        "Not checked: Safari/Firefox, full accessibility audit or live browser-driven sample import. Chromium motion tests render actual HTML/CSS with app scripts disabled."
+      ]
+    },
     "naming": {
       "checkedAt": "2026-10-18T18:20:22.593Z",
       "commit": "55ed789",

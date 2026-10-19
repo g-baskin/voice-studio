@@ -29,6 +29,11 @@
   a:not(.btn):not(.brand) { color:var(--accent); }
   .page p { max-width:78ch; }
   progress { width:100%; accent-color:var(--accent); }
+  #importProgress .static-status { display:none; }
+  @media (prefers-reduced-motion: reduce) {
+    #importProgress progress { display:none; }
+    #importProgress .static-status { display:inline; }
+  }
   .skip { position:absolute; top:-100px; background:var(--card); padding:12px; }
   .skip:focus { top:0; }
   @media (max-width:700px) { .grid { grid-template-columns:minmax(0,1fr); } .card { padding:16px; } }
@@ -74,7 +79,10 @@
 <h2 id="reviewHeading">3. Listen and save solo speech</h2>
 <label class="field">Imported recording<select id="sourceSelect"><option value="">No recordings yet</option></select></label>
 <p id="sourceStatus" class="status" role="status"></p>
-<progress id="importProgress" aria-label="Analyzing recording" hidden></progress>
+<div id="importProgress" hidden>
+  <progress aria-label="Analyzing recording"></progress>
+  <span class="static-status hint">Analyzing recording...</span>
+</div>
 <button id="retry" type="button" class="btn secondary" hidden>Retry saved source</button>
 <div id="review" hidden>
 <p class="hint">Times below are relative to the imported window. Pick a detected turn or enter a range manually. Listen before assigning it to a person.</p>

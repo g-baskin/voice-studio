@@ -2,6 +2,7 @@
 :root {
   --bg:#f6f4ef; --card:#fff; --ink:#1f2a24; --muted:#5f6963; --line:#e3e0d8; --accent:#2f6b4f; --accent-ink:#fff;
   --bad:#a33a2b; --good:#2f6b4f; --warn:#8a5a00; --radius:12px; --rail:1100px;
+  --motion-fast:150ms; --motion-progress:300ms; --motion-easing:ease;
 }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#141916; --card:#1d2420; --ink:#eef1ec; --muted:#a3ada6; --line:#2f3833; --accent:#6fbf94;

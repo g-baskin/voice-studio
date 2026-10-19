@@ -248,7 +248,7 @@ export interface SampleElements {
   "importButton": HTMLElementTagNameMap["button"];
   "importForm": HTMLElementTagNameMap["form"];
   "importHeading": HTMLElementTagNameMap["h2"];
-  "importProgress": HTMLElementTagNameMap["progress"];
+  "importProgress": HTMLElementTagNameMap["div"];
   "listen": HTMLElementTagNameMap["button"];
   "main": HTMLElementTagNameMap["main"];
   "mediaFile": HTMLElementTagNameMap["input"];

@@ -38,7 +38,7 @@
   .option { border:1px solid var(--line); border-radius:10px; padding:12px; display:flex; flex-direction:column; gap:8px; }
   audio { width:100%; max-width:420px; }
   .bar { height:8px; background:var(--line); border-radius:99px; overflow:hidden; }
-  .bar span { display:block; height:100%; width:0; background:var(--accent); transition:width .3s; }
+  .bar span { display:block; height:100%; width:0; background:var(--accent); transition:width var(--motion-progress) var(--motion-easing); }
   .scores { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; }
   .score { border:1px solid var(--line); border-radius:10px; padding:10px; }
   .score b { font-size:1.4rem; display:block; }
