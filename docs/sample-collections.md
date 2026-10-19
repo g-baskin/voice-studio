@@ -1,6 +1,6 @@
 # Voice sample collections
 
-Open **Voice Lab > Voice sample collections** (`/samples.html`). This is local reference-based
+Open **Voice Lab > Voice sample collections** (`/samples.html`); the Voice Lab Clone tab also links here. This is local reference-based
 cloning, not model training. New recordings can improve references, but more audio does not guarantee
 better output. The owner explicitly deferred actual model training on this Intel Mac.
 
@@ -36,7 +36,7 @@ bundles without preserving their license notices and reviewing upstream terms.
 3. Create or select a permitted person. Speaker numbers are source-local, not identity recognition.
 4. Listen to original/dialogue audio. Pick a suggested turn or set exact selection start/end values.
    The selected range is relative to the imported window. Confirm it contains only that person's
-   voice, then save it. Choose original audio if separation damages the speech.
+   voice, then save it. Each sample must be 0.5 to 60 seconds. Choose original audio if separation damages the speech.
 5. Import more sources and assign their reviewed selections to the same collection.
 6. Select samples totaling 5 to 20 seconds, then build a new reference. It is immediately available
    as a separate cloned voice in Voice Lab and Studio. Old versions remain untouched.
@@ -45,7 +45,7 @@ bundles without preserving their license notices and reviewing upstream terms.
    version's name in Studio. Re-select an earlier preferred version to roll back the preference.
 
 Known overlapping turns cannot be saved. Diarization can miss overlaps, split one person into several
-labels, or merge people. Listen rather than trusting labels. Very quiet selections are rejected;
+labels, or merge people. Listen rather than trusting labels. Empty or silent selections are rejected (quiet speech is not);
 RMS level and possible clipping flags are measurements, not an overall quality or identity score.
 Samples cannot be edited in place: save a corrected range/person assignment and leave the unwanted
 sample unchecked when building references. This version has no automatic identity matching, per-person

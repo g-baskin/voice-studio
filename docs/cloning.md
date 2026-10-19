@@ -169,6 +169,12 @@ The timbre moves to the clone, and the output keeps the source's timing and spee
 - **API:** see the docstring in `src/naturalvoice/clone_api.py`. It covers `GET /api/clone/status`, `POST /api/clone/voices`, and `POST /api/clone/preview` plus polling `/api/clone/preview/{job}` and fetching `/audio`.
 - **Everywhere else:** `clone:<id>` voices work through `tts.speak`, which covers Studio and the CLI. Long text is split into sentences and joined with natural pauses.
 
+## Building references from sample collections
+
+To pick a reference from longer recordings or several sources, use
+[voice sample collections](sample-collections.md). You save approved 0.5 to 60 second samples per person, then
+build a 5 to 20 second reference. Each build is a new cloned voice; earlier versions are kept. Nothing is trained.
+
 ## Limits
 
 - English only (the voice changer works on any speech, but the voices were trained on English).

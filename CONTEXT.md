@@ -53,3 +53,13 @@ Mix — The combined voice and optional music output of a project.
 Timed placement — Positioning lines at explicit times, such as imported subtitle cues. Sequential placement instead plays lines in order with pauses.
 
 Dubbing — Producing speech aligned to subtitle timing, optionally combining it with a video's unchanged picture.
+
+Sample collection: The approved samples and reference versions kept for one permitted person. Not a voice itself, and not a training dataset.
+
+Media source: An imported recording (local file or one public YouTube video) analyzed in a 5 to 120 second window. Its speaker numbers are source-local labels, not identities, and are unrelated to script speakers.
+
+Approved sample: A 0.5 to 60 second range from a media source that the user listened to and confirmed contains only that person's voice. Saved samples are not edited in place; a detected speaker label alone does not approve a sample.
+
+Reference version: A new cloned voice built from 5 to 20 seconds of selected approved samples. Each build is a separate, immutable version. Not model training, and it never overwrites earlier versions.
+
+Preferred version: The reference version marked as preferred within a collection. Collection metadata only; it does not replace voices in saved Studio projects.

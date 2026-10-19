@@ -7,6 +7,12 @@ All Voice Lab voices live inside **Kokoro's style space**: a voice is a style ar
 new voices are combinations and nudges of the 54 stock voices. Nothing here is a generative voice model or a
 true clone (true cloning is in the Clone section, provided by a separate engine).
 
+## Voice sample collections
+
+To collect approved recordings of one person and build cloned-voice reference versions from them, use the
+**Voice sample collections** link at the top of Voice Lab or in the Clone tab. See
+[sample-collections.md](sample-collections.md). Collections produce cloned voices, not custom voices.
+
 ## Library
 Lists stock voices, your voices and clones, with filters for language, gender and kind, plus search. Each voice
 has **Preview**, which renders a fixed sample line in the voice's language. Previews are cached in `data/previews`,
