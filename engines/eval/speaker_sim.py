@@ -4,11 +4,13 @@ Usage: engines/chatterbox/.venv/bin/python engines/eval/speaker_sim.py ref.wav a
 Prints cosine(ref, x) for each file. Model: https://huggingface.co/Wespeaker/wespeaker-voxceleb-resnet34-LM
 (fetch voxceleb_resnet34_LM.onnx into engines/eval/models/, sha256 7bb2f06e…c068).
 """
+
 from __future__ import annotations
 
 import sys
 import wave
 from pathlib import Path
+from typing import overload
 
 import numpy as np
 import onnxruntime as ort
@@ -34,18 +36,27 @@ def fbank(x: np.ndarray, sr: int = 16000, n_mels: int = 80) -> np.ndarray:
     x = x * 32768
     flen, hop, nfft = 400, 160, 512
     n = 1 + (len(x) - flen) // hop
-    frames = np.stack([x[i * hop:i * hop + flen] for i in range(n)])
+    frames = np.stack([x[i * hop : i * hop + flen] for i in range(n)])
     frames = frames - frames.mean(axis=1, keepdims=True)
     frames = np.concatenate([frames[:, :1], frames[:, 1:] - 0.97 * frames[:, :-1]], axis=1)
     frames *= np.hamming(flen) ** 0.85  # povey window
     spec = np.abs(np.fft.rfft(frames, nfft)) ** 2
-    mel = lambda f: 1127 * np.log(1 + f / 700)
+
+    @overload
+    def mel(f: float) -> float: ...
+
+    @overload
+    def mel(f: np.ndarray) -> np.ndarray: ...
+
+    def mel(f: float | np.ndarray) -> float | np.ndarray:
+        return 1127 * np.log(1 + f / 700)
+
     pts = np.linspace(mel(20), mel(sr / 2), n_mels + 2)
     freqs = mel(np.fft.rfftfreq(nfft, 1 / sr))
     fb = np.zeros((n_mels, len(freqs)))
     for m in range(n_mels):
-        l, c, r = pts[m:m + 3]
-        fb[m] = np.clip(np.minimum((freqs - l) / (c - l), (r - freqs) / (r - c)), 0, None)
+        left, center, right = pts[m : m + 3]
+        fb[m] = np.clip(np.minimum((freqs - left) / (center - left), (right - freqs) / (right - center)), 0, None)
     feats = np.log(np.maximum(spec @ fb.T, 1.19e-7))
     return (feats - feats.mean(axis=0)).astype(np.float32)
 
