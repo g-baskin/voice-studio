@@ -17,9 +17,9 @@ served there.
 
 | Nodes | Count |
 |---|---|
-| class | 30 |
-| function | 347 |
-| module | 29 |
+| class | 34 |
+| function | 358 |
+| module | 30 |
 | page | 4 |
 | process | 3 |
 | route | 70 |
@@ -27,9 +27,9 @@ served there.
 
 | Edges | Count |
 |---|---|
-| calls | 196 |
-| defines | 377 |
-| imports | 73 |
+| calls | 200 |
+| defines | 392 |
+| imports | 76 |
 | loads | 5 |
 | requests | 66 |
 | runs | 3 |
@@ -50,10 +50,12 @@ flowchart LR
   bench --> humanize
   bench --> quality
   bench --> tts
+  cli --> access
   cli --> analyze
   cli --> audio
   cli --> bench
   cli --> humanize
+  cli --> server
   cli --> studio
   cli --> tts
   cli --> voices
@@ -83,6 +85,7 @@ flowchart LR
   scriptgen --> rewrite
   scriptgen_api --> llm
   scriptgen_api --> scriptgen
+  server --> access
   server --> audio
   server --> clone_api
   server --> humanize

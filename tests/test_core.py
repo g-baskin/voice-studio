@@ -189,7 +189,7 @@ def test_ai_clean_reduces_echo_and_keeps_length():
 def client():
     from naturalvoice.server import app
 
-    return TestClient(app)
+    return TestClient(app, base_url="http://127.0.0.1", client=("127.0.0.1", 50000))
 
 
 def _wait(client, job):

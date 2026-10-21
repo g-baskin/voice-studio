@@ -78,7 +78,7 @@ def test_auto_falls_back_when_llm_fails_but_explicit_llm_errors(monkeypatch):
 
 
 def test_api():
-    c = TestClient(server.app)
+    c = TestClient(server.app, base_url="http://127.0.0.1", client=("127.0.0.1", 50000))
     st = c.get("/api/scriptgen/status").json()
     assert st["llm"]["available"] is False and "ad" in st["kinds"]
     assert c.get("/api/scriptgen/sample?kind=story").json()["kind"] == "story"

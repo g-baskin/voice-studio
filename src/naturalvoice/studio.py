@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
 import re
 import subprocess
 import sys
@@ -25,6 +26,8 @@ from scipy import signal
 
 from . import audio as aio
 from . import humanize as hz
+
+log = logging.getLogger(__name__)
 
 SR = 24000
 MAX_LINES = 500
@@ -1187,11 +1190,10 @@ def _render_project_lines(
                 a, ph = render_line(ln, dictionary, opts.polish)
             rendered.append((i, a, ph))
         except Exception as e:  # one bad line must not kill the render unless asked
-            msg = (
-                str(e)
-                if isinstance(e, (RuntimeError, ValueError, KeyError))
-                else "The voice engine failed on this line."
-            )
+            expected = isinstance(e, (RuntimeError, ValueError, KeyError))
+            if not expected:  # the user sees a generic sentence, so keep the real cause in the log
+                log.exception("Studio line %d failed unexpectedly", i + 1)
+            msg = str(e) if expected else "The voice engine failed on this line."
             msg = msg.strip("'\"") or "The voice engine failed on this line."
             errors.append({"line": i + 1, "id": ln.get("id"), "error": msg})
             if opts.stop_on_error:

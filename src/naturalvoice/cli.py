@@ -79,6 +79,11 @@ def main(argv=None) -> int:
     sv.add_argument("--host", default="127.0.0.1")
     sv.add_argument("--port", type=int, default=8765)
     sv.add_argument("--open", action="store_true", help="open it in the browser")
+    sv.add_argument(
+        "--new-token",
+        action="store_true",
+        help="replace the network access link; devices must open the new one",
+    )
 
     r = sub.add_parser("render", help="render a Studio project file (JSON) to mix, captions, stems")
     r.add_argument("project")
@@ -146,14 +151,37 @@ def main(argv=None) -> int:
         results = bench.run(a.out, quick=a.quick, log=lambda m: print(m, file=sys.stderr))
         print(bench.render(results))
     elif a.cmd == "serve":
+        import logging
+
         import uvicorn
 
+        from . import access, server, voices
+
+        token_path = voices.DATA_DIR / access.TOKEN_FILE
+        if a.new_token:
+            access.stored_token(token_path, renew=True)
+            print("Replaced the network access link. Devices that used the old one are signed out.", file=sys.stderr)
+        policy = access.policy_for_bind(a.host, token_path)
+        server.app.state.access = policy
+        url = f"http://{a.host}:{a.port}"
+        if policy.token:
+            logging.getLogger("uvicorn.access").addFilter(access.RedactAccessToken())
+            link = access.access_link(a.host, a.port, policy.token)
+            # A wildcard bind also listens on loopback, where this computer needs no token.
+            url = f"http://127.0.0.1:{a.port}" if a.host in access.WILDCARD_HOSTS else link
+            print(
+                "Network mode: open this private link once on each other device:\n"
+                f"  {link}\n"
+                "It stays the same across restarts; `voicestudio serve --new-token` replaces it.\n"
+                "Anyone with the link can use Voice Studio while it runs. Use it only on networks you trust.",
+                file=sys.stderr,
+            )
         if a.open:
             import threading
             import webbrowser
 
-            threading.Timer(1.5, lambda: webbrowser.open(f"http://{a.host}:{a.port}")).start()
-        uvicorn.run("naturalvoice.server:app", host=a.host, port=a.port)
+            threading.Timer(1.5, lambda: webbrowser.open(url)).start()
+        uvicorn.run(server.app, host=a.host, port=a.port)
     return 0
 
 

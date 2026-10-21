@@ -1,4 +1,5 @@
 import io
+import os
 import time
 import zipfile
 
@@ -18,7 +19,7 @@ def client(monkeypatch, tmp_path):
     monkeypatch.setattr(quality, "dnsmos", lambda x, sr: {"OVRL": 3.2, "SIG": 3.3})
     # Focus API workflow tests on slicing/exporting; the real DSP has its own suite.
     monkeypatch.setattr(workflow.hz, "humanize", lambda x, sr, settings, progress: x * 0.5)
-    return TestClient(server.app)
+    return TestClient(server.app, base_url="http://127.0.0.1", client=("127.0.0.1", 50000))
 
 
 def wav(seconds=22):
@@ -68,7 +69,8 @@ def test_short_preview_and_invalid_start(client):
     job = submit(client, {"mode": "preview", "seconds": 10}, payload=wav(2)).json()["job"]
     assert finish(client, job)["result"]["seconds"] == 2
     job = submit(client, {"mode": "preview", "start": 30, "seconds": 10}, payload=wav(2)).json()["job"]
-    assert finish(client, job)["status"] == "error"
+    state = finish(client, job)
+    assert state["status"] == "error" and state["error"].startswith("This section is empty")
     # Errors release the worker slot.
     job = submit(client, {"mode": "analyze"}, payload=wav(2)).json()["job"]
     assert finish(client, job)["status"] == "done"
@@ -126,6 +128,55 @@ def test_zip_completed_only_safe_unique_names(client):
         assert all(archive.read(name).startswith(b"RIFF") for name in archive.namelist())
     assert not list(server.WORK.glob("batch-*.zip")), "ZIP temporary file cleaned after download"
     assert client.post("/api/batch-download", json={"jobs": [ids[0], "f" * 32]}).status_code == 400
+
+
+def test_unexpected_errors_stay_generic(client, monkeypatch):
+    def broken(x, sr, settings, progress):
+        raise ValueError("internal detail /private/path")
+
+    monkeypatch.setattr(workflow.hz, "humanize", broken)
+    state = finish(client, submit(client, {"mode": "preview", "seconds": 10}).json()["job"])
+    assert state["status"] == "error" and state["error"].startswith("Could not process this recording")
+    assert "/private/path" not in state["error"]
+
+
+def test_speech_file_is_removed_after_download(client, monkeypatch, tmp_path):
+    from naturalvoice import tts
+
+    monkeypatch.setattr(tts, "speak", lambda *a, **k: (np.zeros(2400, dtype=np.float32), 24000))
+    r = client.post("/api/speak", data={"text": "Hello."})
+    assert r.status_code == 200 and r.content[:4] == b"RIFF"
+    assert not list(tmp_path.glob("speech-*.wav"))
+
+
+def test_prune_bounds_jobs_and_removes_only_owned_leftovers(client, monkeypatch, tmp_path):
+    monkeypatch.setattr(server, "KEEP_JOBS", 2)
+    ids = [f"{n:032x}" for n in range(5)]
+    for i, key in enumerate(ids):
+        (tmp_path / key).mkdir()
+        server.jobs[key] = {"status": "running" if i == 0 else "done"}
+    old = time.time() - server.STALE_SECONDS - 60
+    leftovers = {
+        "f" * 32: True,  # job folder from an earlier run
+        f"speech-{'a' * 32}.wav": True,
+        f"batch-{'b' * 32}.zip": True,
+        "notes.txt": False,  # never created by the server: keep it
+        "music": False,
+    }
+    for name in leftovers:
+        p = tmp_path / name
+        p.mkdir() if name in {"f" * 32, "music"} else p.write_bytes(b"x")
+        os.utime(p, (old, old))
+    fresh = tmp_path / f"speech-{'c' * 32}.wav"
+    fresh.write_bytes(b"x")  # may still be streaming to the browser
+
+    server._prune()
+
+    assert list(server.jobs) == [ids[0], ids[3], ids[4]]  # running job is never pruned
+    assert {p.name for p in tmp_path.iterdir() if p.name in ids} == {ids[0], ids[3], ids[4]}
+    for name, removed in leftovers.items():
+        assert (tmp_path / name).exists() is not removed, name
+    assert fresh.exists()
 
 
 def test_matched_copies_match_loudness_without_clipping():

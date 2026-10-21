@@ -58,7 +58,7 @@ def test_tags_survive_and_noop():
 
 
 def test_api(monkeypatch):
-    c = TestClient(server.app)
+    c = TestClient(server.app, base_url="http://127.0.0.1", client=("127.0.0.1", 50000))
     assert c.get("/api/rewrite/status").json()["rules"] is True
     r = c.post("/api/rewrite", json={"text": "It costs $3."}).json()
     assert r["text"] == "It costs three dollars." and r["engine"] == "built-in rules"

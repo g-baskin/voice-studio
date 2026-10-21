@@ -40,7 +40,7 @@ def test_banner_is_social_preview_size_and_linked_from_readme():
 
 
 def test_manifest_icons_and_page_links_resolve_over_http():
-    c = TestClient(server.app)
+    c = TestClient(server.app, base_url="http://127.0.0.1", client=("127.0.0.1", 50000))
     manifest = c.get("/manifest.webmanifest").json()
     assert manifest["name"] == "Voice Studio" and {i["purpose"] for i in manifest["icons"]} >= {"any", "maskable"}
     for icon in manifest["icons"]:

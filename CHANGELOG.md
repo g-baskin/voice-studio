@@ -21,8 +21,20 @@ all entries below describe unreleased source, not historical releases.
 - An optional, separately installed media engine for sample collections, set up with
   `scripts/setup_media_engine.sh`; the main and Chatterbox environments are not changed (`0a207b3`).
 
+### Security
+
+- The web app now refuses requests that do not come from this computer through `127.0.0.1`/`localhost`,
+  so other websites can no longer reach it through a rebound DNS name or send it cross-site uploads.
+- Phone mode (`serve --host 0.0.0.0`) prints a private access link; other devices must open it once before
+  they can use the app. The link is saved owner-only in the data folder and stays the same across restarts;
+  `serve --new-token` replaces it and signs out every device. Request logs hide it.
+
 ### Fixed
 
 - Python's reported version and the macOS launcher's version now match the package's `0.3.0` source version.
+- Cleanup jobs no longer pile up in the temporary folder: the oldest finished jobs and old leftovers are
+  removed, and text-to-voice files are deleted once downloaded.
+- Recording problems users can fix are recognised by error type rather than message wording, and
+  unexpected Studio line failures are now logged.
 
 [Unreleased]: https://github.com/g-baskin/voice-studio/commits/dev
