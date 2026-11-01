@@ -1,5 +1,5 @@
 // Run only against a server with disposable NATURALVOICE_DATA. Writes synthetic media.
-const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
+const chromium = require('./browser_support.cjs');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');

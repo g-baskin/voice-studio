@@ -1,6 +1,6 @@
 // Voice Lab end-to-end check. Run against a live server:
 // PLAYWRIGHT_MODULE=... NV_URL=http://127.0.0.1:8771 node tests/browser_voicelab.cjs
-const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
+const chromium = require('./browser_support.cjs');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
@@ -72,7 +72,13 @@ async function noOverflow(page, label) {
     await page.selectOption('#libGender', '');
     await page.selectOption('#libLang', '');
     await page.fill('#libSearch', '');
-    await page.screenshot({ path: '/tmp/nv-voicelab-desktop.png', fullPage: false });
+    await page.screenshot({
+      path: require('node:path').join(
+        process.env.NV_SCREENSHOTS || require('node:os').tmpdir(),
+        'nv-voicelab-desktop.png',
+      ),
+      fullPage: false,
+    });
 
     // Keyboard tab switching
     await page.focus('#tab-library');
@@ -89,7 +95,12 @@ async function noOverflow(page, label) {
     await page.fill('#designName', '<b>Browser Mix</b>');
     await page.click('#designSave');
     await page.waitForFunction(() => /Saved/.test(document.querySelector('#designSaveStatus').textContent));
-    await page.screenshot({ path: '/tmp/nv-voicelab-design.png' });
+    await page.screenshot({
+      path: require('node:path').join(
+        process.env.NV_SCREENSHOTS || require('node:os').tmpdir(),
+        'nv-voicelab-design.png',
+      ),
+    });
 
     // It appears in the Library as text, then rename + delete
     await page.click('#tab-library');
@@ -173,9 +184,20 @@ async function noOverflow(page, label) {
     }
     await page.click('#tab-library');
     await page.selectOption('#libKind', '');
-    await page.screenshot({ path: '/tmp/nv-voicelab-mobile.png' });
+    await page.screenshot({
+      path: require('node:path').join(
+        process.env.NV_SCREENSHOTS || require('node:os').tmpdir(),
+        'nv-voicelab-mobile.png',
+      ),
+    });
     await page.click('#tab-design');
-    await page.screenshot({ path: '/tmp/nv-voicelab-mobile-design.png', fullPage: true });
+    await page.screenshot({
+      path: require('node:path').join(
+        process.env.NV_SCREENSHOTS || require('node:os').tmpdir(),
+        'nv-voicelab-mobile-design.png',
+      ),
+      fullPage: true,
+    });
 
     assert.deepEqual(errors, []);
     console.log('voicelab browser check passed');

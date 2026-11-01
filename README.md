@@ -23,6 +23,11 @@ unless you choose to connect an AI service for script writing.
   approved samples per person, and build new reference versions of a cloned voice without replacing old ones.
   This is reference selection, not model training. ([guide](docs/sample-collections.md))
 
+**Backups:** download saved projects, voices, references and browser settings from the Backup page, then
+restore into a separate folder without replacing current work. ([guide](docs/backups.md))
+
+**Browser checks:** `npm run test:browser` runs isolated local suites. ([prerequisites and artifacts](docs/browser-tests.md))
+
 Text-to-speech uses [Kokoro](https://github.com/hexgrad/kokoro) (Apache-2.0) and cloning uses
 [Chatterbox-Turbo](https://github.com/resemble-ai/chatterbox) (MIT), both on the CPU. No GPU is needed.
 

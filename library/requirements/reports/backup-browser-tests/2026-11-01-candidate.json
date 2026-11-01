@@ -1,0 +1,159 @@
+{
+  "base": "d0e222f76b2def85d50d4b1e3acfe39f60cb8ddd",
+  "branch": "feature/backup-browser-tests",
+  "scope": "changed regular source files plus configuration; reports and local prerequisite symlinks excluded",
+  "files": [
+    {
+      "path": ".gitignore",
+      "sha256": "2c0d076482fe97d433338a082087dbee48c65272b92502dd42dc671ef32c00c7"
+    },
+    {
+      "path": "README.md",
+      "sha256": "378bbc029f3ce40204b1829539bd04f1ae135d4e35c5cee7feff236a8254b51a"
+    },
+    {
+      "path": "docs/backups.md",
+      "sha256": "d58b7347355b2b243cd2deca68f7c311e69bb11c29ee53a30526929d1d0789df"
+    },
+    {
+      "path": "docs/browser-tests.md",
+      "sha256": "46f5d66c1eb073c9bb9c1bbd022ee0045959d28e9f47605b52be2648ab36c0f2"
+    },
+    {
+      "path": "eslint.config.mjs",
+      "sha256": "9994068ffd529cda9f8d4e2f616e6cdf80fe62ce035af0be7de81066bd77f418"
+    },
+    {
+      "path": "jsconfig.json",
+      "sha256": "5d5cafde9caa50357a8349da663efe6f0cdee0525858ba1edced369f9f17fa74"
+    },
+    {
+      "path": "jsconfig.node.json",
+      "sha256": "b58365090d006ab1badb9eeac5b40e6ba9ae7e327383294bf3f40b2a2dbac90b"
+    },
+    {
+      "path": "jsconfig.worker.json",
+      "sha256": "4f515ddaa977f3064184a5453226c6fb76d364f5ca7aeede25cc06b545e7a3c6"
+    },
+    {
+      "path": "library/knowledge/private/codebase-graph/meta/code-graph.json",
+      "sha256": "cc0e039faf828e18c48489d6c98d6f7fd2247dabc20609e9c337ef4b9715a80d"
+    },
+    {
+      "path": "library/knowledge/private/codebase-graph/meta/code-graph.md",
+      "sha256": "5301fea4523181921b399314b3166a27c31b39b07fec14fcf0883502b4ddfc3b"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "a4e6010108ee8c684101875da8f780038d93db91d814b9200a4299c35c95ef5b"
+    },
+    {
+      "path": "package.json",
+      "sha256": "8b2aad44d83653cca772bcfa4305456222eda60bccf2cc0ca37853d84fc46fac"
+    },
+    {
+      "path": "pyproject.toml",
+      "sha256": "13fbee56216e7530ad947d37f1447ad557dd9e1e230b4911d1d9738b83d2efe2"
+    },
+    {
+      "path": "scripts/browser_tests.py",
+      "sha256": "b0edff93860e7c51562d0ec86d3fc98e4ee60b7a37fc4f0e8ecf5421328209f8"
+    },
+    {
+      "path": "scripts/web_types.py",
+      "sha256": "b1529219295c7ce934a87914f2ab2368342690ef77f67ae8fd2795860b0f2f21"
+    },
+    {
+      "path": "src/naturalvoice/backup.py",
+      "sha256": "6890c2694adb4de09f3cdfc6c246be5119e531de765732818ccd391f4920a601"
+    },
+    {
+      "path": "src/naturalvoice/backup_api.py",
+      "sha256": "441986b2d5ad8301a797534a04c6f7c7db8259cdc3733835f89bcb78e14b2263"
+    },
+    {
+      "path": "src/naturalvoice/server.py",
+      "sha256": "2b330f7d681b7a4235a5fd721e37b260025e0a2befa81cf34279624e74084416"
+    },
+    {
+      "path": "src/naturalvoice/web/backup.html",
+      "sha256": "8c209101bc0dab8fed035138885ba7d9af7d55c7f0469ab5129ad8b81e193813"
+    },
+    {
+      "path": "src/naturalvoice/web/backup.js",
+      "sha256": "3367be39f63f30978f7f1cd12b7b8af016315f251160d0b54c69aa3942f3b35e"
+    },
+    {
+      "path": "src/naturalvoice/web/index.html",
+      "sha256": "ba3bc003751abf44d79d4c12efc19186c5ab7fcee99e54e577859dae28b65f42"
+    },
+    {
+      "path": "src/naturalvoice/web/samples.html",
+      "sha256": "f323b938cd7b17e291ce7aef3b25af3c14e9059cb384d00d634426edf060e817"
+    },
+    {
+      "path": "src/naturalvoice/web/studio.html",
+      "sha256": "6b3d555ae2d665a920cd577417e5193938988b76882af72e9baa139a500c2d6e"
+    },
+    {
+      "path": "src/naturalvoice/web/voicelab.html",
+      "sha256": "76d8086fca35f244993d790076266afd68318685fbe82852a1841ef12533ec1c"
+    },
+    {
+      "path": "tests/browser_backup.cjs",
+      "sha256": "97ca43b91021cc8b3f32bde25e9fbc9ff6bf19bfa064970eedaf49766d157a30"
+    },
+    {
+      "path": "tests/browser_clone.cjs",
+      "sha256": "ec7eaf90d0898dc698ed174273490e82968189b1bce395e958f3cb0ec696bf75"
+    },
+    {
+      "path": "tests/browser_motion.cjs",
+      "sha256": "1b894d1e62c530ffbcb040bb8d03cff0d48b76c2f570ad267d939b2a689394df"
+    },
+    {
+      "path": "tests/browser_samples.cjs",
+      "sha256": "c35e44a1a2d504e80bfd6f6ef5db9c933a8afbb4f449d06273ab18012b43233d"
+    },
+    {
+      "path": "tests/browser_stars.cjs",
+      "sha256": "ae9e489ffa623846eec294787eb1ba44c83b47790cb574ed56eebff335a172dd"
+    },
+    {
+      "path": "tests/browser_studio.cjs",
+      "sha256": "d909dbbae3aa5dc35d766fc9f5223a2ad913570fb003b2a42000742fa8b0d5ed"
+    },
+    {
+      "path": "tests/browser_support.cjs",
+      "sha256": "ed55f94da6beae12c64592f0c1af2528c694394ec7c2d0d3d2bd50d47553d151"
+    },
+    {
+      "path": "tests/browser_templates.cjs",
+      "sha256": "da6f2330e795234f8650f72b77309eed631cbb1743f96a90bf83298120f2d93c"
+    },
+    {
+      "path": "tests/browser_voicelab.cjs",
+      "sha256": "d3d0efec783a8ea297a562f44bb93a8defbff6f2d7fb97e299601aec05aca8dd"
+    },
+    {
+      "path": "tests/browser_workflow.cjs",
+      "sha256": "cabe80c9233c3171d994414c828a60e26b8845ad08796a9cbffe04d4683295c2"
+    },
+    {
+      "path": "tests/test_backup.py",
+      "sha256": "f5cb7beda83e12587ab7e7f22af052caf4a3066920a861b4619ae3d107a66fea"
+    },
+    {
+      "path": "tests/test_browser_runner.py",
+      "sha256": "ed9f3e9a5bd1446cf611301c4390c9c85fb192df9b12382bf85cb0c9cf5d833c"
+    },
+    {
+      "path": "types/dom.d.ts",
+      "sha256": "01b6cb6f10bfd367cd69e7ec7ca7308652b12d70bdb5b4837636fc81b1a2c7a8"
+    },
+    {
+      "path": "uv.lock",
+      "sha256": "9b8d2791ecd56928f940b8bd9d5878c5fe76d1cfc0b5d439d9ebb710f0ab6ede"
+    }
+  ]
+}

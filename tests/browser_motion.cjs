@@ -1,5 +1,5 @@
 // Read-only motion regression checks against actual HTML/CSS. No server, models or application scripts.
-const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
+const chromium = require('./browser_support.cjs');
 const assert = require('node:assert/strict');
 const path = require('node:path');
 const { pathToFileURL } = require('node:url');

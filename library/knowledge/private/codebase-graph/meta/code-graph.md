@@ -17,23 +17,23 @@ served there.
 
 | Nodes | Count |
 |---|---|
-| class | 34 |
-| function | 358 |
-| module | 30 |
-| page | 4 |
+| class | 35 |
+| function | 366 |
+| module | 32 |
+| page | 5 |
 | process | 3 |
-| route | 70 |
-| script | 6 |
+| route | 73 |
+| script | 7 |
 
 | Edges | Count |
 |---|---|
-| calls | 200 |
-| defines | 392 |
-| imports | 76 |
-| loads | 5 |
-| requests | 66 |
+| calls | 202 |
+| defines | 401 |
+| imports | 81 |
+| loads | 6 |
+| requests | 69 |
 | runs | 3 |
-| serves | 70 |
+| serves | 73 |
 | spawns | 3 |
 
 ## Modules, engine processes and web assets
@@ -44,6 +44,10 @@ Module imports, process spawns and page script loads. Symbol, route and call edg
 flowchart LR
   analyze --> humanize
   analyze --> quality
+  backup_api --> backup
+  backup_api --> sample_library_api
+  backup_api --> server
+  backup_api --> voices
   bench --> analyze
   bench --> audio
   bench --> enhance
@@ -87,6 +91,7 @@ flowchart LR
   scriptgen_api --> scriptgen
   server --> access
   server --> audio
+  server --> backup_api
   server --> clone_api
   server --> humanize
   server --> llm_api
@@ -124,6 +129,7 @@ flowchart LR
   engines_chatterbox_worker_py -.-> engines_chatterbox_worker
   engines_media_download_py -.-> engines_media_download
   engines_media_worker_py -.-> engines_media_worker
+  backup_html --> backup_js
   index_html --> workflow_js
   samples_html --> samples_js
   studio_html --> studio_js

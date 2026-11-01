@@ -16,5 +16,6 @@ dist/
 build/
 bench/refs/
 data/
+voice-studio-restored-*/
 engines/*/.venv/
 engines/*/models/

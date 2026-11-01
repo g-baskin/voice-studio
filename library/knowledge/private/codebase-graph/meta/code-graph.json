@@ -171,6 +171,71 @@
    "target": "symbol:naturalvoice.audio.save"
   },
   {
+   "kind": "defines",
+   "source": "module:naturalvoice.backup",
+   "target": "symbol:naturalvoice.backup.allowed"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.backup",
+   "target": "symbol:naturalvoice.backup.browser_settings"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.backup",
+   "target": "symbol:naturalvoice.backup.export_data"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.backup",
+   "target": "symbol:naturalvoice.backup.inventory"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.backup",
+   "target": "symbol:naturalvoice.backup.restore_data"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.backup_api",
+   "target": "module:naturalvoice.backup"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.backup_api",
+   "target": "module:naturalvoice.sample_library_api"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.backup_api",
+   "target": "module:naturalvoice.server"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.backup_api",
+   "target": "module:naturalvoice.voices"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.backup_api",
+   "target": "symbol:naturalvoice.backup_api.BackupGate"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.backup_api",
+   "target": "symbol:naturalvoice.backup_api.export_backup"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.backup_api",
+   "target": "symbol:naturalvoice.backup_api.restore_backup"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.backup_api",
+   "target": "symbol:naturalvoice.backup_api.restored_browser_settings"
+  },
+  {
    "kind": "imports",
    "source": "module:naturalvoice.bench",
    "target": "module:naturalvoice.analyze"
@@ -1199,6 +1264,11 @@
    "kind": "imports",
    "source": "module:naturalvoice.server",
    "target": "module:naturalvoice.audio"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.server",
+   "target": "module:naturalvoice.backup_api"
   },
   {
    "kind": "imports",
@@ -2379,6 +2449,31 @@
    "kind": "calls",
    "source": "symbol:naturalvoice.analyze.report",
    "target": "symbol:naturalvoice.quality.dnsmos"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.backup_api.export_backup",
+   "target": "route:POST /api/backups/export"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.backup_api.export_backup",
+   "target": "symbol:naturalvoice.backup.browser_settings"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.backup_api.restore_backup",
+   "target": "route:POST /api/backups/restore"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.backup_api.restored_browser_settings",
+   "target": "route:GET /api/backups/browser"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.backup_api.restored_browser_settings",
+   "target": "symbol:naturalvoice.backup.browser_settings"
   },
   {
    "kind": "calls",
@@ -3721,6 +3816,26 @@
    "target": "symbol:naturalvoice.audio.load"
   },
   {
+   "kind": "loads",
+   "source": "web:backup.html",
+   "target": "web:backup.js"
+  },
+  {
+   "kind": "requests",
+   "source": "web:backup.js",
+   "target": "route:GET /api/backups/browser"
+  },
+  {
+   "kind": "requests",
+   "source": "web:backup.js",
+   "target": "route:POST /api/backups/export"
+  },
+  {
+   "kind": "requests",
+   "source": "web:backup.js",
+   "target": "route:POST /api/backups/restore"
+  },
+  {
    "kind": "requests",
    "source": "web:clone.js",
    "target": "route:GET /api/clone/convert/{job}"
@@ -4121,6 +4236,18 @@
    "line": 1
   },
   {
+   "file": "src/naturalvoice/backup.py",
+   "id": "module:naturalvoice.backup",
+   "kind": "module",
+   "line": 1
+  },
+  {
+   "file": "src/naturalvoice/backup_api.py",
+   "id": "module:naturalvoice.backup_api",
+   "kind": "module",
+   "line": 1
+  },
+  {
    "file": "src/naturalvoice/bench.py",
    "id": "module:naturalvoice.bench",
    "kind": "module",
@@ -4301,6 +4428,12 @@
    "line": 154
   },
   {
+   "file": "src/naturalvoice/backup_api.py",
+   "id": "route:GET /api/backups/browser",
+   "kind": "route",
+   "line": 121
+  },
+  {
    "file": "src/naturalvoice/clone_api.py",
    "id": "route:GET /api/clone/convert/{job}",
    "kind": "route",
@@ -4479,6 +4612,18 @@
    "id": "route:GET /api/voices",
    "kind": "route",
    "line": 71
+  },
+  {
+   "file": "src/naturalvoice/backup_api.py",
+   "id": "route:POST /api/backups/export",
+   "kind": "route",
+   "line": 53
+  },
+  {
+   "file": "src/naturalvoice/backup_api.py",
+   "id": "route:POST /api/backups/restore",
+   "kind": "route",
+   "line": 92
   },
   {
    "file": "src/naturalvoice/server.py",
@@ -4887,6 +5032,60 @@
    "id": "symbol:naturalvoice.audio.save",
    "kind": "function",
    "line": 43
+  },
+  {
+   "file": "src/naturalvoice/backup.py",
+   "id": "symbol:naturalvoice.backup.allowed",
+   "kind": "function",
+   "line": 36
+  },
+  {
+   "file": "src/naturalvoice/backup.py",
+   "id": "symbol:naturalvoice.backup.browser_settings",
+   "kind": "function",
+   "line": 21
+  },
+  {
+   "file": "src/naturalvoice/backup.py",
+   "id": "symbol:naturalvoice.backup.export_data",
+   "kind": "function",
+   "line": 72
+  },
+  {
+   "file": "src/naturalvoice/backup.py",
+   "id": "symbol:naturalvoice.backup.inventory",
+   "kind": "function",
+   "line": 48
+  },
+  {
+   "file": "src/naturalvoice/backup.py",
+   "id": "symbol:naturalvoice.backup.restore_data",
+   "kind": "function",
+   "line": 104
+  },
+  {
+   "file": "src/naturalvoice/backup_api.py",
+   "id": "symbol:naturalvoice.backup_api.BackupGate",
+   "kind": "class",
+   "line": 22
+  },
+  {
+   "file": "src/naturalvoice/backup_api.py",
+   "id": "symbol:naturalvoice.backup_api.export_backup",
+   "kind": "function",
+   "line": 53
+  },
+  {
+   "file": "src/naturalvoice/backup_api.py",
+   "id": "symbol:naturalvoice.backup_api.restore_backup",
+   "kind": "function",
+   "line": 92
+  },
+  {
+   "file": "src/naturalvoice/backup_api.py",
+   "id": "symbol:naturalvoice.backup_api.restored_browser_settings",
+   "kind": "function",
+   "line": 121
   },
   {
    "file": "src/naturalvoice/bench.py",
@@ -7047,6 +7246,18 @@
    "id": "symbol:naturalvoice.workflow.warnings",
    "kind": "function",
    "line": 88
+  },
+  {
+   "file": "src/naturalvoice/web/backup.html",
+   "id": "web:backup.html",
+   "kind": "page",
+   "line": 1
+  },
+  {
+   "file": "src/naturalvoice/web/backup.js",
+   "id": "web:backup.js",
+   "kind": "script",
+   "line": 1
   },
   {
    "file": "src/naturalvoice/web/clone.js",

@@ -1,7 +1,7 @@
 // Real-browser check of the Studio page. Needs a running server:
 //   uv run voicestudio serve --port 8772
 //   PLAYWRIGHT_MODULE=... node tests/browser_studio.cjs
-const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
+const chromium = require('./browser_support.cjs');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const errors = [];
@@ -125,14 +125,26 @@ const BASE = process.env.NV_URL || 'http://127.0.0.1:8772';
     assert.equal(await page.inputValue('[aria-label="Line 2 delivery"]'), 'warm');
     assert.equal(await page.inputValue('#title'), 'Browser test');
     assert.ok(await page.isChecked('[aria-label="Use take 2 for line 2"]'), 'chosen take saved');
-    await page.screenshot({ path: '/tmp/nv-studio-desktop.png', fullPage: true });
+    await page.screenshot({
+      path: require('node:path').join(
+        process.env.NV_SCREENSHOTS || require('node:os').tmpdir(),
+        'nv-studio-desktop.png',
+      ),
+      fullPage: true,
+    });
 
     // mobile
     await page.setViewportSize({ width: 390, height: 844 });
     await page.waitForTimeout(300);
     const over = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
     assert.ok(over <= 0, `horizontal overflow ${over}px`);
-    await page.screenshot({ path: '/tmp/nv-studio-mobile.png', fullPage: true });
+    await page.screenshot({
+      path: require('node:path').join(
+        process.env.NV_SCREENSHOTS || require('node:os').tmpdir(),
+        'nv-studio-mobile.png',
+      ),
+      fullPage: true,
+    });
 
     // director's note -> readout -> explicit Apply
     await page.fill('[aria-label="Line 1"] input[id^="note-"]', 'slower, deeper, dramatic pause, flamingo');
@@ -163,7 +175,13 @@ const BASE = process.env.NV_URL || 'http://127.0.0.1:8772';
     await page.click('text=Accept rewrite');
     const rewritten = await page.inputValue('[aria-label="Line 3"] textarea');
     assert.ok(rewritten.includes('[pause 1s]') && rewritten.includes('percent'), rewritten);
-    await page.screenshot({ path: '/tmp/nv-studio-desktop2.png', fullPage: true });
+    await page.screenshot({
+      path: require('node:path').join(
+        process.env.NV_SCREENSHOTS || require('node:os').tmpdir(),
+        'nv-studio-desktop2.png',
+      ),
+      fullPage: true,
+    });
     // remove the test style
     const sts = await (await page.request.get(BASE + '/api/studio/styles')).json();
     for (const x of sts.styles.filter((x) => x.name === 'Browser style'))
@@ -226,7 +244,10 @@ const BASE = process.env.NV_URL || 'http://127.0.0.1:8772';
     await page.waitForFunction((n) => document.querySelectorAll('#lines .linecard').length === n, gl);
     assert.equal(await page.inputValue('[aria-label="Line 1 voice"]'), castVoices[0]);
     assert.equal(await page.inputValue('[aria-label="Line 2 voice"]'), castVoices[1]);
-    await page.screenshot({ path: '/tmp/nv-gen-desktop.png', fullPage: false });
+    await page.screenshot({
+      path: require('node:path').join(process.env.NV_SCREENSHOTS || require('node:os').tmpdir(), 'nv-gen-desktop.png'),
+      fullPage: false,
+    });
     // custom brief -> Add to end
     await page.selectOption('#gen-kind', 'ad');
     await page.fill('#gen-topic', "Rosa's bakery");
@@ -253,7 +274,10 @@ const BASE = process.env.NV_URL || 'http://127.0.0.1:8772';
       await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
       'gen overflow at 390',
     );
-    await page.screenshot({ path: '/tmp/nv-gen-mobile.png', fullPage: false });
+    await page.screenshot({
+      path: require('node:path').join(process.env.NV_SCREENSHOTS || require('node:os').tmpdir(), 'nv-gen-mobile.png'),
+      fullPage: false,
+    });
 
     // ---- Connect AI (all LLM endpoints stubbed; no real key is used)
     await page.setViewportSize({ width: 1280, height: 900 });
@@ -307,7 +331,11 @@ const BASE = process.env.NV_URL || 'http://127.0.0.1:8772';
     assert.equal(await page.getAttribute('#ai-key', 'type'), 'password');
     assert.equal(await page.getAttribute('#ai-box a', 'rel'), 'noopener');
     assert.equal(await page.getAttribute('#ai-model', 'placeholder'), 'openai/gpt-4o-mini');
-    await page.screenshot({ path: '/tmp/nv-ai-desktop.png', fullPage: false, clip: undefined });
+    await page.screenshot({
+      path: require('node:path').join(process.env.NV_SCREENSHOTS || require('node:os').tmpdir(), 'nv-ai-desktop.png'),
+      fullPage: false,
+      clip: undefined,
+    });
     const KEY = 'TESTKEY-not-a-real-key-wxyz';
     await page.fill('#ai-key', KEY);
     await page.click('#ai-connect');
