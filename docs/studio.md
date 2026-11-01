@@ -1,7 +1,7 @@
 # Studio
 
 Multi-voice voice-over production, fully offline: write or paste a script, give each line a voice and a
-delivery, render a mastered mix with captions, stems and a timeline. Page: `studio.html`; API: `/api/studio`;
+delivery, render a mastered mix with captions, stems and a timeline. Page: `/studio`; API: `/api/studio`;
 engine: `src/naturalvoice/studio.py`.
 
 ## Features
@@ -45,7 +45,7 @@ audience, and "Use emotion tags" (off by default; tags only sound in cloned voic
   in plain words and never change the script.
 
 ### Connect AI
-Inside the card. With no AI connected the status says so and a **Connect AI** panel explains that Voice Studio uses
+Inside the card. With no AI connected the status says so and a **Connect AI** panel explains that Shark Audio uses
 OpenRouter (one key for many models; get one at https://openrouter.ai/keys) and that the key is stored only on this
 computer, in the app's data folder. Paste the key (password field, no autocomplete or spellcheck) and optionally a
 model (default `openai/gpt-4o-mini`), then **Connect**: `PUT /api/llm/key` checks it with a tiny real request
@@ -127,7 +127,7 @@ exactly (defence in depth).
   stem). Mux: `ffmpeg -c:v copy` (picture untouched), AAC 256k (Opus for WebM), and optionally a soft subtitle
   track (mov_text in MP4/MOV, WebVTT in WebM, SRT in MKV). Nothing is burned in; SRT/VTT sidecars are still exported.
   The dubbed video is in the result (player + download) and the ZIP. Uploads older than a day are deleted.
-- **Voice Lab handoff**: `studio.html?voice=<id>` puts that voice on the first empty line (or a new line) if the id
+- **Voice Lab handoff**: `/studio?voice=<id>` puts that voice on the first empty line (or a new line) if the id
   is in the voice catalog; unknown ids are ignored. The parameter is then removed from the address bar.
 
 ## Alternate takes

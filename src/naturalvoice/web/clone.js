@@ -242,8 +242,9 @@
     createMsg.textContent = 'Preparing the reference recording…';
     try {
       const rec = await (await api('api/clone/voices', { method: 'POST', body: fd })).json();
-      createMsg.textContent = `Created “${rec.name}” from ${rec.meta.reference_seconds} s of audio. Preview it below.`;
+      // Announce only once the new voice is selected, so "Preview it below" is true when it appears.
       await loadVoices(rec.id);
+      createMsg.textContent = `Created “${rec.name}” from ${rec.meta.reference_seconds} s of audio. Preview it below.`;
       previewText.focus();
     } catch (e) {
       createMsg.className = 'error';

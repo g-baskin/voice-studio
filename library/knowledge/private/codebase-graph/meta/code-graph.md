@@ -17,23 +17,23 @@ served there.
 
 | Nodes | Count |
 |---|---|
-| class | 35 |
-| function | 366 |
-| module | 32 |
-| page | 5 |
+| class | 43 |
+| function | 401 |
+| module | 34 |
+| page | 4 |
 | process | 3 |
-| route | 73 |
-| script | 7 |
+| route | 82 |
+| script | 6 |
 
 | Edges | Count |
 |---|---|
-| calls | 202 |
-| defines | 401 |
-| imports | 81 |
-| loads | 6 |
-| requests | 69 |
+| calls | 215 |
+| defines | 444 |
+| imports | 86 |
+| loads | 5 |
+| requests | 66 |
 | runs | 3 |
-| serves | 73 |
+| serves | 82 |
 | spawns | 3 |
 
 ## Modules, engine processes and web assets
@@ -98,11 +98,16 @@ flowchart LR
   server --> rewrite_api
   server --> sample_library_api
   server --> scriptgen_api
+  server --> shark_api
   server --> studio_api
   server --> tts
   server --> voicelab_api
   server --> voices
   server --> workflow
+  shark --> studio
+  shark_api --> server
+  shark_api --> shark
+  shark_api --> studio
   studio --> audio
   studio --> clone
   studio --> humanize
@@ -129,7 +134,6 @@ flowchart LR
   engines_chatterbox_worker_py -.-> engines_chatterbox_worker
   engines_media_download_py -.-> engines_media_download
   engines_media_worker_py -.-> engines_media_worker
-  backup_html --> backup_js
   index_html --> workflow_js
   samples_html --> samples_js
   studio_html --> studio_js

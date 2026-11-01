@@ -17,9 +17,9 @@ const ok = (c, m) => {
   const open = async (opts) => {
     const page = await browser.newPage(opts);
     page.on('pageerror', (e) => errors.push(e.message));
-    const has = (await page.request.get(BASE + 'voicelab.html')).ok();
+    const has = (await page.request.get(BASE + 'voice-lab')).ok();
     if (has) {
-      await page.goto(BASE + 'voicelab.html');
+      await page.goto(BASE + 'voice-lab');
       if (await page.$('#tab-clone')) await page.click('#tab-clone');
     } else {
       await page.goto(BASE + 'manifest.webmanifest');

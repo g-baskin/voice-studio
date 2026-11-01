@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="docs/assets/banner.png" alt="Voice Studio: a stair-stepped, echoing robotic waveform melts into a smooth, natural one. Make AI voices sound human." width="100%">
+  <img src="docs/assets/banner.png" alt="Shark Audio: a stair-stepped, echoing robotic waveform melts into a smooth, natural one. Make AI voices sound human." width="100%">
 </p>
 
-# Voice Studio
+# Shark Audio
 
 **A voice production suite that runs on your own computer.** Fix robotic AI voices, write and render voice-overs
 with captions, design new voices, and clone a voice from a few seconds of audio. Nothing is uploaded anywhere
@@ -14,6 +14,9 @@ unless you choose to connect an AI service for script writing.
   import and **timed video dubbing**, background music with ducking, captions (SRT/VTT), stems, and loudness
   targets for YouTube, podcasts, EBU R128 and audiobooks. An **AI script writer** and a speech-friendly rewriter
   help when you don't have a script. ([guide](docs/studio.md))
+- **Speak:** write a scene with speakers and inline directions (`[whisper]`, `[excited]`...), hear it chunk by
+  chunk, then retake or revise any chunk in plain words ("gentler, a bit sadder"). Each direction is reported as
+  applied or approximated. ([guide](docs/speak.md))
 - **Voice Lab:** browse 54 built-in voices (star your favourites), design new ones by blending, describe a voice
   in words, or match a recording to the closest blend. ([guide](docs/voicelab.md))
 - **Cloning:** zero-shot voice cloning from 5-60 seconds of audio, emotion tags (`[laugh]`, `[sigh]`...), a
@@ -44,11 +47,11 @@ git clone https://github.com/g-baskin/voice-studio.git
 cd voice-studio
 uv sync                          # Python 3.12 environment
 scripts/download_models.sh       # base models, ~385 MB, checksum-verified
-uv run voicestudio serve --open  # opens http://127.0.0.1:8765
+uv run sharkaudio serve --open   # opens http://127.0.0.1:8765
 ```
 
-On a Mac you can also double-click **`desktop/Voice Studio.app`**, which starts the engine and opens the app in
-its own window. Stop it with `desktop/Stop Voice Studio.command`.
+On a Mac you can also double-click **`desktop/Voice Studio.app`** (shown as Shark Audio), which starts the engine
+and opens the app in its own window. Stop it with `desktop/Stop Voice Studio.command`.
 
 **Optional: voice cloning** (about 3.3 GB, installed inside the project folder only):
 
@@ -73,7 +76,7 @@ Building and previewing reference versions also needs the cloning engine above. 
 
 Studio's **Write a script for me** and **Rewrite for speech** work without any AI: a built-in outline writer and
 rules handle numbers, abbreviations and long sentences. To get fully written scripts, connect a language model.
-Voice Studio talks to it through the official [OpenAI Python SDK](https://github.com/openai/openai-python), and
+Shark Audio talks to it through the official [OpenAI Python SDK](https://github.com/openai/openai-python), and
 uses [OpenRouter](https://openrouter.ai) by default, which gives you one key for many models.
 
 1. Create a key at https://openrouter.ai/keys.
@@ -93,7 +96,7 @@ When you use an AI service, the text of your brief or script is sent to that pro
 ## Environment settings (optional)
 
 **Core local use requires no environment variables.** [`.env.example`](.env.example) lists optional AI-service
-keys, model choices, storage paths and cloning-worker settings. Voice Studio does **not** automatically load
+keys, model choices, storage paths and cloning-worker settings. Shark Audio does **not** automatically load
 `.env` files.
 
 To use one, run `cp -n .env.example .env` from the project root (this keeps an existing `.env`). Edit `.env`,
@@ -128,7 +131,7 @@ uv run voicestudio bench --quick                                 # benchmark the
 
 ## Responsible use
 
-Voice cloning and the voice changer can imitate real people. Voice Studio asks you to confirm you own the voice
+Voice cloning and the voice changer can imitate real people. Shark Audio asks you to confirm you own the voice
 or have permission to use it, and enforces that on the server, but it can't verify your claim. Don't impersonate
 people, deceive listeners, or break the law or platform rules. Label synthetic voices where required, and check
 the licenses of the models you use before commercial use.
@@ -153,7 +156,9 @@ PLAYWRIGHT_MODULE=/path/to/playwright NV_URL=http://127.0.0.1:8765 node tests/br
 ```
 
 The `tests/browser_*.cjs` checks drive a real browser against a running server; see each file's header. The
-Python package is `naturalvoice` (`src/naturalvoice`); Voice Studio is the product name.
+Python package is `naturalvoice` (`src/naturalvoice`); Shark Audio is the product name (formerly Voice Studio).
+The `sharkaudio`, `voicestudio` and `naturalvoice` commands all start the same app. Pages are moving to
+SvelteKit; see [interface development](docs/frontend.md).
 
 ### Local code-quality checks
 
@@ -188,7 +193,7 @@ method; the macOS app is a launcher for that checkout, not a standalone installe
 
 ## License
 
-Voice Studio is free software under the **GNU Affero General Public License, version 3 only**
+Shark Audio is free software under the **GNU Affero General Public License, version 3 only**
 (`AGPL-3.0-only`). See [LICENSE](LICENSE). In short: you may use, study, change and share it. If you distribute
 a modified version, or let others use a modified version over a network, you must make your modified source
 available under the same license.

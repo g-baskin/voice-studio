@@ -67,7 +67,7 @@ def test_openrouter_env_key_uses_openrouter_defaults(monkeypatch):
     assert llm.chat("sys", "usr") == "Hello there."
     c = seen["cfg"]
     assert c["base_url"] == "https://openrouter.ai/api/v1" and c["model"] == "openai/gpt-4o-mini"
-    assert c["headers"]["X-Title"] == "Voice Studio"
+    assert c["headers"]["X-Title"] == "Shark Audio"
     messages = FakeClient.sent["messages"]
     assert isinstance(messages, list)
     assert messages[0] == {"role": "system", "content": "sys"}

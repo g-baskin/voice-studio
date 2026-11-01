@@ -21,7 +21,7 @@ Run selected suites when working on a smaller surface:
 PLAYWRIGHT_MODULE=/absolute/path/to/node_modules/playwright npm run test:browser -- backup motion templates
 ```
 
-Available suites: backup, clone, motion, samples, stars, studio, templates, voicelab, workflow.
+Available suites: backup, clone, clone_race, motion, samples, speak, stars, studio, templates, voicelab, workflow.
 Missing browser/model/engine prerequisites fail the affected run. A selected subset is not a full-suite pass.
 
 Each suite gets its own data directory, temporary audio workspace, screenshots, browser log and server log.

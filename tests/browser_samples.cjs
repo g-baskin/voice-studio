@@ -34,7 +34,7 @@ function wav() {
   try {
     const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
     page.on('pageerror', (error) => errors.push(error.message));
-    await page.goto(BASE + '/samples.html');
+    await page.goto(BASE + '/samples');
     await page.waitForFunction(() => document.getElementById('status').textContent.includes('engine ready'));
     await page.screenshot({ path: path.join(OUT, 'desktop-empty.png'), fullPage: true });
     // Keyboard reaches the skip link and the main content without a pointer.

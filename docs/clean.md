@@ -8,7 +8,7 @@ audio or video. This guide has the details; the project overview is in the [READ
 | Want | Do |
 |---|---|
 | Web app | `uv run voicestudio serve --open` → http://127.0.0.1:8765 |
-| Desktop (Mac) | double-click `desktop/Voice Studio.app` |
+| Desktop (Mac) | double-click `desktop/Voice Studio.app` (shown as Shark Audio) |
 | Phone | `uv run voicestudio serve --host 0.0.0.0`, open the private access link it prints on the phone (same Wi-Fi) once, then "Add to Home Screen". The link stays the same across restarts; anyone who has it can use the app while it runs, so replace it with `serve --host 0.0.0.0 --new-token` if it leaks |
 | Fix a file | `uv run voicestudio clean ad.mp4` → `ad.natural.mp4` (audio or video; the picture is untouched) |
 | Text to voice | `uv run voicestudio speak "Hello there!" --voice af_heart -o hello.wav` |

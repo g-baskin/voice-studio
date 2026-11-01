@@ -1,7 +1,7 @@
 [project]
 name = "voice-studio"
 version = "0.3.0"
-description = "Voice Studio: local voice production suite. Clean AI voices, write and render voice-overs, design and clone voices."
+description = "Shark Audio: local voice production suite. Clean AI voices, write and render voice-overs, design and clone voices."
 readme = "README.md"
 license = "AGPL-3.0-only"
 license-files = ["LICENSE"]
@@ -27,7 +27,8 @@ dependencies = [
 ]
 
 [project.scripts]
-voicestudio = "naturalvoice.cli:main"
+sharkaudio = "naturalvoice.cli:main"
+voicestudio = "naturalvoice.cli:main"  # earlier product name, still supported
 naturalvoice = "naturalvoice.cli:main"  # old name, kept so existing commands keep working
 
 [project.urls]
@@ -38,7 +39,7 @@ requires = ["uv_build>=0.9.13,<0.14.0"]
 build-backend = "uv_build"
 
 [tool.uv.build-backend]
-# The Python package keeps its original folder name (naturalvoice); the product name is Voice Studio.
+# The Python package keeps its original folder name (naturalvoice); the product name is Shark Audio.
 module-name = "naturalvoice"
 
 [tool.uv]

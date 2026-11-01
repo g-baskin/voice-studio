@@ -1,0 +1,1 @@
+var e=class extends Error{};async function t(t,n){let r=await fetch(t,n);if(!r.ok){let t=`The request failed.`;try{let e=await r.json();e&&typeof e==`object`&&`detail`in e&&typeof e.detail==`string`&&(t=e.detail)}catch{}throw new e(t)}return r}export{t};

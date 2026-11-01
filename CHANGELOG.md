@@ -1,13 +1,26 @@
 # Changelog
 
-Notable changes to Voice Studio, grouped using Keep a Changelog categories.
+Notable changes to Shark Audio (formerly Voice Studio), grouped using Keep a Changelog categories.
 The current source version is **0.3.0**. No Git tag or GitHub release has been published;
 all entries below describe unreleased source, not historical releases.
 
 ## [Unreleased]
 
+### Changed
+
+- The product is now called Shark Audio across the app, docs, banner and desktop launcher. The new `sharkaudio`
+  command joins `voicestudio` and `naturalvoice`, which keep working. The desktop bundle keeps its folder name.
+- Pages have clean addresses (`/studio`, `/voice-lab`, `/samples`, `/backup`); old `.html` addresses redirect
+  with their query intact.
+- The interface is moving to SvelteKit (`frontend/`). The Backup page is the first page served from the
+  SvelteKit build; the other pages follow one at a time.
+
 ### Added
 
+- **Speak** (`/speak`): directed multi-speaker performances with inline directions, chunked recording that
+  plays as it arrives, retakes, plain-language revisions and a joined download. Directions are reported as
+  applied, approximated or unavailable. Inspired by Fish Audio's published design; no Fish Audio code or
+  models are used.
 - Local voice cleanup, multi-voice Studio scripts, captions, dubbing, voice design and consent-gated cloning
   in the initial source snapshot (`7962b18`, 2026-10-18).
 - Voice Studio branding, banner and app icons (`4e17b0f`).

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate Voice Studio's logo artwork (SVG). PNG/ICNS are rendered from these by scripts/render_brand.cjs.
+"""Generate Shark Audio's logo artwork (SVG). PNG/ICNS are rendered from these by scripts/render_brand.cjs.
 
 The mark tells the product's story in one line: a coarse, stair-stepped, echoing "robotic" waveform
 (grey, digital, low resolution) whose steps shrink until it flows into a smooth, warm "human" wave (green).
@@ -87,7 +87,7 @@ def icon_svg(inset=0.0, rounded=True, canvas=512):
     pad = canvas * inset
     scale = (canvas - 2 * pad) / canvas
     rx = 112 if rounded else 0
-    return f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {canvas} {canvas}" width="{canvas}" height="{canvas}" role="img" aria-label="Voice Studio">
+    return f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {canvas} {canvas}" width="{canvas}" height="{canvas}" role="img" aria-label="Shark Audio">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="0.9" y2="1"><stop offset="0" stop-color="{BG_B}"/><stop offset="1" stop-color="{BG_A}"/></linearGradient>
     <radialGradient id="halo" cx="0.72" cy="0.5" r="0.55"><stop offset="0" stop-color="{GREEN_B}" stop-opacity="0.35"/><stop offset="1" stop-color="{GREEN_B}" stop-opacity="0"/></radialGradient>{defs("i", 72, 330, 72, 440, 260)}
@@ -110,7 +110,7 @@ def banner_svg():
         for y in (cy - amp - 20, cy, cy + amp + 20)
     )
     font = "'SF Pro Display','Helvetica Neue',Inter,'Segoe UI',system-ui,sans-serif"
-    return f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {w} {h}" width="{w}" height="{h}" role="img" aria-label="Voice Studio: make AI voices sound human">
+    return f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {w} {h}" width="{w}" height="{h}" role="img" aria-label="Shark Audio: make AI voices sound human">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0a110e"/><stop offset="1" stop-color="#14231b"/></linearGradient>
     <radialGradient id="halo" cx="0.78" cy="0.72" r="0.55"><stop offset="0" stop-color="{GREEN_B}" stop-opacity="0.30"/><stop offset="1" stop-color="{GREEN_B}" stop-opacity="0"/></radialGradient>
@@ -120,7 +120,7 @@ def banner_svg():
   <rect width="{w}" height="{h}" fill="url(#halo)"/>
   {guides}
   <g font-family="{font}">
-    <text x="80" y="178" font-size="116" font-weight="700" letter-spacing="-3" fill="#f2f6f3">Voice <tspan fill="url(#title)">Studio</tspan></text>
+    <text x="80" y="178" font-size="116" font-weight="700" letter-spacing="-3" fill="#f2f6f3">Shark <tspan fill="url(#title)">Audio</tspan></text>
     <text x="84" y="238" font-size="38" font-weight="500" fill="#b6c4bb">Make AI voices sound human.</text>
     <text x="84" y="286" font-size="24" fill="#7f9087">Clean robotic voices  ·  Write voice-overs  ·  Design and clone voices</text>
   </g>

@@ -2,7 +2,17 @@ import js from '@eslint/js';
 import globals from 'globals';
 
 export default [
-  { ignores: ['node_modules/**', '.venv/**', 'engines/**/.venv/**', 'dist/**', 'build/**'] },
+  {
+    ignores: [
+      'node_modules/**',
+      '.venv/**',
+      'engines/**/.venv/**',
+      'dist/**',
+      'build/**',
+      'frontend/**',
+      'src/naturalvoice/ui/**',
+    ],
+  },
   js.configs.recommended,
   {
     files: ['src/naturalvoice/web/*.js'],

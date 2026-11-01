@@ -278,18 +278,4 @@ export interface SampleElements {
   "useCleaned": HTMLElementTagNameMap["input"];
   "versions": HTMLElementTagNameMap["ul"];
 }
-export interface BackupElements {
-  "backupBrowser": HTMLElementTagNameMap["button"];
-  "backupDestination": HTMLElementTagNameMap["pre"];
-  "backupExport": HTMLElementTagNameMap["button"];
-  "backupFile": HTMLElementTagNameMap["input"];
-  "backupMain": HTMLElementTagNameMap["main"];
-  "backupReplace": HTMLElementTagNameMap["input"];
-  "backupRestore": HTMLElementTagNameMap["button"];
-  "backupRestoreForm": HTMLElementTagNameMap["form"];
-  "backupStatus": HTMLElementTagNameMap["p"];
-  "browserHeading": HTMLElementTagNameMap["h2"];
-  "exportHeading": HTMLElementTagNameMap["h2"];
-  "restoreHeading": HTMLElementTagNameMap["h2"];
-}
 export type ElementFor<M, K extends string> = K extends keyof M ? M[K] : HTMLElement;

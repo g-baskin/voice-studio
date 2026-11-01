@@ -73,7 +73,7 @@ async def export_backup(request: Request) -> FileResponse:
         await run_in_threadpool(backup.export_data, voices.DATA_DIR, archive, settings)
         return FileResponse(
             archive,
-            filename="voice-studio-backup.zip",
+            filename="shark-audio-backup.zip",
             media_type="application/zip",
             headers={"Cache-Control": "no-store"},
             background=BackgroundTask(shutil.rmtree, folder),
@@ -113,7 +113,7 @@ async def restore_backup(request: Request) -> dict:
         "folder": str(folder),
         "files": count,
         "browser": settings,
-        "restart": f"NATURALVOICE_DATA={shlex.quote(str(folder))} uv run voicestudio serve --open",
+        "restart": f"NATURALVOICE_DATA={shlex.quote(str(folder))} uv run sharkaudio serve --open",
     }
 
 

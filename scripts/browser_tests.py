@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import argparse
 import json
+import contextlib
 import os
+import signal
 import socket
 import subprocess
 import sys
@@ -43,6 +45,22 @@ def serve(fd: int) -> None:
         clone.stop()
 
 
+def stop_server(process: subprocess.Popen[bytes], grace: float = 30) -> None:
+    """Stop a test server and everything it started, such as the cloning worker.
+
+    The server runs in its own session, so its process group holds only processes this runner
+    created. A server stuck mid-render would otherwise leave its worker running and slow later suites.
+    """
+    process.terminate()
+    try:
+        process.wait(timeout=grace)
+    except subprocess.TimeoutExpired:
+        process.kill()
+        process.wait()
+    with contextlib.suppress(ProcessLookupError):
+        os.killpg(process.pid, signal.SIGKILL)
+
+
 @contextmanager
 def test_server(root: Path, env: dict[str, str], log_path: Path) -> Iterator[str]:
     with socket.socket() as listener, log_path.open("w") as log:
@@ -56,6 +74,7 @@ def test_server(root: Path, env: dict[str, str], log_path: Path) -> Iterator[str
             pass_fds=(listener.fileno(),),
             stdout=log,
             stderr=subprocess.STDOUT,
+            start_new_session=True,
         )
         try:
             deadline = time.monotonic() + 60
@@ -72,12 +91,7 @@ def test_server(root: Path, env: dict[str, str], log_path: Path) -> Iterator[str
                     time.sleep(0.1)
             yield url
         finally:
-            process.terminate()
-            try:
-                process.wait(timeout=30)
-            except subprocess.TimeoutExpired:
-                process.kill()
-                process.wait()
+            stop_server(process)
 
 
 def verify_restored(root: Path, folder: Path, env: dict[str, str]) -> None:

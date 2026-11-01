@@ -6,7 +6,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const os = require('node:os');
 
-const URL = (process.env.NV_URL || 'http://127.0.0.1:8771') + '/voicelab.html';
+const URL = (process.env.NV_URL || 'http://127.0.0.1:8771') + '/voice-lab';
 
 function wav(seconds = 12) {
   // tone bursts: valid 10-60 s reference, fast to generate

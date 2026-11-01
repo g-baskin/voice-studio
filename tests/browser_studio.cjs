@@ -15,11 +15,11 @@ const BASE = process.env.NV_URL || 'http://127.0.0.1:8772';
     const page = await ctx.newPage();
     page.on('pageerror', (e) => errors.push(e.message));
     page.on('console', (m) => consoleText.push(m.text()));
-    await page.goto(BASE + '/studio.html');
+    await page.goto(BASE + '/studio');
     await page.evaluate(() => localStorage.clear());
     await page.reload();
     await page.waitForSelector('#lines textarea');
-    assert.equal(await page.getAttribute('a[href="studio.html"]', 'aria-current'), 'page');
+    assert.equal(await page.getAttribute('a[href="/studio"]', 'aria-current'), 'page');
 
     // 3 lines, 2 voices
     await page.click('#add');
@@ -190,14 +190,14 @@ const BASE = process.env.NV_URL || 'http://127.0.0.1:8772';
     // Voice Lab handoff: ?voice=<id> puts that voice on a new line; unknown ids are ignored
     await page.setViewportSize({ width: 1280, height: 900 });
     const before = await page.$$eval('#lines .linecard', (n) => n.length);
-    await page.goto(BASE + '/studio.html?voice=bf_emma');
+    await page.goto(BASE + '/studio?voice=bf_emma');
     await page.waitForFunction(() => document.getElementById('proj-status').textContent.includes('Voice Lab'));
     const n = await page.$$eval('#lines .linecard', (x) => x.length);
     assert.equal(n, before + 1);
     assert.equal(await page.inputValue(`[aria-label="Line ${n} voice"]`), 'bf_emma');
     assert.ok(!(await page.url()).includes('voice='));
     await page.waitForTimeout(700); // draft autosave is debounced
-    await page.goto(BASE + '/studio.html?voice=custom:ffffffffffff');
+    await page.goto(BASE + '/studio?voice=custom:ffffffffffff');
     await page.waitForSelector('#lines textarea');
     assert.equal(await page.$$eval('#lines .linecard', (x) => x.length), n);
 
@@ -226,7 +226,7 @@ const BASE = process.env.NV_URL || 'http://127.0.0.1:8772';
       await r.fulfill({ json: { ...real, llm: { available: false, via: null } } });
     });
     await page.evaluate(() => localStorage.clear());
-    await page.goto(BASE + '/studio.html');
+    await page.goto(BASE + '/studio');
     await page.waitForSelector('#lines textarea');
     await page.click('#gen-box summary');
     await page.waitForFunction(() => document.getElementById('gen-engine').textContent.startsWith('No AI connected.'));
@@ -322,7 +322,7 @@ const BASE = process.env.NV_URL || 'http://127.0.0.1:8772';
       if (r.request().method() === 'DELETE') return r.fulfill({ json: off });
       return r.continue();
     });
-    await page.goto(BASE + '/studio.html');
+    await page.goto(BASE + '/studio');
     await page.waitForSelector('#lines textarea');
     await page.click('#gen-box summary');
     await page.waitForFunction(() => document.getElementById('gen-engine').textContent.startsWith('No AI connected.'));

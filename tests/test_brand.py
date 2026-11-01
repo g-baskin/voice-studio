@@ -42,13 +42,13 @@ def test_banner_is_social_preview_size_and_linked_from_readme():
 def test_manifest_icons_and_page_links_resolve_over_http():
     c = TestClient(server.app, base_url="http://127.0.0.1", client=("127.0.0.1", 50000))
     manifest = c.get("/manifest.webmanifest").json()
-    assert manifest["name"] == "Voice Studio" and {i["purpose"] for i in manifest["icons"]} >= {"any", "maskable"}
+    assert manifest["name"] == "Shark Audio" and {i["purpose"] for i in manifest["icons"]} >= {"any", "maskable"}
     for icon in manifest["icons"]:
         assert c.get("/" + icon["src"]).status_code == 200, icon["src"]
-    for page in ("index.html", "studio.html", "voicelab.html"):
-        html = c.get("/" + page).text
+    for page in ("/", "/studio", "/voice-lab", "/samples", "/backup"):
+        html = c.get(page).text
         for href in re.findall(r'<link rel="(?:icon|apple-touch-icon|manifest)"[^>]*href="([^"]+)"', html):
-            assert c.get("/" + href).status_code == 200, (page, href)
+            assert c.get(href if href.startswith("/") else "/" + href).status_code == 200, (page, href)
     shell = re.findall(r'"([\w.-]+\.(?:png|svg|js|css|webmanifest))"', (WEB / "sw.js").read_text())
     for f in shell:
         assert (WEB / f).exists(), f"service worker caches a missing file: {f}"

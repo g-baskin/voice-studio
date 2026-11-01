@@ -120,7 +120,7 @@ def decide(conn: HTTPConnection, policy: AccessPolicy) -> Response | None:
     origin = conn.headers.get("origin")
     scheme = {"ws": "http", "wss": "https"}.get(conn.url.scheme, conn.url.scheme)
     if unsafe and origin and origin != f"{scheme}://{conn.url.netloc}":
-        return _forbidden(conn, 403, "Open this page from the Voice Studio app itself.")
+        return _forbidden(conn, 403, "Open this page from the Shark Audio app itself.")
     if conn.headers.get("sec-fetch-site") == "cross-site" and (unsafe or conn.url.path.startswith("/api/")):
         return _forbidden(conn, 403, "Cross-site requests are not allowed.")
 
@@ -128,7 +128,7 @@ def decide(conn: HTTPConnection, policy: AccessPolicy) -> Response | None:
     if is_loopback_host(conn.url.hostname or "") and is_loopback_host(peer):
         return None
     if policy.token is None:
-        return _forbidden(conn, 403, "Voice Studio only accepts connections from this computer at http://127.0.0.1.")
+        return _forbidden(conn, 403, "Shark Audio only accepts connections from this computer at http://127.0.0.1.")
     if _same_token(conn.cookies.get(COOKIE), policy.token):
         return None
     if method == "GET" and conn.scope["type"] == "http" and _same_token(conn.query_params.get(QUERY), policy.token):

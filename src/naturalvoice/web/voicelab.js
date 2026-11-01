@@ -55,7 +55,7 @@
     try {
       res = await fetch(url, opts);
     } catch (cause) {
-      throw new Error('Could not reach Voice Studio. Is the app still running?', { cause });
+      throw new Error('Could not reach Shark Audio. Is the app still running?', { cause });
     }
     if (!res.ok) throw new Error(await errorText(res));
     return res;
@@ -256,7 +256,7 @@
       copy,
       el('a', {
         class: 'btn secondary small',
-        href: 'studio.html?voice=' + encodeURIComponent(v.id),
+        href: '/studio?voice=' + encodeURIComponent(v.id),
         text: 'Use in Studio',
       }),
     );

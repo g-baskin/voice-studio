@@ -10,7 +10,7 @@ if (!base || !process.env.NATURALVOICE_DATA) throw new Error('Run through npm ru
     const page = await browser.newPage({ acceptDownloads: true });
     const errors = [];
     page.on('pageerror', (error) => errors.push(error.message));
-    await page.goto(base + '/backup.html');
+    await page.goto(base + '/backup');
     const draft = JSON.stringify({ project: { title: 'Backed-up draft' }, projectId: null });
     const templates = JSON.stringify({
       archive: {
@@ -32,7 +32,7 @@ if (!base || !process.env.NATURALVOICE_DATA) throw new Error('Run through npm ru
       page.getByRole('button', { name: 'Download backup', exact: true }).click(),
     ]);
     const archive = await download.path();
-    assert.equal(download.suggestedFilename(), 'voice-studio-backup.zip');
+    assert.equal(download.suggestedFilename(), 'shark-audio-backup.zip');
     const before = fs.readdirSync(path.join(process.env.NATURALVOICE_DATA, 'projects'));
     await page.setInputFiles('#backupFile', archive);
     const [response] = await Promise.all([

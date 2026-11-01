@@ -270,7 +270,7 @@ def render(r: dict) -> str:
     methods_ = r["methods"]
     base = r["overall"].get("untouched", {})
     lines = [
-        "# Voice Studio benchmark",
+        "# Shark Audio benchmark",
         "",
         "Standard measures: **OVRL / SIG / BAK** = Microsoft DNSMOS predicted listener ratings (1-5), "
         "**PESQ** = ITU-T P.862.2 wideband (1-4.6), **STOI** = intelligibility (0-1). "

@@ -7,11 +7,14 @@ Read `CLAUDE.md` for workflow and behavior details, `CONTEXT.md` for domain term
 - For commit requests, follow `.gg/commands/commit.md`: local checks, tests, build and a read-only review before staging/committing.
 
 <!-- gg:init:start -->
-## Voice Studio
+## Shark Audio (formerly Voice Studio)
 
-Local voice production: clean recordings, render scripts and timed dubs, and design or clone voices; cloud speech providers are optional. The product/distribution is `voice-studio`, but the Python package remains `naturalvoice` and both CLI names are supported for compatibility.
+Local voice production: clean recordings, render scripts and timed dubs, and design or clone voices; cloud speech providers are optional. The product name is Shark Audio; the distribution stays `voice-studio`, the Python package remains `naturalvoice`, and the `sharkaudio`, `voicestudio` and `naturalvoice` commands all stay supported.
 
 ## Boundaries and invariants
+
+- Speak (`shark.py`, `shark_api.py`, `/speak`) is original code inspired by Fish Audio's published design. Never copy Fish Audio code, weights or voices into this AGPL project: their license adds restrictions AGPL forbids. Directions the local engines cannot truly perform must be reported as approximated, never claimed as applied.
+- The interface is being migrated to SvelteKit 3 (Svelte 5 runes) in `frontend/`, built with adapter-static into `src/naturalvoice/ui/`, which is committed so the app runs with `uv` alone. After any `frontend/` change run `npm run frontend:build`; `npm run frontend:check` fails when the committed build is stale. Pages not yet migrated stay as HTML in `src/naturalvoice/web/`; `server.PAGES` maps clean addresses to either, and old `.html` addresses redirect.
 
 - Custom voices are Kokoro vectors; cloned voices are reference recordings consumed by Chatterbox. Matching a recording within stock-voice space is not cloning. Keep these categories distinct in storage and UI terminology.
 - Chatterbox runs in its own Python 3.12 environment through a persistent JSON-lines subprocess. Do not merge its dependencies into the main environment: root ONNX Runtime is pinned to 1.19.2 for Intel-Mac wheels, while the engine independently pins 1.23.2.

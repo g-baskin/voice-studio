@@ -27,7 +27,6 @@ def generated_types(root: Path) -> str:
         ("studio", "StudioElements"),
         ("voicelab", "VoiceLabElements"),
         ("samples", "SampleElements"),
-        ("backup", "BackupElements"),
     ):
         parser = Elements()
         parser.feed((root / f"src/naturalvoice/web/{page}.html").read_text())

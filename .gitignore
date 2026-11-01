@@ -11,6 +11,7 @@ samples/
 .ruff_cache/
 .mypy_cache/
 node_modules/
+.svelte-kit/
 .DS_Store
 dist/
 build/

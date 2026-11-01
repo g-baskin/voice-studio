@@ -8,7 +8,7 @@ const BASE = process.env.NV_URL || 'http://127.0.0.1:8765';
   try {
     const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
     page.on('pageerror', (e) => errors.push(e.message));
-    await page.goto(BASE + '/voicelab.html');
+    await page.goto(BASE + '/voice-lab');
     await page.waitForSelector('#libList li');
     await page.fill('#libSearch', 'bella');
     const star = page.getByRole('button', { name: 'Star Bella' });
@@ -40,7 +40,7 @@ const BASE = process.env.NV_URL || 'http://127.0.0.1:8765';
     // Studio picker lists starred voices first.
     const studio = await browser.newPage();
     studio.on('pageerror', (e) => errors.push(e.message));
-    await studio.goto(BASE + '/studio.html');
+    await studio.goto(BASE + '/studio');
     await studio.waitForSelector('.line select, select[aria-label*="oice"]');
     const labels = await studio.$$eval('optgroup', (gs) => gs.map((g) => g.label));
     assert.ok(
@@ -50,7 +50,7 @@ const BASE = process.env.NV_URL || 'http://127.0.0.1:8765';
     // Clean page quick voice picker too.
     const clean = await browser.newPage();
     clean.on('pageerror', (e) => errors.push(e.message));
-    await clean.goto(BASE + '/index.html');
+    await clean.goto(BASE + '/');
     await clean.waitForFunction(() => document.querySelector('#voice optgroup'));
     assert.equal(await clean.$eval('#voice optgroup', (g) => g.label), '\u2605 Starred');
     // Mobile width.

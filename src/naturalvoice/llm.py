@@ -26,7 +26,7 @@ OPENROUTER_URL = "https://openrouter.ai/api/v1"
 OPENROUTER_MODEL = "openai/gpt-4o-mini"
 OLLAMA_URL = "http://127.0.0.1:11434/v1"
 SITE_URL = "https://github.com/g-baskin/voice-studio"
-SITE_NAME = "Voice Studio"
+SITE_NAME = "Shark Audio"
 _KEY_OK = re.compile(r"^[\x21-\x7e]{8,300}$")  # printable ASCII, no spaces
 
 

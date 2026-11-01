@@ -1,4 +1,4 @@
-// Voice Studio Studio. All user text goes through textContent / value; never innerHTML.
+// Shark Audio Studio. All user text goes through textContent / value; never innerHTML.
 'use strict';
 /** @template {string} K
  * @param {K} id
@@ -1938,7 +1938,7 @@ async function refreshRecent() {
         newLine(
           'af_heart',
           'Narrator',
-          'Welcome to Voice Studio Studio. [pause 0.5s] Write your script, then press Render.',
+          'Welcome to Shark Audio Studio. [pause 0.5s] Write your script, then press Render.',
         ),
       ],
     });
