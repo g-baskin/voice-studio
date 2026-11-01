@@ -5,7 +5,7 @@
     "lint": "uv run --locked ruff check src tests scripts engines/chatterbox/worker.py engines/media/worker.py engines/media/download.py && eslint . && shellcheck scripts/*.sh",
     "format": "uv run --locked ruff format src tests scripts engines/chatterbox/worker.py engines/media/worker.py engines/media/download.py && prettier --write \"src/naturalvoice/web/**/*.js\" \"scripts/*.cjs\" \"tests/*.cjs\" \"*.mjs\" && shfmt -w -i 2 scripts/*.sh",
     "format:check": "uv run --locked ruff format --check src tests scripts engines/chatterbox/worker.py engines/media/worker.py engines/media/download.py && prettier --check \"src/naturalvoice/web/**/*.js\" \"scripts/*.cjs\" \"tests/*.cjs\" \"*.mjs\" && shfmt -d -i 2 scripts/*.sh",
-    "typecheck": "uv run --locked python scripts/web_types.py && uv run --locked python scripts/code_graph.py && uv run --locked mypy && tsc -p jsconfig.json && tsc -p jsconfig.worker.json && tsc -p jsconfig.node.json",
+    "typecheck": "uv run --locked python scripts/code_graph.py && uv run --locked mypy && tsc -p jsconfig.worker.json && tsc -p jsconfig.node.json",
     "check": "npm run lint && npm run format:check && npm run typecheck && npm run frontend:check",
     "test:browser": "uv run --locked --no-sync --no-python-downloads --offline python scripts/browser_tests.py",
     "frontend:build": "npm --prefix frontend run build",

@@ -20,18 +20,17 @@ served there.
 | class | 43 |
 | function | 401 |
 | module | 34 |
-| page | 4 |
+| page | 19 |
 | process | 3 |
 | route | 82 |
-| script | 6 |
+| script | 19 |
 
 | Edges | Count |
 |---|---|
 | calls | 215 |
 | defines | 444 |
 | imports | 86 |
-| loads | 5 |
-| requests | 66 |
+| requests | 76 |
 | runs | 3 |
 | serves | 82 |
 | spawns | 3 |
@@ -134,9 +133,4 @@ flowchart LR
   engines_chatterbox_worker_py -.-> engines_chatterbox_worker
   engines_media_download_py -.-> engines_media_download
   engines_media_worker_py -.-> engines_media_worker
-  index_html --> workflow_js
-  samples_html --> samples_js
-  studio_html --> studio_js
-  voicelab_html --> clone_js
-  voicelab_html --> voicelab_js
 ```

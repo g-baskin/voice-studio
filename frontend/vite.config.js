@@ -8,9 +8,9 @@ import pkg from './package.json' with { type: 'json' };
 // The Python app serves this build; SHARK_UI_OUT lets the freshness check build elsewhere.
 const out = process.env.SHARK_UI_OUT ?? fileURLToPath(new URL('../src/naturalvoice/ui', import.meta.url));
 const api = process.env.SHARK_API ?? 'http://127.0.0.1:8765';
-// Shared assets and pages the Python app still serves from src/naturalvoice/web.
+// Shared assets the Python app serves from src/naturalvoice/web.
 const SHARED = ['/app.css', '/icon.svg', '/favicon-32.png', '/apple-touch-icon.png', '/manifest.webmanifest'];
-const LEGACY = new Set(['/', '/studio', '/voice-lab', ...SHARED]);
+const LEGACY = new Set(SHARED);
 
 export default defineConfig({
   plugins: [

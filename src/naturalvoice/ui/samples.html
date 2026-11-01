@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0b1310" />
+    <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="stylesheet" href="/app.css" />
+    <link href="./_app/immutable/entry/start.BH0UkpfC.js" rel="modulepreload">
+		<link href="./_app/immutable/entry/payload.DSmR2FwN.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/CRzLMJPS.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/BymQNHGV.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/DtudVTbV.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/BmyCCkbw.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/D4sPtfAZ.js" rel="modulepreload">
+		<link href="./_app/immutable/entry/app.BIYpq_i6.js" rel="modulepreload">
+		<link href="./_app/immutable/nodes/0.C7il-yuK.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/DK3Fl9T5.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/D3WTCjHM.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/CJ43mxrg.js" rel="modulepreload">
+		<link href="./_app/immutable/nodes/4.BeBIUHqf.js" rel="modulepreload">
+		<!--erxr18--><!----><title>Voice sample collections · Shark Audio</title>
+		<link href="./_app/immutable/assets/0.C3tuTB9r.css" rel="stylesheet">
+		<link href="./_app/immutable/assets/4.BT9r8QDe.css" rel="stylesheet">
+  </head>
+  <body>
+    <div style="display: contents" data-sveltekit-reload><!--[--><!--[--><!--[0--><!--[--><a class="skip svelte-12qhfyh" href="#main">Skip to sample collections</a> <header class="apphead"><div class="apphead-inner"><a class="brand" href="/"><img src="/icon.svg" alt="" width="28" height="28"/>Shark Audio</a> <nav class="appnav" aria-label="Main"><!--[--><a href="/">Clean</a><a href="/speak">Speak</a><a href="/studio">Studio</a><a href="/voice-lab">Voice Lab</a><a href="/backup">Backup</a><!--]--></nav></div></header> <main id="main" class="page" tabindex="-1"><!--[--><!--[-1--><!--[--><h1>Voice sample collections</h1> <p class="lede svelte-erxr18">Keep each person's approved recordings together. Add more clips later and compare new reference versions without
+  replacing old ones.</p> <p class="note svelte-erxr18">Local reference-based cloning, not model training. Speaker labels are suggestions: review every selection. Background
+  separation cannot reliably isolate people speaking at the same time.</p> <p id="status" class="status svelte-erxr18" role="status" aria-live="polite">Loading the local library...</p> <button id="refresh" class="btn secondary svelte-erxr18" type="button">Refresh library</button> <div class="grid svelte-erxr18" style="margin-top:16px"><section class="card svelte-erxr18" aria-labelledby="importHeading"><h2 id="importHeading" class="svelte-erxr18">1. Import a recording</h2> <form id="importForm"><label class="field svelte-erxr18">Audio or video file<input id="mediaFile" name="file" type="file" accept=".wav,.mp3,.mp4,.m4a,.flac,.webm,.ogg,.mov,.mkv,.opus" class="svelte-erxr18"/></label> <label class="field svelte-erxr18">Or a public YouTube video URL<input id="mediaUrl" name="url" type="url" placeholder="https://www.youtube.com/watch?v=..." class="svelte-erxr18"/></label> <p class="hint svelte-erxr18">Files up to 250 MB. Analyze a 5 to 120 second window. For larger movies, export a clip first. YouTube imports
+        download audio from videos up to 30 minutes and may be unavailable.</p> <div class="row svelte-erxr18"><label class="field svelte-erxr18">Start in source (seconds)<input name="start" type="number" min="0" max="28800" step="0.1" value="0" required="" class="svelte-erxr18"/></label> <label class="field svelte-erxr18">Window length (seconds)<input name="seconds" type="number" min="5" max="120" step="0.1" value="30" required="" class="svelte-erxr18"/></label></div> <label class="field svelte-erxr18">Expected speakers (0 = detect automatically)<input name="speakers" type="number" min="0" max="16" value="0" required="" class="svelte-erxr18"/></label> <label class="check svelte-erxr18"><input name="separate" type="checkbox" value="true" class="svelte-erxr18"/>Separate vocals from background music (slower; may
+        introduce artifacts)</label> <label class="check svelte-erxr18"><input name="consent" type="checkbox" value="true" required="" class="svelte-erxr18"/>I have permission to process this recording and
+        clone its selected voices.</label> <button id="importButton" class="btn" type="submit">Import and detect speakers</button></form></section> <section class="card svelte-erxr18" aria-labelledby="peopleHeading"><h2 id="peopleHeading" class="svelte-erxr18">2. Choose a person</h2> <label class="field svelte-erxr18">Saved person<select id="personSelect" class="svelte-erxr18"><option value="" selected="">Create a person below</option><!--[--><!--]--></select></label> <form id="personForm"><label class="field svelte-erxr18">New person's name<input id="personName" name="name" type="text" maxlength="60" required="" value="" class="svelte-erxr18"/></label> <label class="check svelte-erxr18"><input name="consent" type="checkbox" required="" class="svelte-erxr18"/>I own this voice or have permission
+        to clone it.</label> <button class="btn secondary svelte-erxr18" type="submit">Create collection</button></form> <p class="hint svelte-erxr18">Choose the same person when adding samples from another recording. Speaker numbers only apply to the current
+      source.</p></section></div> <section class="card svelte-erxr18" aria-labelledby="reviewHeading"><h2 id="reviewHeading" class="svelte-erxr18">3. Listen and save solo speech</h2> <label class="field svelte-erxr18">Imported recording<select id="sourceSelect" class="svelte-erxr18"><option value="" selected="">No recordings yet</option><!--[--><!--]--></select></label> <p id="sourceStatus" class="status svelte-erxr18" role="status"></p> <div id="importProgress" hidden="" class="svelte-erxr18"><progress aria-label="Analyzing recording" class="svelte-erxr18"></progress> <span class="static-status hint svelte-erxr18">Analyzing recording...</span></div> <button id="retry" type="button" class="btn secondary svelte-erxr18" hidden="">Retry saved source</button> <div id="review" hidden=""><p class="hint svelte-erxr18">Times below are relative to the imported window. Pick a detected turn or enter a range manually. Listen before
+      assigning it to a person.</p> <div id="turns" class="turns svelte-erxr18" role="group" aria-label="Detected speaker turns"><!--[!--><!---->No speech turns detected. You can listen and select a range manually.<!--]--></div> <div class="grid svelte-erxr18"><div class="svelte-erxr18"><h3 class="svelte-erxr18">Original window</h3> <audio id="originalAudio" controls="" preload="none" aria-label="Original audio window" class="svelte-erxr18"></audio></div> <div class="svelte-erxr18"><h3 class="svelte-erxr18">Dialogue window</h3> <audio id="dialogueAudio" controls="" preload="none" aria-label="Dialogue audio window" class="svelte-erxr18"></audio></div></div> <form id="sampleForm"><div class="row svelte-erxr18"><label class="field svelte-erxr18">Selection start (seconds)<input id="sampleStart" type="number" min="0" max="120" step="0.001" required="" value="0" class="svelte-erxr18"/></label> <label class="field svelte-erxr18">Selection end (seconds)<input id="sampleEnd" type="number" min="0.5" max="121" step="0.001" required="" value="5" class="svelte-erxr18"/></label> <button id="listen" type="button" class="btn secondary svelte-erxr18">Listen to selection</button></div> <audio id="selectionAudio" controls="" preload="none" aria-label="Selected audio range" hidden="" class="svelte-erxr18"></audio> <label class="check svelte-erxr18"><input id="useCleaned" type="checkbox" checked="" class="svelte-erxr18"/>Use the dialogue
+        version (uncheck to keep original audio)</label> <label class="check svelte-erxr18"><input id="sampleConsent" type="checkbox" required="" class="svelte-erxr18"/>I listened: this selection
+        contains only the permitted person's voice.</label> <p id="destination" class="hint svelte-erxr18">Choose a person before saving.</p> <button id="saveSample" type="submit" class="btn" disabled="">Save approved sample</button></form></div></section> <section class="card svelte-erxr18" aria-labelledby="collectionHeading"><h2 id="collectionHeading" class="svelte-erxr18">4. Build and compare reference versions</h2> <p id="collectionName" class="hint svelte-erxr18">Choose a person to see their samples.</p> <ul id="samples" class="items svelte-erxr18"><!--[--><!--]--></ul> <p id="selectionTotal" class="status svelte-erxr18">Select samples totaling 5 to 20 seconds.</p> <button id="buildVersion" type="button" class="btn" disabled="">Build reference version</button> <p class="hint svelte-erxr18">Only checked samples enter the new reference. Adding recordings does not train a model or guarantee better results.
+    Previous versions remain available in Voice Lab and Studio.</p> <label class="field svelte-erxr18">Comparison sentence<textarea id="previewText" rows="2" maxlength="500" class="svelte-erxr18">Hello. This is a reference comparison using the same sentence.</textarea></label> <ul id="versions" class="items svelte-erxr18"><!--[!--><!--[-1--><!--]--><!--]--></ul></section> <p class="hint svelte-erxr18">Recordings stay in this app's local data folder. Keep a backup of the whole folder. The sample library has a 2 GB
+  budget and requires 1 GB free disk space.</p><!--]--><!--]--><!--]--><!----></main><!--]--><!--]--><!--]--><!----> <!--[-1--><!--]--><!--]-->
+			
+			<script>
+				{
+					__sveltekit_1vzggm = {
+						base: new URL(".", location).pathname.slice(0, -1),
+						version: "0.3.0"
+					};
+
+					const element = document.currentScript.parentElement;
+
+					import("./_app/immutable/entry/start.BH0UkpfC.js").then(async (kit) => {
+						kit.init(__sveltekit_1vzggm);
+						const app = await import("./_app/immutable/entry/app.BIYpq_i6.js");
+						kit.start(app, element, {
+							node_ids: [0, 4],
+							data: [null,null],
+							form: null,
+							error: null
+						});
+					});
+				}
+			</script>
+		</div>
+  </body>
+</html>

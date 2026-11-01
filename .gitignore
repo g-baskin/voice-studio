@@ -3,6 +3,8 @@ __pycache__/
 models/
 bench/audio/
 samples/
+!frontend/src/routes/samples/
+!frontend/src/lib/samples/
 *.pyc
 .env
 .env.*

@@ -165,7 +165,7 @@ The timbre moves to the clone, and the output keeps the source's timing and spee
 
 ## Using it
 
-- **Web:** open the Voice Lab "Clone a voice" panel (`web/clone.js` renders into `#clonePanel`). Upload a file or record one with the read-aloud script, tick consent, give it a name and create it, then preview.
+- **Web:** open the Voice Lab "Clone a voice" panel (`frontend/src/routes/voice-lab/ClonePanel.svelte` renders into `#clonePanel`). Upload a file or record one with the read-aloud script, tick consent, give it a name and create it, then preview.
 - **API:** see the docstring in `src/naturalvoice/clone_api.py`. It covers `GET /api/clone/status`, `POST /api/clone/voices`, and `POST /api/clone/preview` plus polling `/api/clone/preview/{job}` and fetching `/audio`.
 - **Everywhere else:** `clone:<id>` voices work through `tts.speak`, which covers Studio and the CLI. Long text is split into sentences and joined with natural pauses.
 

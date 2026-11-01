@@ -23,6 +23,8 @@ def test_web_template_interactions():
     subprocess.run(
         [
             node,
+            "--experimental-strip-types",
+            "--no-warnings",
             str(Path(__file__).with_name("web_templates.cjs")),
             json.dumps({k: s.to_dict() for k, s in hz.PRESETS.items()}),
         ],
@@ -30,19 +32,46 @@ def test_web_template_interactions():
     )
 
 
+def test_studio_drafts_load_safely():
+    """A Studio draft restored from a backup may be damaged; it must load as safe defaults."""
+    import shutil
+
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("Node is required for the Studio draft checks")
+    subprocess.run(
+        [node, "--experimental-strip-types", "--no-warnings", str(Path(__file__).with_name("studio_drafts.cjs"))],
+        check=True,
+    )
+
+
 def test_web_script_syntax():
     """A parse error disables every control, including file picking and dropping."""
-    import re
     import shutil
 
     node = shutil.which("node")
     if node is None:
         pytest.skip("Node is required for the browser JavaScript syntax check")
-    page = (Path(__file__).parents[1] / "src/naturalvoice/web/index.html").read_text()
-    scripts = re.findall(r"<script>(.*?)</script>", page, flags=re.S)
-    assert scripts, "No app script found"
-    scripts.append((Path(__file__).parents[1] / "src/naturalvoice/web/workflow.js").read_text())
-    subprocess.run([node, "--check"], input="\n".join(scripts), text=True, check=True)
+    frontend = Path(__file__).parents[1] / "frontend"
+    modules = sorted((frontend / "src/lib/clean").glob("*.ts"))
+    assert modules, "No Clean page modules found"
+    for module in modules:
+        subprocess.run(
+            [
+                node,
+                "--experimental-strip-types",
+                "--no-warnings",
+                "--input-type=module",
+                "-e",
+                f"await import({module.as_uri()!r})",
+            ],
+            check=True,
+        )
+    if not (frontend / "node_modules/svelte").is_dir():
+        pytest.skip("Frontend tools are not installed")
+    page = frontend / "src/routes/+page.svelte"
+    check = "require('svelte/compiler').compile(require('fs').readFileSync(process.argv[1], 'utf8'), {filename: 'page.svelte'})"
+    subprocess.run([node, "-e", check, str(page)], cwd=frontend, check=True)
 
 
 def speechlike(seconds=6.0, seed=0):

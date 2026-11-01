@@ -12,8 +12,9 @@ all entries below describe unreleased source, not historical releases.
   command joins `voicestudio` and `naturalvoice`, which keep working. The desktop bundle keeps its folder name.
 - Pages have clean addresses (`/studio`, `/voice-lab`, `/samples`, `/backup`); old `.html` addresses redirect
   with their query intact.
-- The interface is moving to SvelteKit (`frontend/`). The Backup page is the first page served from the
-  SvelteKit build; the other pages follow one at a time.
+- The whole interface is now SvelteKit 3 with Svelte 5 (`frontend/`): Clean, Speak, Studio, Voice Lab, sample
+  collections and Backup. The hand-written HTML pages and their scripts are gone; behaviour, element ids and
+  saved browser data (templates and the Studio draft) are unchanged.
 
 ### Added
 

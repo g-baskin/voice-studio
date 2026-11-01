@@ -170,11 +170,11 @@ async function noOverflow(page, label) {
     });
     assert.ok(await page.isEnabled('#matchGo'));
 
-    // Clone tab shows the panel filled by clone.js (reached via the Match link)
+    // Clone tab shows the cloning panel (reached via the Match link)
     await page.click('#goClone');
     assert.equal(await page.getAttribute('#tab-clone', 'aria-selected'), 'true');
     assert.ok(await page.isVisible('#clonePanel'));
-    assert.ok((await page.locator('#clonePanel').evaluate((n) => n.children.length)) > 0, 'clone.js filled the panel');
+    assert.ok((await page.locator('#clonePanel').evaluate((n) => n.children.length)) > 0, 'cloning panel rendered');
 
     // Mobile
     await page.setViewportSize({ width: 390, height: 844 });

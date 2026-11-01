@@ -2,7 +2,7 @@
 
 Read `CLAUDE.md` for workflow and behavior details, `CONTEXT.md` for domain terms, and relevant records in `docs/adr/` before architecture changes.
 
-- After HTML ID/tag changes, run `uv run python scripts/web_types.py --write` to refresh checked DOM declarations.
+- After any `frontend/` change, run `npm run frontend:build`; `npm run frontend:check` fails when the committed build in `src/naturalvoice/ui/` is stale.
 - CI lives in `.github/workflows/ci.yml` but is disabled at the owner's request. Keep checks local; do not re-enable CI without approval.
 - For commit requests, follow `.gg/commands/commit.md`: local checks, tests, build and a read-only review before staging/committing.
 
@@ -14,7 +14,7 @@ Local voice production: clean recordings, render scripts and timed dubs, and des
 ## Boundaries and invariants
 
 - Speak (`shark.py`, `shark_api.py`, `/speak`) is original code inspired by Fish Audio's published design. Never copy Fish Audio code, weights or voices into this AGPL project: their license adds restrictions AGPL forbids. Directions the local engines cannot truly perform must be reported as approximated, never claimed as applied.
-- The interface is being migrated to SvelteKit 3 (Svelte 5 runes) in `frontend/`, built with adapter-static into `src/naturalvoice/ui/`, which is committed so the app runs with `uv` alone. After any `frontend/` change run `npm run frontend:build`; `npm run frontend:check` fails when the committed build is stale. Pages not yet migrated stay as HTML in `src/naturalvoice/web/`; `server.PAGES` maps clean addresses to either, and old `.html` addresses redirect.
+- Every page is SvelteKit 3 (Svelte 5 runes) in `frontend/`, built with adapter-static into `src/naturalvoice/ui/`, which is committed so the app runs with `uv` alone. `server.PAGES` maps clean addresses to the build, and old `.html` addresses redirect. `src/naturalvoice/web/` now holds only shared assets: `app.css`, icons, the manifest and the service worker. Links are full page loads (`data-sveltekit-reload` in `app.html`), so each page boots fresh and pagehide autosave still fires.
 
 - Custom voices are Kokoro vectors; cloned voices are reference recordings consumed by Chatterbox. Matching a recording within stock-voice space is not cloning. Keep these categories distinct in storage and UI terminology.
 - Chatterbox runs in its own Python 3.12 environment through a persistent JSON-lines subprocess. Do not merge its dependencies into the main environment: root ONNX Runtime is pinned to 1.19.2 for Intel-Mac wheels, while the engine independently pins 1.23.2.

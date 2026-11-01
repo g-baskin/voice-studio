@@ -1,20 +1,20 @@
-// Read-only motion regression checks against actual HTML/CSS. No server, models or application scripts.
+// Read-only motion regression checks against the built pages' HTML/CSS, with application scripts disabled.
 const chromium = require('./browser_support.cjs');
 const assert = require('node:assert/strict');
-const path = require('node:path');
-const { pathToFileURL } = require('node:url');
+const base = process.env.NV_URL;
+if (!base) throw new Error('Run through npm run test:browser.');
 
 (async () => {
   const browser = await chromium.launch({ headless: true });
   try {
     const context = await browser.newContext({ javaScriptEnabled: false, serviceWorkers: 'block' });
     const page = await context.newPage();
-    const open = (file) => page.goto(pathToFileURL(path.resolve(__dirname, '../src/naturalvoice/web', file)).href);
+    const open = (address) => page.goto(base + address);
     const cases = [
-      ['index.html', '.drop', '0.15s', '--motion-fast'],
-      ['index.html', '.progress div', '0.3s', '--motion-progress'],
-      ['studio.html', '.progress div', '0.3s', '--motion-progress'],
-      ['voicelab.html', '.bar span', '0.3s', '--motion-progress'],
+      ['/', '.drop', '0.15s', '--motion-fast'],
+      ['/', '.progress div', '0.3s', '--motion-progress'],
+      ['/studio', '.progress div', '0.3s', '--motion-progress'],
+      ['/voice-lab', '.bar span', '0.3s', '--motion-progress'],
     ];
     for (const [file, selector, duration, token] of cases) {
       await page.emulateMedia({ reducedMotion: 'no-preference' });
@@ -39,7 +39,7 @@ const { pathToFileURL } = require('node:url');
       assert.equal((await style()).duration, '0s', `${file}: reduced motion wins over token overrides`);
     }
 
-    await open('samples.html');
+    await open('/samples');
     const native = page.locator('#importProgress progress');
     const fallback = page.locator('#importProgress .static-status');
     for (const width of [1440, 390]) {

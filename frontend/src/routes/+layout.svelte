@@ -6,17 +6,13 @@
   let { children }: { children: Snippet } = $props();
 </script>
 
-<a class="skip" href="#main">Skip to content</a>
+<a class="skip" href="#main">{page.data.skip ?? 'Skip to content'}</a>
 <header class="apphead">
   <div class="apphead-inner">
-    <a class="brand" href="/" data-sveltekit-reload><img src="/icon.svg" alt="" width="28" height="28" />{PRODUCT}</a>
+    <a class="brand" href="/"><img src="/icon.svg" alt="" width="28" height="28" />{PRODUCT}</a>
     <nav class="appnav" aria-label="Main">
       {#each NAV as item (item.href)}
-        <a
-          href={item.href}
-          aria-current={page.url.pathname === item.href ? 'page' : undefined}
-          data-sveltekit-reload={item.svelte ? undefined : ''}>{item.label}</a
-        >
+        <a href={item.href} aria-current={page.url.pathname === item.href ? 'page' : undefined}>{item.label}</a>
       {/each}
     </nav>
   </div>

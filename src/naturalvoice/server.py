@@ -23,7 +23,7 @@ from pydantic import BaseModel, Field
 from . import access, audio, humanize as hz
 
 WEB = Path(__file__).parent / "web"
-# SvelteKit build of the pages already migrated (source: frontend/); the rest are plain HTML in WEB.
+# SvelteKit build of every page (source: frontend/). WEB keeps shared assets: CSS, icons, manifest, service worker.
 UI = Path(__file__).parent / "ui"
 WORK = Path(tempfile.gettempdir()) / "naturalvoice"
 WORK.mkdir(exist_ok=True)
@@ -290,12 +290,12 @@ for _r in (
 ):
     app.include_router(_r)
 
-# Clean page addresses; the old .html addresses redirect so bookmarks keep working.
+# Clean page addresses for the SvelteKit build; the old .html addresses redirect so bookmarks keep working.
 PAGES = {
-    "/": WEB / "index.html",
-    "/studio": WEB / "studio.html",
-    "/voice-lab": WEB / "voicelab.html",
-    "/samples": WEB / "samples.html",
+    "/": UI / "index.html",
+    "/studio": UI / "studio.html",
+    "/voice-lab": UI / "voice-lab.html",
+    "/samples": UI / "samples.html",
     "/speak": UI / "speak.html",
     "/backup": UI / "backup.html",
 }

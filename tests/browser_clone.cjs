@@ -3,9 +3,6 @@
 const chromium = require('./browser_support.cjs');
 const BASE = (process.env.NV_URL || 'http://127.0.0.1:8773') + '/';
 const REF = process.env.NV_REF || '/tmp/nv_ref8.wav';
-const HARNESS = `<!doctype html><html><head><meta charset="utf-8"><base href="${BASE}">
-<meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="${BASE}app.css"></head>
-<body><main class="page"><h1>Voice Lab</h1><section id="clonePanel"></section></main><script src="${BASE}clone.js"></script></body></html>`;
 const ok = (c, m) => {
   if (!c) throw new Error('FAIL: ' + m);
   console.log('ok -', m);
@@ -17,14 +14,8 @@ const ok = (c, m) => {
   const open = async (opts) => {
     const page = await browser.newPage(opts);
     page.on('pageerror', (e) => errors.push(e.message));
-    const has = (await page.request.get(BASE + 'voice-lab')).ok();
-    if (has) {
-      await page.goto(BASE + 'voice-lab');
-      if (await page.$('#tab-clone')) await page.click('#tab-clone');
-    } else {
-      await page.goto(BASE + 'manifest.webmanifest');
-      await page.setContent(HARNESS, { waitUntil: 'load' });
-    }
+    await page.goto(BASE + 'voice-lab');
+    await page.click('#tab-clone');
     await page.waitForSelector('#cloneCreate');
     await page.waitForFunction(() => !/Checking/.test(document.querySelector('#clonePanel .status').textContent));
     return page;

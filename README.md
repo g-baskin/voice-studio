@@ -169,20 +169,19 @@ tooling in `package-lock.json`. Install Node **22.13+ (22.x)**, ShellCheck and s
 ```sh
 uv sync --locked
 npm ci --ignore-scripts
-npm run check          # lint + format check + type check; does not reformat source
+npm run check          # lint, format check, type check and interface check; does not reformat source
 npm run lint           # Ruff, ESLint and ShellCheck
 npm run format:check   # Ruff format, Prettier and shfmt
-npm run typecheck      # DOM declarations, mypy and TypeScript checkJs
+npm run typecheck      # code graph, mypy and TypeScript checkJs
 npm run format         # intentionally reformats Python, JavaScript and shell source
 uv run --locked pytest -ra
 ```
 
-Coverage includes application Python, the cloning worker, developer scripts and tests; browser JavaScript,
-the service worker and Node scripts have separate type-check environments. Existing Python bodies are checked
-by mypy, while imports without available third-party typing remain permissive. JavaScript uses incremental,
-non-strict `checkJs`, not a claim of complete strict typing. Inline HTML scripts are not type checked.
-`types/dom.d.ts` is generated from the page templates and checked for drift. After changing HTML IDs or tags,
-run `uv run python scripts/web_types.py --write`; don't edit that generated file by hand.
+Coverage includes application Python, the cloning worker, developer scripts and tests. The interface in
+`frontend/` is strict TypeScript and Svelte, checked by `svelte-check`; the service worker and Node scripts have
+separate type-check environments. Existing Python bodies are checked by mypy, while imports without available
+third-party typing remain permissive. The service worker and Node scripts use non-strict `checkJs`, not a claim
+of complete strict typing. See [interface development](docs/frontend.md).
 
 ## Builds and releases
 
