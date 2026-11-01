@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 640" width="1280" height="640" role="img" aria-label="Voice Studio: make AI voices sound human">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 640" width="1280" height="640" role="img" aria-label="Shark Audio: make AI voices sound human">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0a110e"/><stop offset="1" stop-color="#14231b"/></linearGradient>
     <radialGradient id="halo" cx="0.78" cy="0.72" r="0.55"><stop offset="0" stop-color="#2fa36b" stop-opacity="0.30"/><stop offset="1" stop-color="#2fa36b" stop-opacity="0"/></radialGradient>
@@ -20,7 +20,7 @@
   <rect width="1280" height="640" fill="url(#halo)"/>
   <line x1="0" x2="1280" y1="350" y2="350" stroke="#ffffff" stroke-opacity="0.05"/><line x1="0" x2="1280" y1="470" y2="470" stroke="#ffffff" stroke-opacity="0.05"/><line x1="0" x2="1280" y1="590" y2="590" stroke="#ffffff" stroke-opacity="0.05"/>
   <g font-family="'SF Pro Display','Helvetica Neue',Inter,'Segoe UI',system-ui,sans-serif">
-    <text x="80" y="178" font-size="116" font-weight="700" letter-spacing="-3" fill="#f2f6f3">Voice <tspan fill="url(#title)">Studio</tspan></text>
+    <text x="80" y="178" font-size="116" font-weight="700" letter-spacing="-3" fill="#f2f6f3">Shark <tspan fill="url(#title)">Audio</tspan></text>
     <text x="84" y="238" font-size="38" font-weight="500" fill="#b6c4bb">Make AI voices sound human.</text>
     <text x="84" y="286" font-size="24" fill="#7f9087">Clean robotic voices  ·  Write voice-overs  ·  Design and clone voices</text>
   </g>

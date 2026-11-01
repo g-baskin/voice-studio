@@ -1,6 +1,6 @@
 # Voice Lab
 
-Open `voicelab.html` (Voice Lab in the top nav). Everything runs offline on this computer. Voices you make are
+Open `/voice-lab` (Voice Lab in the top nav). Everything runs offline on this computer. Voices you make are
 saved as `custom:<id>` in `data/voices` and can be used anywhere a voice id is accepted (Studio, CLI, `/api/speak`).
 
 All Voice Lab voices live inside **Kokoro's style space**: a voice is a style array of shape (510, 1, 256), and
@@ -17,7 +17,7 @@ To collect approved recordings of one person and build cloned-voice reference ve
 Lists stock voices, your voices and clones, with filters for language, gender and kind, plus search. Each voice
 has **Preview**, which renders a fixed sample line in the voice's language. Previews are cached in `data/previews`,
 so replaying one is instant. You can also copy the voice id or use **Use in Studio**, which opens
-`studio.html?voice=<id>`. Your own voices also have **Rename**, **Delete** and (for designed voices) **Edit**,
+`/studio?voice=<id>`. Your own voices also have **Rename**, **Delete** and (for designed voices) **Edit**,
 which re-opens the saved recipe in Design.
 
 ## Design (blend)

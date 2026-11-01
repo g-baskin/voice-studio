@@ -14,8 +14,8 @@ import time
 import uuid
 from pathlib import Path
 
-from fastapi import FastAPI, File, Form, HTTPException, UploadFile
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
+from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.background import BackgroundTask
 from pydantic import BaseModel, Field
@@ -23,6 +23,8 @@ from pydantic import BaseModel, Field
 from . import access, audio, humanize as hz
 
 WEB = Path(__file__).parent / "web"
+# SvelteKit build of every page (source: frontend/). WEB keeps shared assets: CSS, icons, manifest, service worker.
+UI = Path(__file__).parent / "ui"
 WORK = Path(tempfile.gettempdir()) / "naturalvoice"
 WORK.mkdir(exist_ok=True)
 MAX_BYTES = 500 * 1024 * 1024
@@ -32,7 +34,7 @@ STALE_SECONDS = 86400
 JOB_DIR = re.compile(r"[0-9a-f]{32}")
 SCRATCH_FILE = re.compile(r"(?:speech-[0-9a-f]{32}\.wav|batch-[0-9a-f]{32}\.zip)")
 
-app = FastAPI(title="Voice Studio")
+app = FastAPI(title="Shark Audio")
 jobs: dict[str, dict] = {}
 # One processing job at a time bounds CPU/memory; the browser batch queue is sequential.
 processing = threading.BoundedSemaphore(1)
@@ -267,11 +269,17 @@ def speak(
 # Feature routers must be registered before the static mount, which catches everything else.
 from . import clone_api, llm_api, rewrite_api, sample_library_api, scriptgen_api, studio_api, voicelab_api  # noqa: E402
 
+from . import backup_api  # noqa: E402
+from . import shark_api  # noqa: E402
+
+app.add_middleware(backup_api.BackupGate)
 app.add_middleware(sample_library_api.SampleUploadLimit)
 # Added last so it runs first: nothing, including the upload limit, sees a refused request.
 app.add_middleware(access.LocalAccess)
 
 for _r in (
+    backup_api.router,
+    shark_api.router,
     voicelab_api.router,
     studio_api.router,
     clone_api.router,
@@ -282,4 +290,44 @@ for _r in (
 ):
     app.include_router(_r)
 
+# Clean page addresses for the SvelteKit build; the old .html addresses redirect so bookmarks keep working.
+PAGES = {
+    "/": UI / "index.html",
+    "/studio": UI / "studio.html",
+    "/voice-lab": UI / "voice-lab.html",
+    "/samples": UI / "samples.html",
+    "/speak": UI / "speak.html",
+    "/backup": UI / "backup.html",
+}
+OLD_ADDRESSES = {
+    "/index.html": "/",
+    "/studio.html": "/studio",
+    "/voicelab.html": "/voice-lab",
+    "/samples.html": "/samples",
+    "/backup.html": "/backup",
+}
+
+
+def _serve_page(path: Path):
+    def page() -> FileResponse:
+        return FileResponse(path, media_type="text/html", headers={"Cache-Control": "no-cache"})
+
+    return page
+
+
+def _redirect_to(target: str):
+    # Temporary redirects: a browser must not cache them if this app is rolled back.
+    def moved(request: Request) -> RedirectResponse:
+        query = request.url.query
+        return RedirectResponse(target + (f"?{query}" if query else ""), status_code=302)
+
+    return moved
+
+
+for _path, _file in PAGES.items():
+    app.add_api_route(_path, _serve_page(_file), methods=["GET", "HEAD"], include_in_schema=False)
+for _old, _new in OLD_ADDRESSES.items():
+    app.add_api_route(_old, _redirect_to(_new), methods=["GET", "HEAD"], include_in_schema=False)
+
+app.mount("/_app", StaticFiles(directory=UI / "_app"), name="ui")
 app.mount("/", StaticFiles(directory=WEB, html=True), name="web")

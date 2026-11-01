@@ -29,7 +29,7 @@ def local_request(request: Request) -> None:
         raise HTTPException(403, "Sample collections are only available through localhost.")
     origin = request.headers.get("origin")
     if origin and origin != f"{request.url.scheme}://{request.url.netloc}":
-        raise HTTPException(403, "Open this page from the local Voice Studio app.")
+        raise HTTPException(403, "Open this page from the local Shark Audio app.")
     if request.headers.get("sec-fetch-site") == "cross-site":
         raise HTTPException(403, "Cross-site requests are not allowed.")
 

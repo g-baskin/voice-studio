@@ -17,23 +17,22 @@ served there.
 
 | Nodes | Count |
 |---|---|
-| class | 34 |
-| function | 358 |
-| module | 30 |
-| page | 4 |
+| class | 43 |
+| function | 401 |
+| module | 34 |
+| page | 19 |
 | process | 3 |
-| route | 70 |
-| script | 6 |
+| route | 82 |
+| script | 19 |
 
 | Edges | Count |
 |---|---|
-| calls | 200 |
-| defines | 392 |
-| imports | 76 |
-| loads | 5 |
-| requests | 66 |
+| calls | 215 |
+| defines | 444 |
+| imports | 86 |
+| requests | 76 |
 | runs | 3 |
-| serves | 70 |
+| serves | 82 |
 | spawns | 3 |
 
 ## Modules, engine processes and web assets
@@ -44,6 +43,10 @@ Module imports, process spawns and page script loads. Symbol, route and call edg
 flowchart LR
   analyze --> humanize
   analyze --> quality
+  backup_api --> backup
+  backup_api --> sample_library_api
+  backup_api --> server
+  backup_api --> voices
   bench --> analyze
   bench --> audio
   bench --> enhance
@@ -87,17 +90,23 @@ flowchart LR
   scriptgen_api --> scriptgen
   server --> access
   server --> audio
+  server --> backup_api
   server --> clone_api
   server --> humanize
   server --> llm_api
   server --> rewrite_api
   server --> sample_library_api
   server --> scriptgen_api
+  server --> shark_api
   server --> studio_api
   server --> tts
   server --> voicelab_api
   server --> voices
   server --> workflow
+  shark --> studio
+  shark_api --> server
+  shark_api --> shark
+  shark_api --> studio
   studio --> audio
   studio --> clone
   studio --> humanize
@@ -124,9 +133,4 @@ flowchart LR
   engines_chatterbox_worker_py -.-> engines_chatterbox_worker
   engines_media_download_py -.-> engines_media_download
   engines_media_worker_py -.-> engines_media_worker
-  index_html --> workflow_js
-  samples_html --> samples_js
-  studio_html --> studio_js
-  voicelab_html --> clone_js
-  voicelab_html --> voicelab_js
 ```

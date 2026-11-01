@@ -1,0 +1,1 @@
+import{A as e,H as t,J as n,M as r,O as i,Y as a,nt as o,q as s,tt as c}from"../chunks/BmyCCkbw.js";import{t as l}from"../chunks/D4sPtfAZ.js";import"../chunks/D3WTCjHM.js";var u=r(`<h1> </h1> <p> </p>`,1);function d(r,d){o(d,!0);var f=u(),p=s(f),m=n(p,!0),h=a(p,2),g=n(h,!0);t(()=>{i(m,l.status),i(g,l.error?.message)}),e(r,f),c()}export{d as component};

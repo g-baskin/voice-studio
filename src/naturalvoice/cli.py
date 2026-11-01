@@ -173,7 +173,7 @@ def main(argv=None) -> int:
                 "Network mode: open this private link once on each other device:\n"
                 f"  {link}\n"
                 "It stays the same across restarts; `voicestudio serve --new-token` replaces it.\n"
-                "Anyone with the link can use Voice Studio while it runs. Use it only on networks you trust.",
+                "Anyone with the link can use Shark Audio while it runs. Use it only on networks you trust.",
                 file=sys.stderr,
             )
         if a.open:

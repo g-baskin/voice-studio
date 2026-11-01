@@ -171,6 +171,71 @@
    "target": "symbol:naturalvoice.audio.save"
   },
   {
+   "kind": "defines",
+   "source": "module:naturalvoice.backup",
+   "target": "symbol:naturalvoice.backup.allowed"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.backup",
+   "target": "symbol:naturalvoice.backup.browser_settings"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.backup",
+   "target": "symbol:naturalvoice.backup.export_data"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.backup",
+   "target": "symbol:naturalvoice.backup.inventory"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.backup",
+   "target": "symbol:naturalvoice.backup.restore_data"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.backup_api",
+   "target": "module:naturalvoice.backup"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.backup_api",
+   "target": "module:naturalvoice.sample_library_api"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.backup_api",
+   "target": "module:naturalvoice.server"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.backup_api",
+   "target": "module:naturalvoice.voices"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.backup_api",
+   "target": "symbol:naturalvoice.backup_api.BackupGate"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.backup_api",
+   "target": "symbol:naturalvoice.backup_api.export_backup"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.backup_api",
+   "target": "symbol:naturalvoice.backup_api.restore_backup"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.backup_api",
+   "target": "symbol:naturalvoice.backup_api.restored_browser_settings"
+  },
+  {
    "kind": "imports",
    "source": "module:naturalvoice.bench",
    "target": "module:naturalvoice.analyze"
@@ -1203,6 +1268,11 @@
   {
    "kind": "imports",
    "source": "module:naturalvoice.server",
+   "target": "module:naturalvoice.backup_api"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.server",
    "target": "module:naturalvoice.clone_api"
   },
   {
@@ -1229,6 +1299,11 @@
    "kind": "imports",
    "source": "module:naturalvoice.server",
    "target": "module:naturalvoice.scriptgen_api"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.server",
+   "target": "module:naturalvoice.shark_api"
   },
   {
    "kind": "imports",
@@ -1264,6 +1339,16 @@
    "kind": "defines",
    "source": "module:naturalvoice.server",
    "target": "symbol:naturalvoice.server._prune"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.server",
+   "target": "symbol:naturalvoice.server._redirect_to"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.server",
+   "target": "symbol:naturalvoice.server._serve_page"
   },
   {
    "kind": "defines",
@@ -1304,6 +1389,231 @@
    "kind": "defines",
    "source": "module:naturalvoice.server",
    "target": "symbol:naturalvoice.server.speak"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.shark",
+   "target": "module:naturalvoice.studio"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.shark",
+   "target": "symbol:naturalvoice.shark.Chunk"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.shark",
+   "target": "symbol:naturalvoice.shark.Direction"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.shark",
+   "target": "symbol:naturalvoice.shark.SharkError"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.shark",
+   "target": "symbol:naturalvoice.shark._atoms"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.shark",
+   "target": "symbol:naturalvoice.shark._note_words"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.shark",
+   "target": "symbol:naturalvoice.shark._pieces"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.shark",
+   "target": "symbol:naturalvoice.shark._readout"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.shark",
+   "target": "symbol:naturalvoice.shark._remove_unusable"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.shark",
+   "target": "symbol:naturalvoice.shark._runs"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.shark",
+   "target": "symbol:naturalvoice.shark._split_free"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.shark",
+   "target": "symbol:naturalvoice.shark.assemble"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.shark",
+   "target": "symbol:naturalvoice.shark.chunk_text"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.shark",
+   "target": "symbol:naturalvoice.shark.direction_name"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.shark",
+   "target": "symbol:naturalvoice.shark.new_job_id"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.shark",
+   "target": "symbol:naturalvoice.shark.plan"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.shark",
+   "target": "symbol:naturalvoice.shark.render"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.shark",
+   "target": "symbol:naturalvoice.shark.revise"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.shark",
+   "target": "symbol:naturalvoice.shark.split_turns"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.shark_api",
+   "target": "module:naturalvoice.server"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.shark_api",
+   "target": "module:naturalvoice.shark"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.shark_api",
+   "target": "module:naturalvoice.studio"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.shark_api",
+   "target": "symbol:naturalvoice.shark_api.JobGone"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.shark_api",
+   "target": "symbol:naturalvoice.shark_api.Revision"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.shark_api",
+   "target": "symbol:naturalvoice.shark_api.Script"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.shark_api",
+   "target": "symbol:naturalvoice.shark_api.Selection"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.shark_api",
+   "target": "symbol:naturalvoice.shark_api.VersionLimit"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.shark_api",
+   "target": "symbol:naturalvoice.shark_api._busy"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.shark_api",
+   "target": "symbol:naturalvoice.shark_api._chunk_fields"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.shark_api",
+   "target": "symbol:naturalvoice.shark_api._entry"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.shark_api",
+   "target": "symbol:naturalvoice.shark_api._job"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.shark_api",
+   "target": "symbol:naturalvoice.shark_api._plan"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.shark_api",
+   "target": "symbol:naturalvoice.shark_api._prune"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.shark_api",
+   "target": "symbol:naturalvoice.shark_api._public_error"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.shark_api",
+   "target": "symbol:naturalvoice.shark_api._render_version"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.shark_api",
+   "target": "symbol:naturalvoice.shark_api._view"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.shark_api",
+   "target": "symbol:naturalvoice.shark_api.cancel"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.shark_api",
+   "target": "symbol:naturalvoice.shark_api.chunk_audio"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.shark_api",
+   "target": "symbol:naturalvoice.shark_api.directions"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.shark_api",
+   "target": "symbol:naturalvoice.shark_api.perform"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.shark_api",
+   "target": "symbol:naturalvoice.shark_api.performance"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.shark_api",
+   "target": "symbol:naturalvoice.shark_api.plan"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.shark_api",
+   "target": "symbol:naturalvoice.shark_api.revise"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.shark_api",
+   "target": "symbol:naturalvoice.shark_api.select"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.shark_api",
+   "target": "symbol:naturalvoice.shark_api.status"
   },
   {
    "kind": "imports",
@@ -2381,6 +2691,31 @@
    "target": "symbol:naturalvoice.quality.dnsmos"
   },
   {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.backup_api.export_backup",
+   "target": "route:POST /api/backups/export"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.backup_api.export_backup",
+   "target": "symbol:naturalvoice.backup.browser_settings"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.backup_api.restore_backup",
+   "target": "route:POST /api/backups/restore"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.backup_api.restored_browser_settings",
+   "target": "route:GET /api/backups/browser"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.backup_api.restored_browser_settings",
+   "target": "symbol:naturalvoice.backup.browser_settings"
+  },
+  {
    "kind": "calls",
    "source": "symbol:naturalvoice.bench._codec",
    "target": "symbol:naturalvoice.audio.load"
@@ -3082,6 +3417,116 @@
   },
   {
    "kind": "calls",
+   "source": "symbol:naturalvoice.shark.plan",
+   "target": "symbol:naturalvoice.studio.clone_emotion_tags"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.shark.plan",
+   "target": "symbol:naturalvoice.studio.new_line"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.shark.plan",
+   "target": "symbol:naturalvoice.studio.parse_note"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.shark.render",
+   "target": "symbol:naturalvoice.studio.render_line"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.shark.revise",
+   "target": "symbol:naturalvoice.studio.clone_emotion_tags"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.shark.revise",
+   "target": "symbol:naturalvoice.studio.parse_note"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.shark_api._plan",
+   "target": "symbol:naturalvoice.shark.plan"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.shark_api._render_version",
+   "target": "symbol:naturalvoice.shark.render"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.shark_api.cancel",
+   "target": "route:POST /api/shark/jobs/{job}/cancel"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.shark_api.chunk_audio",
+   "target": "route:GET /api/shark/jobs/{job}/chunks/{index}/{version}.wav"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.shark_api.directions",
+   "target": "route:GET /api/shark/directions"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.shark_api.directions",
+   "target": "symbol:naturalvoice.studio.clone_emotion_tags"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.shark_api.perform",
+   "target": "route:POST /api/shark/perform"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.shark_api.perform",
+   "target": "symbol:naturalvoice.shark.new_job_id"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.shark_api.performance",
+   "target": "route:GET /api/shark/jobs/{job}/performance.wav"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.shark_api.performance",
+   "target": "symbol:naturalvoice.shark.assemble"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.shark_api.plan",
+   "target": "route:POST /api/shark/plan"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.shark_api.revise",
+   "target": "route:POST /api/shark/jobs/{job}/chunks/{index}/revise"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.shark_api.revise",
+   "target": "symbol:naturalvoice.shark.Chunk"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.shark_api.revise",
+   "target": "symbol:naturalvoice.shark.revise"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.shark_api.select",
+   "target": "route:POST /api/shark/jobs/{job}/chunks/{index}/select"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.shark_api.status",
+   "target": "route:GET /api/shark/jobs/{job}"
+  },
+  {
+   "kind": "calls",
    "source": "symbol:naturalvoice.studio.clone_emotion_tags",
    "target": "symbol:naturalvoice.clone.status"
   },
@@ -3722,358 +4167,383 @@
   },
   {
    "kind": "requests",
-   "source": "web:clone.js",
-   "target": "route:GET /api/clone/convert/{job}"
-  },
-  {
-   "kind": "requests",
-   "source": "web:clone.js",
-   "target": "route:GET /api/clone/convert/{job}/audio"
-  },
-  {
-   "kind": "requests",
-   "source": "web:clone.js",
-   "target": "route:GET /api/clone/preview/{job}"
-  },
-  {
-   "kind": "requests",
-   "source": "web:clone.js",
-   "target": "route:GET /api/clone/preview/{job}/audio"
-  },
-  {
-   "kind": "requests",
-   "source": "web:clone.js",
-   "target": "route:GET /api/clone/status"
-  },
-  {
-   "kind": "requests",
-   "source": "web:clone.js",
-   "target": "route:GET /api/voices"
-  },
-  {
-   "kind": "requests",
-   "source": "web:clone.js",
-   "target": "route:POST /api/clone/convert"
-  },
-  {
-   "kind": "requests",
-   "source": "web:clone.js",
-   "target": "route:POST /api/clone/preview"
-  },
-  {
-   "kind": "requests",
-   "source": "web:clone.js",
-   "target": "route:POST /api/clone/voices"
-  },
-  {
-   "kind": "requests",
-   "source": "web:index.html",
-   "target": "route:GET /api/presets"
-  },
-  {
-   "kind": "requests",
-   "source": "web:index.html",
-   "target": "route:GET /api/voices"
-  },
-  {
-   "kind": "requests",
-   "source": "web:index.html",
-   "target": "route:POST /api/speak"
-  },
-  {
-   "kind": "loads",
-   "source": "web:index.html",
-   "target": "web:workflow.js"
-  },
-  {
-   "kind": "loads",
-   "source": "web:samples.html",
-   "target": "web:samples.js"
-  },
-  {
-   "kind": "requests",
-   "source": "web:samples.js",
-   "target": "route:GET /api/clone/preview/{job}"
-  },
-  {
-   "kind": "requests",
-   "source": "web:samples.js",
-   "target": "route:GET /api/clone/preview/{job}/audio"
-  },
-  {
-   "kind": "requests",
-   "source": "web:samples.js",
-   "target": "route:GET /api/samples"
-  },
-  {
-   "kind": "requests",
-   "source": "web:samples.js",
-   "target": "route:GET /api/samples/audio/{key}"
-  },
-  {
-   "kind": "requests",
-   "source": "web:samples.js",
-   "target": "route:GET /api/samples/people/{key}"
-  },
-  {
-   "kind": "requests",
-   "source": "web:samples.js",
-   "target": "route:GET /api/samples/sources/{key}"
-  },
-  {
-   "kind": "requests",
-   "source": "web:samples.js",
-   "target": "route:POST /api/clone/preview"
-  },
-  {
-   "kind": "requests",
-   "source": "web:samples.js",
-   "target": "route:POST /api/samples/people"
-  },
-  {
-   "kind": "requests",
-   "source": "web:samples.js",
-   "target": "route:POST /api/samples/people/{key}/active"
-  },
-  {
-   "kind": "requests",
-   "source": "web:samples.js",
-   "target": "route:POST /api/samples/people/{key}/samples"
-  },
-  {
-   "kind": "requests",
-   "source": "web:samples.js",
-   "target": "route:POST /api/samples/people/{key}/versions"
-  },
-  {
-   "kind": "requests",
-   "source": "web:samples.js",
-   "target": "route:POST /api/samples/sources"
-  },
-  {
-   "kind": "requests",
-   "source": "web:samples.js",
-   "target": "route:POST /api/samples/sources/{key}/retry"
-  },
-  {
-   "kind": "loads",
-   "source": "web:studio.html",
-   "target": "web:studio.js"
-  },
-  {
-   "kind": "requests",
-   "source": "web:studio.js",
-   "target": "route:DELETE /api/llm/key"
-  },
-  {
-   "kind": "requests",
-   "source": "web:studio.js",
-   "target": "route:DELETE /api/studio/projects/{pid}"
-  },
-  {
-   "kind": "requests",
-   "source": "web:studio.js",
-   "target": "route:GET /api/clone/status"
-  },
-  {
-   "kind": "requests",
-   "source": "web:studio.js",
-   "target": "route:GET /api/rewrite/status"
-  },
-  {
-   "kind": "requests",
-   "source": "web:studio.js",
-   "target": "route:GET /api/scriptgen/sample"
-  },
-  {
-   "kind": "requests",
-   "source": "web:studio.js",
-   "target": "route:GET /api/scriptgen/status"
-  },
-  {
-   "kind": "requests",
-   "source": "web:studio.js",
-   "target": "route:GET /api/studio/presets"
-  },
-  {
-   "kind": "requests",
-   "source": "web:studio.js",
-   "target": "route:GET /api/studio/projects"
-  },
-  {
-   "kind": "requests",
-   "source": "web:studio.js",
-   "target": "route:GET /api/studio/projects/{pid}"
-  },
-  {
-   "kind": "requests",
-   "source": "web:studio.js",
-   "target": "route:GET /api/studio/render/{job}"
-  },
-  {
-   "kind": "requests",
-   "source": "web:studio.js",
-   "target": "route:GET /api/studio/render/{job}/file/{name}"
-  },
-  {
-   "kind": "requests",
-   "source": "web:studio.js",
-   "target": "route:GET /api/studio/renders"
-  },
-  {
-   "kind": "requests",
-   "source": "web:studio.js",
-   "target": "route:GET /api/studio/styles"
-  },
-  {
-   "kind": "requests",
-   "source": "web:studio.js",
-   "target": "route:GET /api/voices"
-  },
-  {
-   "kind": "requests",
-   "source": "web:studio.js",
-   "target": "route:POST /api/rewrite"
-  },
-  {
-   "kind": "requests",
-   "source": "web:studio.js",
-   "target": "route:POST /api/scriptgen"
-  },
-  {
-   "kind": "requests",
-   "source": "web:studio.js",
-   "target": "route:POST /api/studio/music"
-  },
-  {
-   "kind": "requests",
-   "source": "web:studio.js",
-   "target": "route:POST /api/studio/note"
-  },
-  {
-   "kind": "requests",
-   "source": "web:studio.js",
-   "target": "route:POST /api/studio/parse"
-  },
-  {
-   "kind": "requests",
-   "source": "web:studio.js",
-   "target": "route:POST /api/studio/preview"
-  },
-  {
-   "kind": "requests",
-   "source": "web:studio.js",
-   "target": "route:POST /api/studio/projects"
-  },
-  {
-   "kind": "requests",
-   "source": "web:studio.js",
-   "target": "route:POST /api/studio/projects/{pid}/duplicate"
-  },
-  {
-   "kind": "requests",
-   "source": "web:studio.js",
-   "target": "route:POST /api/studio/render"
-  },
-  {
-   "kind": "requests",
-   "source": "web:studio.js",
-   "target": "route:POST /api/studio/render/{job}/cancel"
-  },
-  {
-   "kind": "requests",
-   "source": "web:studio.js",
-   "target": "route:POST /api/studio/styles"
-  },
-  {
-   "kind": "requests",
-   "source": "web:studio.js",
-   "target": "route:POST /api/studio/subtitles"
-  },
-  {
-   "kind": "requests",
-   "source": "web:studio.js",
-   "target": "route:POST /api/studio/video"
-  },
-  {
-   "kind": "requests",
-   "source": "web:studio.js",
-   "target": "route:PUT /api/llm/key"
-  },
-  {
-   "kind": "requests",
-   "source": "web:studio.js",
-   "target": "route:PUT /api/studio/projects/{pid}"
-  },
-  {
-   "kind": "loads",
-   "source": "web:voicelab.html",
-   "target": "web:clone.js"
-  },
-  {
-   "kind": "loads",
-   "source": "web:voicelab.html",
-   "target": "web:voicelab.js"
-  },
-  {
-   "kind": "requests",
-   "source": "web:voicelab.js",
-   "target": "route:DELETE /api/voicelab/voices/{voice_id}"
-  },
-  {
-   "kind": "requests",
-   "source": "web:voicelab.js",
-   "target": "route:GET /api/voicelab/library"
-  },
-  {
-   "kind": "requests",
-   "source": "web:voicelab.js",
-   "target": "route:GET /api/voicelab/preview"
-  },
-  {
-   "kind": "requests",
-   "source": "web:voicelab.js",
-   "target": "route:GET /api/voicelab/voices/{voice_id}"
-  },
-  {
-   "kind": "requests",
-   "source": "web:voicelab.js",
-   "target": "route:POST /api/voicelab/describe"
-  },
-  {
-   "kind": "requests",
-   "source": "web:voicelab.js",
-   "target": "route:POST /api/voicelab/design/preview"
-  },
-  {
-   "kind": "requests",
-   "source": "web:voicelab.js",
-   "target": "route:POST /api/voicelab/design/save"
-  },
-  {
-   "kind": "requests",
-   "source": "web:voicelab.js",
-   "target": "route:POST /api/voicelab/match"
-  },
-  {
-   "kind": "requests",
-   "source": "web:workflow.js",
+   "source": "web:lib/clean/queue.ts",
    "target": "route:GET /api/jobs/{job}"
   },
   {
    "kind": "requests",
-   "source": "web:workflow.js",
+   "source": "web:lib/clean/queue.ts",
+   "target": "route:POST /api/clean"
+  },
+  {
+   "kind": "requests",
+   "source": "web:lib/studio/api.ts",
+   "target": "route:GET /api/studio/render/{job}/file/{name}"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/+page.svelte",
    "target": "route:GET /api/jobs/{job}/{which}"
   },
   {
    "kind": "requests",
-   "source": "web:workflow.js",
+   "source": "web:routes/+page.svelte",
+   "target": "route:GET /api/presets"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/+page.svelte",
+   "target": "route:GET /api/voices"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/+page.svelte",
    "target": "route:POST /api/batch-download"
   },
   {
    "kind": "requests",
-   "source": "web:workflow.js",
-   "target": "route:POST /api/clean"
+   "source": "web:routes/+page.svelte",
+   "target": "route:POST /api/speak"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/backup/+page.svelte",
+   "target": "route:GET /api/backups/browser"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/backup/+page.svelte",
+   "target": "route:POST /api/backups/export"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/backup/+page.svelte",
+   "target": "route:POST /api/backups/restore"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/samples/+page.svelte",
+   "target": "route:GET /api/clone/preview/{job}"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/samples/+page.svelte",
+   "target": "route:GET /api/clone/preview/{job}/audio"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/samples/+page.svelte",
+   "target": "route:GET /api/samples"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/samples/+page.svelte",
+   "target": "route:GET /api/samples/audio/{key}"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/samples/+page.svelte",
+   "target": "route:GET /api/samples/people/{key}"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/samples/+page.svelte",
+   "target": "route:GET /api/samples/sources/{key}"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/samples/+page.svelte",
+   "target": "route:POST /api/clone/preview"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/samples/+page.svelte",
+   "target": "route:POST /api/samples/people"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/samples/+page.svelte",
+   "target": "route:POST /api/samples/people/{key}/active"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/samples/+page.svelte",
+   "target": "route:POST /api/samples/people/{key}/samples"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/samples/+page.svelte",
+   "target": "route:POST /api/samples/people/{key}/versions"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/samples/+page.svelte",
+   "target": "route:POST /api/samples/sources"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/samples/+page.svelte",
+   "target": "route:POST /api/samples/sources/{key}/retry"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/speak/+page.svelte",
+   "target": "route:GET /api/shark/directions"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/speak/+page.svelte",
+   "target": "route:GET /api/shark/jobs/{job}"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/speak/+page.svelte",
+   "target": "route:GET /api/shark/jobs/{job}/chunks/{index}/{version}.wav"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/speak/+page.svelte",
+   "target": "route:GET /api/shark/jobs/{job}/performance.wav"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/speak/+page.svelte",
+   "target": "route:GET /api/voices"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/speak/+page.svelte",
+   "target": "route:POST /api/shark/jobs/{job}/cancel"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/speak/+page.svelte",
+   "target": "route:POST /api/shark/jobs/{job}/chunks/{index}/revise"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/speak/+page.svelte",
+   "target": "route:POST /api/shark/jobs/{job}/chunks/{index}/select"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/speak/+page.svelte",
+   "target": "route:POST /api/shark/perform"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/studio/+page.svelte",
+   "target": "route:GET /api/clone/status"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/studio/+page.svelte",
+   "target": "route:GET /api/rewrite/status"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/studio/+page.svelte",
+   "target": "route:GET /api/scriptgen/status"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/studio/+page.svelte",
+   "target": "route:GET /api/studio/presets"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/studio/+page.svelte",
+   "target": "route:GET /api/studio/styles"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/studio/+page.svelte",
+   "target": "route:GET /api/voices"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/studio/+page.svelte",
+   "target": "route:POST /api/studio/styles"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/studio/ExportCard.svelte",
+   "target": "route:POST /api/studio/music"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/studio/ExportCard.svelte",
+   "target": "route:POST /api/studio/video"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/studio/LineCard.svelte",
+   "target": "route:GET /api/studio/styles"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/studio/LineCard.svelte",
+   "target": "route:POST /api/studio/note"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/studio/LineCard.svelte",
+   "target": "route:POST /api/studio/preview"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/studio/LineCard.svelte",
+   "target": "route:POST /api/studio/styles"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/studio/PasteCard.svelte",
+   "target": "route:POST /api/studio/parse"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/studio/PasteCard.svelte",
+   "target": "route:POST /api/studio/subtitles"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/studio/ProjectCard.svelte",
+   "target": "route:DELETE /api/studio/projects/{pid}"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/studio/ProjectCard.svelte",
+   "target": "route:GET /api/studio/projects"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/studio/ProjectCard.svelte",
+   "target": "route:GET /api/studio/projects/{pid}"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/studio/ProjectCard.svelte",
+   "target": "route:POST /api/studio/projects"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/studio/ProjectCard.svelte",
+   "target": "route:POST /api/studio/projects/{pid}/duplicate"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/studio/ProjectCard.svelte",
+   "target": "route:PUT /api/studio/projects/{pid}"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/studio/RenderCard.svelte",
+   "target": "route:GET /api/studio/render/{job}"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/studio/RenderCard.svelte",
+   "target": "route:GET /api/studio/renders"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/studio/RenderCard.svelte",
+   "target": "route:POST /api/studio/render"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/studio/RenderCard.svelte",
+   "target": "route:POST /api/studio/render/{job}/cancel"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/studio/RewritePanel.svelte",
+   "target": "route:POST /api/rewrite"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/studio/ScriptWriter.svelte",
+   "target": "route:DELETE /api/llm/key"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/studio/ScriptWriter.svelte",
+   "target": "route:GET /api/scriptgen/sample"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/studio/ScriptWriter.svelte",
+   "target": "route:POST /api/scriptgen"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/studio/ScriptWriter.svelte",
+   "target": "route:PUT /api/llm/key"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/voice-lab/+page.svelte",
+   "target": "route:DELETE /api/voicelab/voices/{voice_id}"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/voice-lab/+page.svelte",
+   "target": "route:GET /api/voicelab/library"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/voice-lab/+page.svelte",
+   "target": "route:GET /api/voicelab/preview"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/voice-lab/+page.svelte",
+   "target": "route:GET /api/voicelab/voices/{voice_id}"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/voice-lab/+page.svelte",
+   "target": "route:POST /api/voicelab/describe"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/voice-lab/+page.svelte",
+   "target": "route:POST /api/voicelab/design/preview"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/voice-lab/+page.svelte",
+   "target": "route:POST /api/voicelab/design/save"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/voice-lab/+page.svelte",
+   "target": "route:POST /api/voicelab/match"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/voice-lab/ClonePanel.svelte",
+   "target": "route:GET /api/clone/status"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/voice-lab/ClonePanel.svelte",
+   "target": "route:GET /api/voices"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/voice-lab/ClonePanel.svelte",
+   "target": "route:POST /api/clone/convert"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/voice-lab/ClonePanel.svelte",
+   "target": "route:POST /api/clone/preview"
+  },
+  {
+   "kind": "requests",
+   "source": "web:routes/voice-lab/ClonePanel.svelte",
+   "target": "route:POST /api/clone/voices"
   }
  ],
  "generator": "scripts/code_graph.py",
@@ -4117,6 +4587,18 @@
   {
    "file": "src/naturalvoice/audio.py",
    "id": "module:naturalvoice.audio",
+   "kind": "module",
+   "line": 1
+  },
+  {
+   "file": "src/naturalvoice/backup.py",
+   "id": "module:naturalvoice.backup",
+   "kind": "module",
+   "line": 1
+  },
+  {
+   "file": "src/naturalvoice/backup_api.py",
+   "id": "module:naturalvoice.backup_api",
    "kind": "module",
    "line": 1
   },
@@ -4217,6 +4699,18 @@
    "line": 1
   },
   {
+   "file": "src/naturalvoice/shark.py",
+   "id": "module:naturalvoice.shark",
+   "kind": "module",
+   "line": 1
+  },
+  {
+   "file": "src/naturalvoice/shark_api.py",
+   "id": "module:naturalvoice.shark_api",
+   "kind": "module",
+   "line": 1
+  },
+  {
    "file": "src/naturalvoice/studio.py",
    "id": "module:naturalvoice.studio",
    "kind": "module",
@@ -4301,6 +4795,12 @@
    "line": 154
   },
   {
+   "file": "src/naturalvoice/backup_api.py",
+   "id": "route:GET /api/backups/browser",
+   "kind": "route",
+   "line": 121
+  },
+  {
    "file": "src/naturalvoice/clone_api.py",
    "id": "route:GET /api/clone/convert/{job}",
    "kind": "route",
@@ -4334,13 +4834,13 @@
    "file": "src/naturalvoice/server.py",
    "id": "route:GET /api/jobs/{job}",
    "kind": "route",
-   "line": 174
+   "line": 176
   },
   {
    "file": "src/naturalvoice/server.py",
    "id": "route:GET /api/jobs/{job}/{which}",
    "kind": "route",
-   "line": 182
+   "line": 184
   },
   {
    "file": "src/naturalvoice/llm_api.py",
@@ -4352,7 +4852,7 @@
    "file": "src/naturalvoice/server.py",
    "id": "route:GET /api/presets",
    "kind": "route",
-   "line": 66
+   "line": 68
   },
   {
    "file": "src/naturalvoice/rewrite_api.py",
@@ -4401,6 +4901,30 @@
    "id": "route:GET /api/scriptgen/status",
    "kind": "route",
    "line": 27
+  },
+  {
+   "file": "src/naturalvoice/shark_api.py",
+   "id": "route:GET /api/shark/directions",
+   "kind": "route",
+   "line": 149
+  },
+  {
+   "file": "src/naturalvoice/shark_api.py",
+   "id": "route:GET /api/shark/jobs/{job}",
+   "kind": "route",
+   "line": 208
+  },
+  {
+   "file": "src/naturalvoice/shark_api.py",
+   "id": "route:GET /api/shark/jobs/{job}/chunks/{index}/{version}.wav",
+   "kind": "route",
+   "line": 282
+  },
+  {
+   "file": "src/naturalvoice/shark_api.py",
+   "id": "route:GET /api/shark/jobs/{job}/performance.wav",
+   "kind": "route",
+   "line": 290
   },
   {
    "file": "src/naturalvoice/studio_api.py",
@@ -4478,19 +5002,31 @@
    "file": "src/naturalvoice/server.py",
    "id": "route:GET /api/voices",
    "kind": "route",
-   "line": 71
+   "line": 73
+  },
+  {
+   "file": "src/naturalvoice/backup_api.py",
+   "id": "route:POST /api/backups/export",
+   "kind": "route",
+   "line": 53
+  },
+  {
+   "file": "src/naturalvoice/backup_api.py",
+   "id": "route:POST /api/backups/restore",
+   "kind": "route",
+   "line": 92
   },
   {
    "file": "src/naturalvoice/server.py",
    "id": "route:POST /api/batch-download",
    "kind": "route",
-   "line": 210
+   "line": 212
   },
   {
    "file": "src/naturalvoice/server.py",
    "id": "route:POST /api/clean",
    "kind": "route",
-   "line": 83
+   "line": 85
   },
   {
    "file": "src/naturalvoice/clone_api.py",
@@ -4559,10 +5095,40 @@
    "line": 43
   },
   {
+   "file": "src/naturalvoice/shark_api.py",
+   "id": "route:POST /api/shark/jobs/{job}/cancel",
+   "kind": "route",
+   "line": 214
+  },
+  {
+   "file": "src/naturalvoice/shark_api.py",
+   "id": "route:POST /api/shark/jobs/{job}/chunks/{index}/revise",
+   "kind": "route",
+   "line": 227
+  },
+  {
+   "file": "src/naturalvoice/shark_api.py",
+   "id": "route:POST /api/shark/jobs/{job}/chunks/{index}/select",
+   "kind": "route",
+   "line": 273
+  },
+  {
+   "file": "src/naturalvoice/shark_api.py",
+   "id": "route:POST /api/shark/perform",
+   "kind": "route",
+   "line": 162
+  },
+  {
+   "file": "src/naturalvoice/shark_api.py",
+   "id": "route:POST /api/shark/plan",
+   "kind": "route",
+   "line": 157
+  },
+  {
    "file": "src/naturalvoice/server.py",
    "id": "route:POST /api/speak",
    "kind": "route",
-   "line": 236
+   "line": 238
   },
   {
    "file": "src/naturalvoice/studio_api.py",
@@ -4887,6 +5453,60 @@
    "id": "symbol:naturalvoice.audio.save",
    "kind": "function",
    "line": 43
+  },
+  {
+   "file": "src/naturalvoice/backup.py",
+   "id": "symbol:naturalvoice.backup.allowed",
+   "kind": "function",
+   "line": 36
+  },
+  {
+   "file": "src/naturalvoice/backup.py",
+   "id": "symbol:naturalvoice.backup.browser_settings",
+   "kind": "function",
+   "line": 21
+  },
+  {
+   "file": "src/naturalvoice/backup.py",
+   "id": "symbol:naturalvoice.backup.export_data",
+   "kind": "function",
+   "line": 72
+  },
+  {
+   "file": "src/naturalvoice/backup.py",
+   "id": "symbol:naturalvoice.backup.inventory",
+   "kind": "function",
+   "line": 48
+  },
+  {
+   "file": "src/naturalvoice/backup.py",
+   "id": "symbol:naturalvoice.backup.restore_data",
+   "kind": "function",
+   "line": 104
+  },
+  {
+   "file": "src/naturalvoice/backup_api.py",
+   "id": "symbol:naturalvoice.backup_api.BackupGate",
+   "kind": "class",
+   "line": 22
+  },
+  {
+   "file": "src/naturalvoice/backup_api.py",
+   "id": "symbol:naturalvoice.backup_api.export_backup",
+   "kind": "function",
+   "line": 53
+  },
+  {
+   "file": "src/naturalvoice/backup_api.py",
+   "id": "symbol:naturalvoice.backup_api.restore_backup",
+   "kind": "function",
+   "line": 92
+  },
+  {
+   "file": "src/naturalvoice/backup_api.py",
+   "id": "symbol:naturalvoice.backup_api.restored_browser_settings",
+   "kind": "function",
+   "line": 121
   },
   {
    "file": "src/naturalvoice/bench.py",
@@ -5870,61 +6490,319 @@
    "file": "src/naturalvoice/server.py",
    "id": "symbol:naturalvoice.server.BatchDownload",
    "kind": "class",
-   "line": 205
+   "line": 207
   },
   {
    "file": "src/naturalvoice/server.py",
    "id": "symbol:naturalvoice.server._prune",
    "kind": "function",
-   "line": 41
+   "line": 43
+  },
+  {
+   "file": "src/naturalvoice/server.py",
+   "id": "symbol:naturalvoice.server._redirect_to",
+   "kind": "function",
+   "line": 318
+  },
+  {
+   "file": "src/naturalvoice/server.py",
+   "id": "symbol:naturalvoice.server._serve_page",
+   "kind": "function",
+   "line": 311
   },
   {
    "file": "src/naturalvoice/server.py",
    "id": "symbol:naturalvoice.server._settings_from_form",
    "kind": "function",
-   "line": 58
+   "line": 60
   },
   {
    "file": "src/naturalvoice/server.py",
    "id": "symbol:naturalvoice.server.batch_download",
    "kind": "function",
-   "line": 210
+   "line": 212
   },
   {
    "file": "src/naturalvoice/server.py",
    "id": "symbol:naturalvoice.server.clean",
    "kind": "function",
-   "line": 83
+   "line": 85
   },
   {
    "file": "src/naturalvoice/server.py",
    "id": "symbol:naturalvoice.server.job_file",
    "kind": "function",
-   "line": 182
+   "line": 184
   },
   {
    "file": "src/naturalvoice/server.py",
    "id": "symbol:naturalvoice.server.job_status",
    "kind": "function",
-   "line": 174
+   "line": 176
   },
   {
    "file": "src/naturalvoice/server.py",
    "id": "symbol:naturalvoice.server.list_voices",
    "kind": "function",
-   "line": 71
+   "line": 73
   },
   {
    "file": "src/naturalvoice/server.py",
    "id": "symbol:naturalvoice.server.presets",
    "kind": "function",
-   "line": 66
+   "line": 68
   },
   {
    "file": "src/naturalvoice/server.py",
    "id": "symbol:naturalvoice.server.speak",
    "kind": "function",
-   "line": 236
+   "line": 238
+  },
+  {
+   "file": "src/naturalvoice/shark.py",
+   "id": "symbol:naturalvoice.shark.Chunk",
+   "kind": "class",
+   "line": 93
+  },
+  {
+   "file": "src/naturalvoice/shark.py",
+   "id": "symbol:naturalvoice.shark.Direction",
+   "kind": "class",
+   "line": 35
+  },
+  {
+   "file": "src/naturalvoice/shark.py",
+   "id": "symbol:naturalvoice.shark.SharkError",
+   "kind": "class",
+   "line": 88
+  },
+  {
+   "file": "src/naturalvoice/shark.py",
+   "id": "symbol:naturalvoice.shark._atoms",
+   "kind": "function",
+   "line": 167
+  },
+  {
+   "file": "src/naturalvoice/shark.py",
+   "id": "symbol:naturalvoice.shark._note_words",
+   "kind": "function",
+   "line": 323
+  },
+  {
+   "file": "src/naturalvoice/shark.py",
+   "id": "symbol:naturalvoice.shark._pieces",
+   "kind": "function",
+   "line": 145
+  },
+  {
+   "file": "src/naturalvoice/shark.py",
+   "id": "symbol:naturalvoice.shark._readout",
+   "kind": "function",
+   "line": 241
+  },
+  {
+   "file": "src/naturalvoice/shark.py",
+   "id": "symbol:naturalvoice.shark._remove_unusable",
+   "kind": "function",
+   "line": 250
+  },
+  {
+   "file": "src/naturalvoice/shark.py",
+   "id": "symbol:naturalvoice.shark._runs",
+   "kind": "function",
+   "line": 215
+  },
+  {
+   "file": "src/naturalvoice/shark.py",
+   "id": "symbol:naturalvoice.shark._split_free",
+   "kind": "function",
+   "line": 158
+  },
+  {
+   "file": "src/naturalvoice/shark.py",
+   "id": "symbol:naturalvoice.shark.assemble",
+   "kind": "function",
+   "line": 347
+  },
+  {
+   "file": "src/naturalvoice/shark.py",
+   "id": "symbol:naturalvoice.shark.chunk_text",
+   "kind": "function",
+   "line": 183
+  },
+  {
+   "file": "src/naturalvoice/shark.py",
+   "id": "symbol:naturalvoice.shark.direction_name",
+   "kind": "function",
+   "line": 114
+  },
+  {
+   "file": "src/naturalvoice/shark.py",
+   "id": "symbol:naturalvoice.shark.new_job_id",
+   "kind": "function",
+   "line": 357
+  },
+  {
+   "file": "src/naturalvoice/shark.py",
+   "id": "symbol:naturalvoice.shark.plan",
+   "kind": "function",
+   "line": 270
+  },
+  {
+   "file": "src/naturalvoice/shark.py",
+   "id": "symbol:naturalvoice.shark.render",
+   "kind": "function",
+   "line": 341
+  },
+  {
+   "file": "src/naturalvoice/shark.py",
+   "id": "symbol:naturalvoice.shark.revise",
+   "kind": "function",
+   "line": 333
+  },
+  {
+   "file": "src/naturalvoice/shark.py",
+   "id": "symbol:naturalvoice.shark.split_turns",
+   "kind": "function",
+   "line": 120
+  },
+  {
+   "file": "src/naturalvoice/shark_api.py",
+   "id": "symbol:naturalvoice.shark_api.JobGone",
+   "kind": "class",
+   "line": 106
+  },
+  {
+   "file": "src/naturalvoice/shark_api.py",
+   "id": "symbol:naturalvoice.shark_api.Revision",
+   "kind": "class",
+   "line": 55
+  },
+  {
+   "file": "src/naturalvoice/shark_api.py",
+   "id": "symbol:naturalvoice.shark_api.Script",
+   "kind": "class",
+   "line": 33
+  },
+  {
+   "file": "src/naturalvoice/shark_api.py",
+   "id": "symbol:naturalvoice.shark_api.Selection",
+   "kind": "class",
+   "line": 61
+  },
+  {
+   "file": "src/naturalvoice/shark_api.py",
+   "id": "symbol:naturalvoice.shark_api.VersionLimit",
+   "kind": "class",
+   "line": 102
+  },
+  {
+   "file": "src/naturalvoice/shark_api.py",
+   "id": "symbol:naturalvoice.shark_api._busy",
+   "kind": "function",
+   "line": 73
+  },
+  {
+   "file": "src/naturalvoice/shark_api.py",
+   "id": "symbol:naturalvoice.shark_api._chunk_fields",
+   "kind": "function",
+   "line": 267
+  },
+  {
+   "file": "src/naturalvoice/shark_api.py",
+   "id": "symbol:naturalvoice.shark_api._entry",
+   "kind": "function",
+   "line": 219
+  },
+  {
+   "file": "src/naturalvoice/shark_api.py",
+   "id": "symbol:naturalvoice.shark_api._job",
+   "kind": "function",
+   "line": 81
+  },
+  {
+   "file": "src/naturalvoice/shark_api.py",
+   "id": "symbol:naturalvoice.shark_api._plan",
+   "kind": "function",
+   "line": 66
+  },
+  {
+   "file": "src/naturalvoice/shark_api.py",
+   "id": "symbol:naturalvoice.shark_api._prune",
+   "kind": "function",
+   "line": 88
+  },
+  {
+   "file": "src/naturalvoice/shark_api.py",
+   "id": "symbol:naturalvoice.shark_api._public_error",
+   "kind": "function",
+   "line": 95
+  },
+  {
+   "file": "src/naturalvoice/shark_api.py",
+   "id": "symbol:naturalvoice.shark_api._render_version",
+   "kind": "function",
+   "line": 110
+  },
+  {
+   "file": "src/naturalvoice/shark_api.py",
+   "id": "symbol:naturalvoice.shark_api._view",
+   "kind": "function",
+   "line": 129
+  },
+  {
+   "file": "src/naturalvoice/shark_api.py",
+   "id": "symbol:naturalvoice.shark_api.cancel",
+   "kind": "function",
+   "line": 214
+  },
+  {
+   "file": "src/naturalvoice/shark_api.py",
+   "id": "symbol:naturalvoice.shark_api.chunk_audio",
+   "kind": "function",
+   "line": 282
+  },
+  {
+   "file": "src/naturalvoice/shark_api.py",
+   "id": "symbol:naturalvoice.shark_api.directions",
+   "kind": "function",
+   "line": 149
+  },
+  {
+   "file": "src/naturalvoice/shark_api.py",
+   "id": "symbol:naturalvoice.shark_api.perform",
+   "kind": "function",
+   "line": 162
+  },
+  {
+   "file": "src/naturalvoice/shark_api.py",
+   "id": "symbol:naturalvoice.shark_api.performance",
+   "kind": "function",
+   "line": 290
+  },
+  {
+   "file": "src/naturalvoice/shark_api.py",
+   "id": "symbol:naturalvoice.shark_api.plan",
+   "kind": "function",
+   "line": 157
+  },
+  {
+   "file": "src/naturalvoice/shark_api.py",
+   "id": "symbol:naturalvoice.shark_api.revise",
+   "kind": "function",
+   "line": 227
+  },
+  {
+   "file": "src/naturalvoice/shark_api.py",
+   "id": "symbol:naturalvoice.shark_api.select",
+   "kind": "function",
+   "line": 273
+  },
+  {
+   "file": "src/naturalvoice/shark_api.py",
+   "id": "symbol:naturalvoice.shark_api.status",
+   "kind": "function",
+   "line": 208
   },
   {
    "file": "src/naturalvoice/studio.py",
@@ -7049,62 +7927,230 @@
    "line": 88
   },
   {
-   "file": "src/naturalvoice/web/clone.js",
-   "id": "web:clone.js",
+   "file": "frontend/src/lib/api.ts",
+   "id": "web:lib/api.ts",
    "kind": "script",
    "line": 1
   },
   {
-   "file": "src/naturalvoice/web/index.html",
-   "id": "web:index.html",
-   "kind": "page",
-   "line": 1
-  },
-  {
-   "file": "src/naturalvoice/web/samples.html",
-   "id": "web:samples.html",
-   "kind": "page",
-   "line": 1
-  },
-  {
-   "file": "src/naturalvoice/web/samples.js",
-   "id": "web:samples.js",
+   "file": "frontend/src/lib/backup.ts",
+   "id": "web:lib/backup.ts",
    "kind": "script",
    "line": 1
   },
   {
-   "file": "src/naturalvoice/web/studio.html",
-   "id": "web:studio.html",
+   "file": "frontend/src/lib/clean/queue.ts",
+   "id": "web:lib/clean/queue.ts",
+   "kind": "script",
+   "line": 1
+  },
+  {
+   "file": "frontend/src/lib/clean/templates.ts",
+   "id": "web:lib/clean/templates.ts",
+   "kind": "script",
+   "line": 1
+  },
+  {
+   "file": "frontend/src/lib/clean/voices.ts",
+   "id": "web:lib/clean/voices.ts",
+   "kind": "script",
+   "line": 1
+  },
+  {
+   "file": "frontend/src/lib/nav.ts",
+   "id": "web:lib/nav.ts",
+   "kind": "script",
+   "line": 1
+  },
+  {
+   "file": "frontend/src/lib/samples/samples.ts",
+   "id": "web:lib/samples/samples.ts",
+   "kind": "script",
+   "line": 1
+  },
+  {
+   "file": "frontend/src/lib/shark.ts",
+   "id": "web:lib/shark.ts",
+   "kind": "script",
+   "line": 1
+  },
+  {
+   "file": "frontend/src/lib/studio/api.ts",
+   "id": "web:lib/studio/api.ts",
+   "kind": "script",
+   "line": 1
+  },
+  {
+   "file": "frontend/src/lib/studio/logic.ts",
+   "id": "web:lib/studio/logic.ts",
+   "kind": "script",
+   "line": 1
+  },
+  {
+   "file": "frontend/src/lib/studio/studio.svelte.ts",
+   "id": "web:lib/studio/studio.svelte.ts",
+   "kind": "script",
+   "line": 1
+  },
+  {
+   "file": "frontend/src/lib/studio/types.ts",
+   "id": "web:lib/studio/types.ts",
+   "kind": "script",
+   "line": 1
+  },
+  {
+   "file": "frontend/src/lib/voicelab/http.ts",
+   "id": "web:lib/voicelab/http.ts",
+   "kind": "script",
+   "line": 1
+  },
+  {
+   "file": "frontend/src/lib/voicelab/recorder.ts",
+   "id": "web:lib/voicelab/recorder.ts",
+   "kind": "script",
+   "line": 1
+  },
+  {
+   "file": "frontend/src/lib/voicelab/text.ts",
+   "id": "web:lib/voicelab/text.ts",
+   "kind": "script",
+   "line": 1
+  },
+  {
+   "file": "frontend/src/lib/voicelab/types.ts",
+   "id": "web:lib/voicelab/types.ts",
+   "kind": "script",
+   "line": 1
+  },
+  {
+   "file": "frontend/src/routes/+layout.svelte",
+   "id": "web:routes/+layout.svelte",
    "kind": "page",
    "line": 1
   },
   {
-   "file": "src/naturalvoice/web/studio.js",
-   "id": "web:studio.js",
+   "file": "frontend/src/routes/+layout.ts",
+   "id": "web:routes/+layout.ts",
    "kind": "script",
+   "line": 1
+  },
+  {
+   "file": "frontend/src/routes/+page.svelte",
+   "id": "web:routes/+page.svelte",
+   "kind": "page",
+   "line": 1
+  },
+  {
+   "file": "frontend/src/routes/backup/+page.svelte",
+   "id": "web:routes/backup/+page.svelte",
+   "kind": "page",
+   "line": 1
+  },
+  {
+   "file": "frontend/src/routes/samples/+page.svelte",
+   "id": "web:routes/samples/+page.svelte",
+   "kind": "page",
+   "line": 1
+  },
+  {
+   "file": "frontend/src/routes/samples/+page.ts",
+   "id": "web:routes/samples/+page.ts",
+   "kind": "script",
+   "line": 1
+  },
+  {
+   "file": "frontend/src/routes/speak/+page.svelte",
+   "id": "web:routes/speak/+page.svelte",
+   "kind": "page",
+   "line": 1
+  },
+  {
+   "file": "frontend/src/routes/studio/+page.svelte",
+   "id": "web:routes/studio/+page.svelte",
+   "kind": "page",
+   "line": 1
+  },
+  {
+   "file": "frontend/src/routes/studio/DictionaryCard.svelte",
+   "id": "web:routes/studio/DictionaryCard.svelte",
+   "kind": "page",
+   "line": 1
+  },
+  {
+   "file": "frontend/src/routes/studio/ExportCard.svelte",
+   "id": "web:routes/studio/ExportCard.svelte",
+   "kind": "page",
+   "line": 1
+  },
+  {
+   "file": "frontend/src/routes/studio/LineCard.svelte",
+   "id": "web:routes/studio/LineCard.svelte",
+   "kind": "page",
+   "line": 1
+  },
+  {
+   "file": "frontend/src/routes/studio/PasteCard.svelte",
+   "id": "web:routes/studio/PasteCard.svelte",
+   "kind": "page",
+   "line": 1
+  },
+  {
+   "file": "frontend/src/routes/studio/ProjectCard.svelte",
+   "id": "web:routes/studio/ProjectCard.svelte",
+   "kind": "page",
+   "line": 1
+  },
+  {
+   "file": "frontend/src/routes/studio/RenderCard.svelte",
+   "id": "web:routes/studio/RenderCard.svelte",
+   "kind": "page",
+   "line": 1
+  },
+  {
+   "file": "frontend/src/routes/studio/RewritePanel.svelte",
+   "id": "web:routes/studio/RewritePanel.svelte",
+   "kind": "page",
+   "line": 1
+  },
+  {
+   "file": "frontend/src/routes/studio/ScriptCard.svelte",
+   "id": "web:routes/studio/ScriptCard.svelte",
+   "kind": "page",
+   "line": 1
+  },
+  {
+   "file": "frontend/src/routes/studio/ScriptWriter.svelte",
+   "id": "web:routes/studio/ScriptWriter.svelte",
+   "kind": "page",
+   "line": 1
+  },
+  {
+   "file": "frontend/src/routes/studio/Status.svelte",
+   "id": "web:routes/studio/Status.svelte",
+   "kind": "page",
+   "line": 1
+  },
+  {
+   "file": "frontend/src/routes/studio/VoiceSelect.svelte",
+   "id": "web:routes/studio/VoiceSelect.svelte",
+   "kind": "page",
+   "line": 1
+  },
+  {
+   "file": "frontend/src/routes/voice-lab/+page.svelte",
+   "id": "web:routes/voice-lab/+page.svelte",
+   "kind": "page",
+   "line": 1
+  },
+  {
+   "file": "frontend/src/routes/voice-lab/ClonePanel.svelte",
+   "id": "web:routes/voice-lab/ClonePanel.svelte",
+   "kind": "page",
    "line": 1
   },
   {
    "file": "src/naturalvoice/web/sw.js",
-   "id": "web:sw.js",
-   "kind": "script",
-   "line": 1
-  },
-  {
-   "file": "src/naturalvoice/web/voicelab.html",
-   "id": "web:voicelab.html",
-   "kind": "page",
-   "line": 1
-  },
-  {
-   "file": "src/naturalvoice/web/voicelab.js",
-   "id": "web:voicelab.js",
-   "kind": "script",
-   "line": 1
-  },
-  {
-   "file": "src/naturalvoice/web/workflow.js",
-   "id": "web:workflow.js",
+   "id": "web:src/naturalvoice/web/sw.js",
    "kind": "script",
    "line": 1
   }
