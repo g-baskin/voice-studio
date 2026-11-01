@@ -3,7 +3,15 @@
 Read `CLAUDE.md` for workflow and behavior details, `CONTEXT.md` for domain terms, and relevant records in `docs/adr/` before architecture changes.
 
 - After HTML ID/tag changes, run `uv run python scripts/web_types.py --write` to refresh checked DOM declarations.
-- CI lives in `.github/workflows/ci.yml` but is disabled at the owner's request. Keep checks local; do not re-enable CI without approval.
+- CI lives in `.github/workflows/ci.yml` and must stay green.
+- Never commit with `--no-verify`.
+
+## Commands
+
+- Install: `uv sync --locked` and `npm ci --ignore-scripts`; audio tests need ffmpeg and `scripts/download_models.sh`.
+- Lint, format check and types: `npm run check` (or `npm run lint`).
+- Build: `uv build`.
+- Test: `uv run --locked pytest -ra`.
 - For commit requests, follow `.gg/commands/commit.md`: local checks, tests, build and a read-only review before staging/committing.
 
 <!-- gg:init:start -->
