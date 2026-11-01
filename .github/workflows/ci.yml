@@ -1,8 +1,10 @@
+# Generated for this repo's stack: Python (uv) app with Node (npm) quality tools.
+# Action versions verified against each action's latest GitHub release on 2026-11-01, pinned to commit SHAs.
 name: CI
 
 on:
   push:
-    branches: [main, dev]
+    branches: [main]
   pull_request:
     branches: [main]
 
@@ -14,7 +16,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build-test:
+  check-build-test:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -22,23 +24,38 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+
       - name: Set up uv and Python
-        uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
+        uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
         with:
-          version: "0.9.13"
           python-version: "3.12"
           enable-cache: true
-      - name: Install audio and test prerequisites
+
+      - name: Set up Node with npm cache
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install system tools (audio, shell checks)
         run: |
           sudo apt-get update
-          sudo apt-get install --no-install-recommends -y ffmpeg libsndfile1 shellcheck nodejs build-essential
-      - name: Install locked Python dependencies
+          sudo apt-get install --no-install-recommends -y ffmpeg libsndfile1 shellcheck shfmt
+
+      - name: Install Python dependencies
         run: uv sync --locked
-      - name: Check setup scripts
-        run: shellcheck scripts/*.sh
+
+      - name: Install Node tools
+        run: npm ci --ignore-scripts
+
+      - name: Lint, format and type checks
+        run: npm run check
+
       - name: Download verified base models
         run: scripts/download_models.sh
+
       - name: Build distributions
         run: uv build
+
       - name: Run tests
         run: uv run --locked pytest -ra
