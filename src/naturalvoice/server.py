@@ -270,6 +270,7 @@ def speak(
 from . import clone_api, llm_api, rewrite_api, sample_library_api, scriptgen_api, studio_api, voicelab_api  # noqa: E402
 
 from . import backup_api  # noqa: E402
+from . import editor_api  # noqa: E402
 from . import shark_api  # noqa: E402
 
 app.add_middleware(backup_api.BackupGate)
@@ -282,6 +283,7 @@ for _r in (
     shark_api.router,
     voicelab_api.router,
     studio_api.router,
+    editor_api.router,
     clone_api.router,
     sample_library_api.router,
     rewrite_api.router,
@@ -298,6 +300,7 @@ PAGES = {
     "/samples": UI / "samples.html",
     "/speak": UI / "speak.html",
     "/backup": UI / "backup.html",
+    "/editor": UI / "editor.html",
 }
 OLD_ADDRESSES = {
     "/index.html": "/",

@@ -17,22 +17,22 @@ served there.
 
 | Nodes | Count |
 |---|---|
-| class | 43 |
-| function | 401 |
-| module | 34 |
-| page | 19 |
+| class | 56 |
+| function | 478 |
+| module | 36 |
+| page | 29 |
 | process | 3 |
-| route | 82 |
-| script | 19 |
+| route | 102 |
+| script | 25 |
 
 | Edges | Count |
 |---|---|
-| calls | 215 |
-| defines | 444 |
-| imports | 86 |
-| requests | 76 |
+| calls | 245 |
+| defines | 534 |
+| imports | 92 |
+| requests | 99 |
 | runs | 3 |
-| serves | 82 |
+| serves | 102 |
 | spawns | 3 |
 
 ## Modules, engine processes and web assets
@@ -71,6 +71,11 @@ flowchart LR
   clone_api --> clone
   clone_api --> server
   clone_api --> voices
+  editor --> audio
+  editor --> sample_library
+  editor --> voices
+  editor_api --> editor
+  editor_api --> server
   enhance --> quality
   enhance --> tts
   humanize --> enhance
@@ -92,6 +97,7 @@ flowchart LR
   server --> audio
   server --> backup_api
   server --> clone_api
+  server --> editor_api
   server --> humanize
   server --> llm_api
   server --> rewrite_api
