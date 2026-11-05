@@ -9,25 +9,25 @@
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="stylesheet" href="/app.css" />
-    <link href="./_app/immutable/entry/start.BH0UkpfC.js" rel="modulepreload">
+    <link href="./_app/immutable/entry/start.DmR6Xqjp.js" rel="modulepreload">
 		<link href="./_app/immutable/entry/payload.DSmR2FwN.js" rel="modulepreload">
 		<link href="./_app/immutable/chunks/CRzLMJPS.js" rel="modulepreload">
-		<link href="./_app/immutable/chunks/BymQNHGV.js" rel="modulepreload">
-		<link href="./_app/immutable/chunks/DtudVTbV.js" rel="modulepreload">
-		<link href="./_app/immutable/chunks/BmyCCkbw.js" rel="modulepreload">
-		<link href="./_app/immutable/chunks/D4sPtfAZ.js" rel="modulepreload">
-		<link href="./_app/immutable/entry/app.BIYpq_i6.js" rel="modulepreload">
-		<link href="./_app/immutable/nodes/0.C7il-yuK.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/Bc-cal6K.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/CDg8o1z9.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/BhAS6LPd.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/DMWkWuSc.js" rel="modulepreload">
+		<link href="./_app/immutable/entry/app.B5wBhkVC.js" rel="modulepreload">
+		<link href="./_app/immutable/nodes/0.DtJirzh2.js" rel="modulepreload">
 		<link href="./_app/immutable/chunks/DK3Fl9T5.js" rel="modulepreload">
-		<link href="./_app/immutable/chunks/D3WTCjHM.js" rel="modulepreload">
-		<link href="./_app/immutable/chunks/CJ43mxrg.js" rel="modulepreload">
-		<link href="./_app/immutable/nodes/6.xN3ebmN7.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/BUJe3843.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/BvcjrInh.js" rel="modulepreload">
+		<link href="./_app/immutable/nodes/7.Ry9_hqNa.js" rel="modulepreload">
 		<!--1d4i12f--><!----><title>Studio · Shark Audio</title>
 		<link href="./_app/immutable/assets/0.C3tuTB9r.css" rel="stylesheet">
-		<link href="./_app/immutable/assets/6.DSkohtdL.css" rel="stylesheet">
+		<link href="./_app/immutable/assets/7.DSkohtdL.css" rel="stylesheet">
   </head>
   <body>
-    <div style="display: contents" data-sveltekit-reload><!--[--><!--[--><!--[0--><!--[--><a class="skip svelte-12qhfyh" href="#main">Skip to content</a> <header class="apphead"><div class="apphead-inner"><a class="brand" href="/"><img src="/icon.svg" alt="" width="28" height="28"/>Shark Audio</a> <nav class="appnav" aria-label="Main"><!--[--><a href="/">Clean</a><a href="/speak">Speak</a><a href="/studio" aria-current="page">Studio</a><a href="/voice-lab">Voice Lab</a><a href="/backup">Backup</a><!--]--></nav></div></header> <main id="main" class="page" tabindex="-1"><!--[--><!--[-1--><!--[--><h1>Studio</h1> <p class="lede">Write a script, give each line a voice and a delivery, then render a mastered mix with captions. Everything runs on
+    <div style="display: contents" data-sveltekit-reload><!--[--><!--[--><!--[0--><!--[--><a class="skip svelte-12qhfyh" href="#main">Skip to content</a> <header class="apphead"><div class="apphead-inner"><a class="brand" href="/"><img src="/icon.svg" alt="" width="28" height="28"/>Shark Audio</a> <nav class="appnav" aria-label="Main"><!--[--><a href="/">Clean</a><a href="/speak">Speak</a><a href="/studio" aria-current="page">Studio</a><a href="/editor">Editor</a><a href="/voice-lab">Voice Lab</a><a href="/backup">Backup</a><!--]--></nav></div></header> <main id="main" class="page" tabindex="-1"><!--[--><!--[-1--><!--[--><h1>Studio</h1> <p class="lede">Write a script, give each line a voice and a delivery, then render a mastered mix with captions. Everything runs on
   this computer.</p> <section class="card" aria-labelledby="proj-h"><h2 id="proj-h">Project</h2> <div class="grid"><div class="field"><label for="title">Title</label><input id="title" type="text" maxlength="120" value="Untitled project"/></div> <div class="field"><label for="mode">Placement</label><select id="mode"><option value="sequential" selected="">Sequential (one line after another)</option><option value="timed">Timed (dubbing): each line at its start time</option></select></div> <div class="field"><label for="projects">Saved projects</label><select id="projects"><!--[0--><option value="" selected="">Loading…</option><!--]--></select></div></div> <div class="row" style="margin-top:10px"><button class="btn" id="save" type="button">Save project</button> <button class="btn secondary" id="load" type="button">Open</button> <button class="btn secondary" id="dup" type="button">Duplicate</button> <button class="btn danger" id="del" type="button">Delete</button> <button class="btn secondary" id="newp" type="button">New project</button></div> <p class="status" id="proj-status" role="status" aria-live="polite"></p><!----></section><!----> <section class="card" aria-labelledby="paste-h"><details id="paste-box"><summary id="paste-h">Paste a script</summary> <p class="hint">One line per paragraph. Mark speakers as <code>NARRATOR: text</code> or <code>[Narrator] text</code>; untagged
       lines keep the last speaker.</p> <div class="field"><label for="paste">Script</label><textarea id="paste" rows="6" maxlength="50000" placeholder="HOST: Welcome back to the show.
 GUEST: Thanks for having me."></textarea></div> <div class="row" style="margin-top:8px"><button class="btn secondary" id="parse" type="button">Find speakers</button> <button class="btn secondary" id="paste-rewrite" type="button">Rewrite for speech</button></div> <div id="paste-rw-panel" hidden=""><!--[-1--><!--]--></div> <div id="cast" hidden=""><h3 style="font-size:1rem">Cast: pick a voice for each speaker</h3> <div id="cast-rows"><!--[--><!--]--></div> <div class="row"><button class="btn" id="import" type="button">Replace script with these lines</button> <button class="btn secondary" id="append" type="button">Add to end</button></div></div> <p class="status" id="paste-status" role="status" aria-live="polite"></p><!----> <div class="field" style="margin-top:12px"><label for="subs">Or import subtitles <span class="hint">.srt or .vtt · 2 MB max · switches to Timed placement</span></label> <input id="subs" type="file" accept=".srt,.vtt"/></div></details></section><!----> <section class="card" aria-labelledby="gen-h"><details id="gen-box"><summary id="gen-h">Write a script for me</summary> <p class="hint" id="gen-engine" role="status">Checking for a language model…</p> <div id="ai-connected" class="row" hidden=""><span id="ai-connected-text" class="wrapword"><!--[-1--><!--]--></span> <button type="button" class="btn danger small" id="ai-disconnect">Disconnect</button></div> <details id="ai-box" class="svelte-1r04nox"><summary>Connect AI</summary> <p class="hint">Shark Audio uses OpenRouter, one key for many models. Get a key at <a href="https://openrouter.ai/keys" target="_blank" rel="noopener" class="svelte-1r04nox">https://openrouter.ai/keys</a>. Your key is
@@ -46,11 +46,11 @@ first cup half price this week"></textarea></div> <fieldset class="plainset svel
 
 					const element = document.currentScript.parentElement;
 
-					import("./_app/immutable/entry/start.BH0UkpfC.js").then(async (kit) => {
+					import("./_app/immutable/entry/start.DmR6Xqjp.js").then(async (kit) => {
 						kit.init(__sveltekit_1vzggm);
-						const app = await import("./_app/immutable/entry/app.BIYpq_i6.js");
+						const app = await import("./_app/immutable/entry/app.B5wBhkVC.js");
 						kit.start(app, element, {
-							node_ids: [0, 6],
+							node_ids: [0, 7],
 							data: [null,null],
 							form: null,
 							error: null

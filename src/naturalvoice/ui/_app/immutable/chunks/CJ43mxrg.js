@@ -1,1 +1,0 @@
-var e=[{href:`/`,label:`Clean`},{href:`/speak`,label:`Speak`},{href:`/studio`,label:`Studio`},{href:`/voice-lab`,label:`Voice Lab`},{href:`/backup`,label:`Backup`}],t=`Shark Audio`;export{t as n,e as t};
