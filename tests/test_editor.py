@@ -7,6 +7,7 @@ import threading
 import time
 import xml.etree.ElementTree as ET
 from pathlib import Path
+from urllib.parse import quote
 
 import numpy as np
 import pytest
@@ -349,3 +350,208 @@ def test_track_heights_are_saved_and_bounded():
     raw["tracks"][0]["height"] = 1000
     with pytest.raises(ValidationError):
         ed.Sequence.model_validate(raw)
+
+
+def test_old_sequences_load_with_no_subclips_and_green_markers():
+    raw = sequence([]).model_dump()
+    raw.pop("subclips")
+    raw["markers"] = [{"time": 1.0, "label": "Old"}]
+    seq = ed.Sequence.model_validate(raw)
+    assert seq.subclips == [] and seq.markers[0].color == "green"
+    with pytest.raises(ValidationError):
+        ed.Sequence.model_validate(raw | {"markers": [{"time": 1, "label": "x", "color": "url(evil)"}]})
+
+
+def test_subclips_are_bounded_checked_against_the_bin_and_protect_media(tmp_path):
+    tone = add(make(tmp_path / "tone.wav", "sine=f=300", seconds=2))
+    sub = {"id": "s1", "media": tone["id"], "source_in": 0.5, "source_out": 1.5, "name": "Hook"}
+    with pytest.raises(ValidationError, match="out point"):
+        sequence([], subclips=[sub | {"source_out": 0.5}])
+    with pytest.raises(ValidationError):
+        sequence([], subclips=[sub | {"name": "x" * 61}])
+    with pytest.raises(ValidationError, match="unique"):
+        sequence([], subclips=[sub, sub])
+    with pytest.raises(ed.EditorError, match="not in the bin"):
+        ed.save_sequence(sequence([], subclips=[sub | {"media": "c" * 32}]))
+    with pytest.raises(ed.EditorError, match="ends after"):
+        ed.save_sequence(sequence([], subclips=[sub | {"source_out": 9}]))
+    saved = ed.save_sequence(sequence([], subclips=[sub]))
+    assert ed.read_sequence(saved["id"])["subclips"][0]["name"] == "Hook"
+    with pytest.raises(ed.EditorError, match="Test cut"):
+        ed.delete_media(tone["id"])
+
+
+def cut_with_a_pause(path: Path) -> Path:
+    """4 s: red then blue picture (cut at 2 s), a tone that stops between 1.0 and 2.5 s."""
+    tone = "aevalsrc=exprs='if(between(t,1,2.5),0,0.5*sin(2*PI*440*t))':s=44100:d=4"
+    graph = "[0:v][1:v]concat=n=2:v=1:a=0[v]"
+    args = [FF, "-y", "-v", "error", "-f", "lavfi", "-i", "color=c=red:s=160x90:r=25:d=2"]
+    args += ["-f", "lavfi", "-i", "color=c=blue:s=160x90:r=25:d=2", "-f", "lavfi", "-i", tone]
+    args += ["-filter_complex", graph, "-map", "[v]", "-map", "2:a", "-c:v", "libx264", "-pix_fmt", "yuv420p"]
+    subprocess.run(args + ["-c:a", "aac", "-shortest", str(path)], check=True)
+    return path
+
+
+def test_silence_parser_keeps_a_pause_that_runs_to_the_end():
+    lines = [
+        "[Parsed_silencedetect_0 @ 0x6000] silence_start: -0.002\n",
+        "[Parsed_silencedetect_0 @ 0x6000] silence_end: 1.5 | silence_duration: 1.5\n",
+        "[Parsed_ebur128_1 @ 0x7000] t: 0.1 TARGET:-23 LUFS M: -12.5 S:-inf I: -70.0 LUFS\n",
+        "[Parsed_silencedetect_0 @ 0x6000] silence_start: 8.25\n",
+        "unrelated line silence_start: 3\n",
+    ]
+    assert ed.parse_silence(lines, 10.0) == [(0.0, 1.5), (8.25, 10.0)]
+    assert ed.parse_loudness(lines) == [(0.1, -12.5)]
+    shown = ["[Parsed_showinfo_2 @ 0x1] n:   0 pts:  50 pts_time:2.04 duration:1\n"]
+    assert ed.parse_scenes(shown) == [2.04]
+
+
+def test_silence_and_scene_cuts_are_found_in_real_media(tmp_path):
+    media = add(cut_with_a_pause(tmp_path / "cut.mp4"))
+    seen: list[float] = []
+    (start, end), *rest = ed.detect_silence(media["id"], -50, 0.5, seen.append)
+    assert not rest and start == pytest.approx(1.0, abs=0.1) and end == pytest.approx(2.5, abs=0.1)
+    assert seen and all(0 <= f < 1 for f in seen)
+    cuts = ed.detect_scenes(media["id"], 0.3)
+    assert len(cuts) == 1 and cuts[0] == pytest.approx(2.0, abs=0.1)
+    stopped = threading.Event()
+    stopped.set()
+    with pytest.raises(ed.Cancelled):
+        ed.detect_silence(media["id"], -50, 0.5, cancel=stopped)
+
+
+def test_moments_prefer_a_loud_window_without_pauses():
+    duration = 120.0
+    loud = [(t / 10, -14.0 if 60 <= t / 10 < 90 else -32.0) for t in range(1200)]
+    pauses = [(float(s), s + 1.5) for s in range(5, 120, 6) if not 58 <= s < 92]
+    moments = ed.score_moments(duration, loud, pauses, None, 15, 30, 3)
+    best = moments[0]
+    assert best["score"] == 100 and 58 <= best["start"] and best["end"] <= 92
+    assert "loud" in best["reasons"] and "few pauses" in best["reasons"]
+    assert all(m["score"] <= best["score"] for m in moments)
+    spans = sorted((m["start"], m["end"]) for m in moments)
+    assert all(a[1] <= b[0] for a, b in zip(spans, spans[1:])), "moments must not overlap"
+
+
+def test_moments_snapped_to_pauses_keep_their_length_limits_and_never_overlap():
+    loud = [(t / 10, -20.0 - (t % 7)) for t in range(100)]
+    for lo, hi in ((1, 1), (1, 2), (2, 3)):
+        moments = ed.score_moments(10, loud, [(0.5, 1.2), (1.3, 1.4), (4.2, 4.6), (7.1, 7.3)], None, lo, hi, 5)
+        assert moments
+        assert all(lo - 1e-6 <= m["end"] - m["start"] <= hi + 1e-6 for m in moments), (lo, hi, moments)
+        spans = sorted((m["start"], m["end"]) for m in moments)
+        assert all(a[1] <= b[0] for a, b in zip(spans, spans[1:])), (lo, hi, moments)
+
+
+def test_analysis_results_are_cached_per_kind_and_settings(tmp_path, monkeypatch):
+    media = add(cut_with_a_pause(tmp_path / "cut.mp4"))
+    params = {"noise_db": -50.0, "min_seconds": 0.5}
+    first = ed.analyse(media["id"], "silence", params)
+    assert first["kind"] == "silence" and len(first["ranges"]) == 1
+    monkeypatch.setattr(ed, "detect_silence", lambda *a, **k: pytest.fail("should reuse the cached result"))
+    assert ed.analyse(media["id"], "silence", params) == first
+    assert ed.analysis_key("silence", params) != ed.analysis_key("silence", params | {"min_seconds": 1.0})
+    moments = ed.analyse(media["id"], "moments", {"min_length": 1, "max_length": 2, "count": 2})["moments"]
+    assert 1 <= len(moments) <= 2 and all(0 <= m["score"] <= 100 for m in moments)
+
+
+def test_analysis_will_not_follow_a_playlist_to_other_files(tmp_path, monkeypatch):
+    make(tmp_path / "private.wav", "sine=f=440", seconds=1)
+    disguised = tmp_path / "proxy.mp4"
+    disguised.write_text("ffconcat version 1.0\nfile 'private.wav'\n")
+    stream = ["-map", "0:a:0", "-af", "ebur128"]
+    with pytest.raises(ed.EditorError):
+        ed._analyse(disguised, stream, 1.0, ("ebur128",), lambda f: None, threading.Event())
+    monkeypatch.setattr(ed, "INPUT_GUARD", [])
+    assert ed._analyse(disguised, stream, 1.0, ("ebur128",), lambda f: None, threading.Event())
+
+
+def poll(c: TestClient, url: str) -> dict:
+    for _ in range(600):
+        job = c.get(url).json()
+        if job["status"] != "running":
+            return job
+        time.sleep(0.1)
+    raise AssertionError(f"{url} never finished")
+
+
+def test_api_analysis_jobs_run_cache_cancel_and_bound_settings(tmp_path):
+    c = client()
+    media = add(cut_with_a_pause(tmp_path / "cut.mp4"))
+    url = f"/api/editor/media/{media['id']}/analysis"
+    assert c.post(url, json={"kind": "silence", "noise_db": 5}).status_code == 422
+    assert c.post(url, json={"kind": "moments", "min_length": 30, "max_length": 10}).status_code == 422
+    assert c.post(url, json={"kind": "transcript"}).status_code == 422
+    assert c.post(f"/api/editor/media/{'b' * 32}/analysis", json={"kind": "scenes"}).status_code == 404
+
+    job = c.post(url, json={"kind": "silence", "noise_db": -50, "min_seconds": 0.5})
+    assert job.status_code == 202 and "cancel" not in job.json()
+    done = poll(c, f"{url}/{job.json()['id']}")
+    assert done["status"] == "done" and done["kind"] == "silence" and len(done["result"]["ranges"]) == 1
+    from naturalvoice import server
+
+    assert server.processing.acquire(blocking=False), "the slot is free once the job reports done"
+    server.processing.release()
+    again = c.post(url, json={"kind": "silence", "noise_db": -50, "min_seconds": 0.5}).json()
+    assert again["status"] == "done" and again["result"] == done["result"], "the cached result is reused at once"
+
+    other = add(make(tmp_path / "other.mp4", "testsrc2=s=160x90:r=25", "sine=f=300", seconds=1))
+    assert c.get(f"/api/editor/media/{other['id']}/analysis/{done['id']}").status_code == 404
+    assert c.get(f"{url}/{'f' * 32}").status_code == 404
+
+    with server.processing:  # busy with an export or upload
+        busy = c.post(url, json={"kind": "scenes"})
+    assert busy.status_code == 429
+
+    scenes = c.post(url, json={"kind": "scenes", "threshold": 0.4}).json()
+    c.post(f"{url}/{scenes['id']}/cancel")
+    stopped = poll(c, f"{url}/{scenes['id']}")
+    assert stopped["status"] in {"cancelled", "done"}
+    assert server.processing.acquire(blocking=False), "the processing slot is released"
+    server.processing.release()
+
+    from naturalvoice import editor_api
+
+    editor_api.analyses["r" * 32] = {"id": "r" * 32, "media": media["id"], "status": "running", "created": 0}
+    try:
+        assert c.delete(f"/api/editor/media/{media['id']}").status_code == 409, "not removed mid-analysis"
+    finally:
+        editor_api.analyses.pop("r" * 32)
+    assert c.delete(f"/api/editor/media/{media['id']}").status_code == 204
+
+
+def test_api_batch_exports_each_range_as_its_own_file(tmp_path):
+    c = client()
+    source = make(tmp_path / "talk.mp4", "testsrc2=s=320x180:r=25", "sine=f=300", seconds=3)
+    media = add(source)
+    body = sequence([clip("c1", "v1", media["id"], 0, 0, 3)]).model_dump()
+    one = {"in": 0.5, "out": 1.5, "label": "Hook <1>/../x"}
+    bad: list[dict[str, object]] = [
+        {"ranges": []},
+        {"ranges": [{"in": 1, "out": 1}]},
+        {"ranges": [{"in": 0, "out": 1}] * 51},
+        {"ranges": [one | {"label": "x" * 61}]},
+    ]
+    for extra in bad:
+        assert c.post("/api/editor/exports", json={"sequence": body} | extra).status_code == 422, extra
+    beyond = c.post("/api/editor/exports", json={"sequence": body, "ranges": [one, {"in": 5, "out": 6}]})
+    assert beyond.status_code == 400 and beyond.json()["detail"].startswith("Range 2:")
+
+    ranges = [one, {"in": 2, "out": 3}]
+    job = c.post("/api/editor/exports", json={"sequence": body, "quality": "draft", "ranges": ranges}).json()
+    assert job["files"] == ["Test cut-01-Hook 1..x.mp4", "Test cut-02.mp4"]
+    status = poll(c, f"/api/editor/exports/{job['id']}")
+    assert status["status"] == "done" and status["done"] == 2, status
+    from naturalvoice import server
+
+    # A finished job has already freed the slot, so the next one can start at once.
+    assert server.processing.acquire(blocking=False), "the slot is free once the job reports done"
+    server.processing.release()
+    for index, name in enumerate(job["files"]):
+        r = c.get(f"/api/editor/exports/{job['id']}/file?index={index}")
+        assert r.content[4:8] == b"ftyp" and quote(name) in r.headers["content-disposition"]
+        saved = tmp_path / f"part{index}.mp4"
+        saved.write_bytes(r.content)
+        assert ed.probe(saved)["duration"] == pytest.approx(1.0, abs=0.1)
+    assert c.get(f"/api/editor/exports/{job['id']}/file?index=2").status_code == 404
+    assert c.get(f"/api/editor/exports/{job['id']}/file?index=-1").status_code == 404

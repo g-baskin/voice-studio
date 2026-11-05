@@ -123,9 +123,30 @@ class Clip(BaseModel):
         return self.start + self.duration
 
 
+MarkerColor = Literal["green", "red", "purple", "orange", "yellow", "white", "blue", "cyan"]
+
+
 class Marker(BaseModel):
     time: float = Field(ge=0, le=MAX_SECONDS)
     label: str = Field("", max_length=60)
+    color: MarkerColor = "green"
+
+
+class Subclip(BaseModel):
+    """A named part of one media file, saved with the sequence and listed under that media in the bin."""
+
+    id: str = Field(pattern=_SHORT_ID)
+    media: str = Field(pattern=r"^[0-9a-f]{32}$")
+    source_in: float = Field(ge=0, le=MAX_SECONDS)
+    source_out: float = Field(gt=0, le=MAX_SECONDS)
+    name: str = Field(min_length=1, max_length=60)
+    color: MarkerColor = "blue"
+
+    @model_validator(mode="after")
+    def _ordered(self) -> Subclip:
+        if self.source_out <= self.source_in:
+            raise ValueError("A subclip's out point must come after its in point.")
+        return self
 
 
 class Sequence(BaseModel):
@@ -141,6 +162,7 @@ class Sequence(BaseModel):
     tracks: list[Track] = Field(min_length=1, max_length=16)
     clips: list[Clip] = Field(default_factory=list, max_length=2000)
     markers: list[Marker] = Field(default_factory=list, max_length=200)
+    subclips: list[Subclip] = Field(default_factory=list, max_length=500)
 
     @model_validator(mode="after")
     def _consistent(self) -> Sequence:
@@ -151,6 +173,8 @@ class Sequence(BaseModel):
             raise ValueError("Track ids must be unique.")
         if len({c.id for c in self.clips}) != len(self.clips):
             raise ValueError("Clip ids must be unique.")
+        if len({s.id for s in self.subclips}) != len(self.subclips):
+            raise ValueError("Subclip ids must be unique.")
         frame = 1 / self.fps
         for clip in self.clips:
             if clip.track not in tracks:
@@ -405,7 +429,10 @@ def proxy_file(media_id: str) -> Path:
 
 
 def users_of(media_id: str) -> list[str]:
-    return sorted(s["name"] for s in list_sequences(full=True) if any(c["media"] == media_id for c in s["clips"]))
+    def uses(s: dict) -> bool:
+        return any(c["media"] == media_id for c in s["clips"] + s.get("subclips", []))
+
+    return sorted(s["name"] for s in list_sequences(full=True) if uses(s))
 
 
 def delete_media(media_id: str) -> None:
@@ -438,9 +465,24 @@ def read_sequence(sequence_id: str) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def check_subclips(sequence: Sequence) -> None:
+    """Subclips must name media in the bin and stay within its length."""
+    lengths: dict[str, float | None] = {}
+    for sub in sequence.subclips:
+        if sub.media not in lengths:
+            try:
+                lengths[sub.media] = media_record(sub.media).get("duration")
+            except EditorError:
+                raise EditorError(f"The subclip {sub.name!r} refers to media that is not in the bin.") from None
+        length = lengths[sub.media]
+        if length is not None and sub.source_out > length + 0.05:
+            raise EditorError(f"The subclip {sub.name!r} ends after its media does.")
+
+
 def save_sequence(sequence: Sequence, sequence_id: str | None = None, now: float | None = None) -> dict:
     if sequence_id is not None and not sequence_path(sequence_id).is_file():
         raise EditorError("That sequence no longer exists.")
+    check_subclips(sequence)
     sequence_id = sequence_id or uuid.uuid4().hex
     record = sequence.model_dump() | {"id": sequence_id, "updated": time.time() if now is None else now}
     atomic_json(sequence_path(sequence_id), record)
@@ -881,3 +923,318 @@ def premiere_xml(seq: Sequence, media: dict[str, dict]) -> str:
         f"<depth>16</depth><samplerate>{SAMPLE_RATE}</samplerate></samplecharacteristics></format>{''.join(audio)}"
         f"</audio></media>{markers}</sequence></xmeml>\n"
     )
+
+
+# --------------------------------------------------------------------------- clip analysis
+_FILTER_LINE = re.compile(r"^\[Parsed_([a-z0-9]+)_\d+ @ [^\]]+\]\s*(.*)$")
+MOMENT_WEIGHTS = {"energy": 0.5, "speech": 0.35, "pace": 0.15}
+SILENCE_FLOOR = -70.0  # LUFS treated as silence when averaging loudness
+
+
+def _filter_lines(lines: list[str], name: str) -> list[str]:
+    """Log lines a named filter printed, as in `[Parsed_silencedetect_0 @ 0x...] silence_start: 1`."""
+    found = []
+    for line in lines:
+        m = _FILTER_LINE.match(line.strip())
+        if m and m[1] == name:
+            found.append(m[2])
+    return found
+
+
+def parse_silence(lines: list[str], duration: float) -> list[tuple[float, float]]:
+    ranges: list[tuple[float, float]] = []
+    start: float | None = None
+    for text in _filter_lines(lines, "silencedetect"):
+        if m := re.match(r"silence_start:\s*(-?[\d.]+)", text):
+            start = max(0.0, float(m[1]))
+        elif (m := re.match(r"silence_end:\s*([\d.]+)", text)) and start is not None:
+            ranges.append((round(start, 3), round(min(float(m[1]), duration), 3)))
+            start = None
+    if start is not None and start < duration:
+        ranges.append((round(start, 3), round(duration, 3)))  # silent to the end of the file
+    return [(a, b) for a, b in ranges if b > a]
+
+
+def parse_scenes(lines: list[str]) -> list[float]:
+    times = []
+    for text in _filter_lines(lines, "showinfo"):
+        if m := re.search(r"\bpts_time:\s*(-?[\d.]+)", text):
+            times.append(round(max(0.0, float(m[1])), 3))
+    return sorted(set(times))
+
+
+def parse_loudness(lines: list[str]) -> list[tuple[float, float]]:
+    """(time, momentary loudness in LUFS) every 100 ms from ebur128's log."""
+    points = []
+    for text in _filter_lines(lines, "ebur128"):
+        if m := re.match(r"t:\s*([\d.]+)\s.*?\bM:\s*(-?[\d.]+|-?inf|nan)", text):
+            value = float(m[2]) if re.fullmatch(r"-?[\d.]+", m[2]) else SILENCE_FLOOR
+            points.append((float(m[1]), max(SILENCE_FLOOR, value)))
+    return points
+
+
+def _analyse(
+    path: Path,
+    stream: list[str],
+    duration: float,
+    keep: tuple[str, ...],
+    progress: Callable[[float], None],
+    cancel: threading.Event,
+) -> list[str]:
+    """Run one ffmpeg analysis pass and return the log lines of the named filters."""
+    args = [aio._ffmpeg(), "-hide_banner", "-nostats", "-progress", "pipe:1", *INPUT_GUARD, "-i", str(path)]
+    args += [*stream, "-f", "null", "-"]
+    proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    assert proc.stdout is not None and proc.stderr is not None
+    found: list[str] = []
+    tail: list[str] = []
+    prefixes = tuple(f"[Parsed_{name}_" for name in keep)
+
+    def read_log() -> None:
+        for line in proc.stderr:  # type: ignore[union-attr]
+            if line.startswith(prefixes):
+                found.append(line)
+            else:
+                tail[:] = (tail + [line])[-5:]
+
+    reader = threading.Thread(target=read_log, daemon=True)
+    reader.start()
+    try:
+        for line in proc.stdout:
+            if cancel.is_set():
+                proc.terminate()
+                break
+            if line.startswith("out_time_us="):
+                value = line.split("=", 1)[1].strip()
+                if value.isdigit() and duration > 0:
+                    progress(min(0.99, int(value) / 1e6 / duration))
+        proc.wait()
+        reader.join(timeout=5)
+    finally:
+        if proc.poll() is None:
+            proc.kill()
+            proc.wait()
+    if cancel.is_set():
+        raise Cancelled("Analysis cancelled.")
+    if proc.returncode:
+        detail = tail[-1].strip() if tail else "unknown ffmpeg error"
+        raise EditorError(f"Analysis failed: {detail[:300]}")
+    return found
+
+
+def _analysable(media_id: str, need: str) -> tuple[dict, Path]:
+    record = media_record(media_id)
+    if record["kind"] == "image" or not record.get("duration"):
+        raise EditorError("Only video and audio can be analysed.")
+    if need == "audio" and not record["has_audio"]:
+        raise EditorError("That media has no sound to analyse.")
+    if need == "video" and not record["has_video"]:
+        raise EditorError("That media has no picture to analyse.")
+    return record, proxy_file(media_id)
+
+
+def detect_silence(
+    media_id: str,
+    noise_db: float,
+    min_seconds: float,
+    progress: Callable[[float], None] = lambda f: None,
+    cancel: threading.Event | None = None,
+) -> list[tuple[float, float]]:
+    """Silent stretches of the media's sound, read from ffmpeg's silencedetect."""
+    record, path = _analysable(media_id, "audio")
+    noise = min(-10.0, max(-80.0, float(noise_db)))
+    least = min(10.0, max(0.1, float(min_seconds)))
+    stream = ["-map", "0:a:0", "-vn", "-sn", "-af", f"silencedetect=noise={_n(noise)}dB:d={_n(least)}"]
+    lines = _analyse(path, stream, record["duration"], ("silencedetect",), progress, cancel or threading.Event())
+    return parse_silence(lines, record["duration"])
+
+
+def detect_scenes(
+    media_id: str,
+    threshold: float,
+    progress: Callable[[float], None] = lambda f: None,
+    cancel: threading.Event | None = None,
+) -> list[float]:
+    """Times where the picture changes sharply (cuts), from ffmpeg's scene score."""
+    record, path = _analysable(media_id, "video")
+    level = min(0.95, max(0.05, float(threshold)))
+    graph = f"scale=160:-2,select='gt(scene\\,{_n(level)})',showinfo"
+    stream = ["-map", "0:v:0", "-an", "-sn", "-vf", graph]
+    lines = _analyse(path, stream, record["duration"], ("showinfo",), progress, cancel or threading.Event())
+    return [t for t in parse_scenes(lines) if t > 0]
+
+
+def loudness_and_pauses(
+    media_id: str,
+    progress: Callable[[float], None] = lambda f: None,
+    cancel: threading.Event | None = None,
+) -> tuple[list[tuple[float, float]], list[tuple[float, float]]]:
+    """Momentary loudness every 100 ms and the pauses longer than 0.4 s, in one pass."""
+    record, path = _analysable(media_id, "audio")
+    stream = ["-map", "0:a:0", "-vn", "-sn", "-af", "silencedetect=noise=-35dB:d=0.4,ebur128"]
+    keep = ("silencedetect", "ebur128")
+    lines = _analyse(path, stream, record["duration"], keep, progress, cancel or threading.Event())
+    return parse_loudness(lines), parse_silence(lines, record["duration"])
+
+
+def score_moments(
+    duration: float,
+    loudness: list[tuple[float, float]],
+    pauses: list[tuple[float, float]],
+    cuts: list[float] | None,
+    min_length: float = 15,
+    max_length: float = 60,
+    count: int = 10,
+) -> list[dict]:
+    """Rank non-overlapping windows by energy, speech and pace; scores are relative to this media only."""
+    secs = max(1, math.ceil(duration))
+    loud = np.full(secs, SILENCE_FLOOR)
+    sums = np.zeros(secs)
+    hits = np.zeros(secs)
+    for t, value in loudness:
+        i = min(secs - 1, int(t))
+        sums[i] += value
+        hits[i] += 1
+    loud = np.where(hits > 0, sums / np.maximum(hits, 1), loud)
+    silent = np.zeros(secs)
+    for a, b in pauses:
+        for i in range(int(a), min(secs, math.ceil(b))):
+            silent[i] += max(0.0, min(b, i + 1) - max(a, i))
+    silent = np.minimum(1.0, silent)
+    cut_counts = np.zeros(secs)
+    for t in cuts or []:
+        cut_counts[min(secs - 1, int(t))] += 1
+
+    def prefix(values: np.ndarray) -> np.ndarray:
+        return np.concatenate([[0.0], np.cumsum(values)])
+
+    p_loud, p_silent, p_cuts = prefix(loud), prefix(silent), prefix(cut_counts)
+    lo, hi = sorted((max(1.0, float(min_length)), max(1.0, float(max_length))))
+    lengths = sorted({int(round(min(max(L, lo), hi))) for L in (15, 30, 45, 60, 90, lo, hi)})
+    lengths = [L for L in lengths if L <= secs] or [secs]
+    step = max(1, round(duration / 1500))
+    rows = []
+    for L in lengths:
+        for s in range(0, secs - L + 1, step):
+            e = s + L
+            rows.append(
+                (
+                    s,
+                    e,
+                    (p_loud[e] - p_loud[s]) / L,
+                    1 - (p_silent[e] - p_silent[s]) / L,
+                    (p_cuts[e] - p_cuts[s]) * 60 / L,
+                )
+            )
+    energy = np.array([r[2] for r in rows])
+    pace = np.array([r[4] for r in rows])
+    span = float(energy.max() - energy.min())
+    energy_n = (energy - energy.min()) / span if span > 1e-9 else np.full(len(rows), 0.5)
+    pace_n = pace / pace.max() if cuts is not None and pace.max() > 0 else np.zeros(len(rows))
+    w = dict(MOMENT_WEIGHTS)
+    if cuts is None:  # sound only: share the pace weight out
+        w = {"energy": 0.6, "speech": 0.4, "pace": 0.0}
+    speech = np.array([r[3] for r in rows])
+    raw = w["energy"] * energy_n + w["speech"] * speech + w["pace"] * pace_n
+    rspan = float(raw.max() - raw.min())
+    order = sorted(range(len(rows)), key=lambda i: (-raw[i], rows[i][0], rows[i][1]))
+
+    def snapped(start: float, end: float) -> tuple[float, float]:
+        # Begin after a pause and end before one when one is close by, if the length stays within limits.
+        before = [b for a, b in pauses if abs(b - start) <= 1.5 and b < end - lo / 2]
+        after = [a for a, b in pauses if abs(a - end) <= 1.5 and a > start + lo / 2]
+        s2 = round(max(0.0, min(before, key=lambda b: abs(b - start)) - 0.1), 3) if before else start
+        e2 = round(min(duration, min(after, key=lambda a: abs(a - end)) + 0.1), 3) if after else end
+        least = min(lo, end - start) - 1e-6
+        for s, e in ((s2, e2), (s2, end), (start, e2)):
+            if least <= e - s <= hi + 1e-6:
+                return s, e
+        return start, end
+
+    picked: list[dict] = []
+    for i in order:
+        # Overlap is checked on the final, snapped bounds.
+        start, end = snapped(float(rows[i][0]), min(float(rows[i][1]), duration))
+        if any(start < m["end"] and end > m["start"] for m in picked):
+            continue
+        reasons = []
+        if energy_n[i] >= 0.66:
+            reasons.append("loud")
+        elif energy_n[i] <= 0.33:
+            reasons.append("quiet")
+        if speech[i] >= 0.85:
+            reasons.append("few pauses")
+        elif speech[i] <= 0.5:
+            reasons.append("many pauses")
+        if pace_n[i] >= 0.6:
+            reasons.append("many cuts")
+        score = round(100 * (raw[i] - raw.min()) / rspan) if rspan > 1e-9 else 100
+        picked.append({"start": start, "end": round(end, 3), "score": int(score), "reasons": reasons or ["steady"]})
+        if len(picked) >= count:
+            break
+    return picked
+
+
+def find_moments(
+    media_id: str,
+    min_length: float,
+    max_length: float,
+    count: int,
+    progress: Callable[[float], None] = lambda f: None,
+    cancel: threading.Event | None = None,
+) -> list[dict]:
+    record = media_record(media_id)
+    if record["kind"] == "image" or not record.get("duration"):
+        raise EditorError("Only video and audio can be analysed.")
+    cancel = cancel or threading.Event()
+    video = record["has_video"]
+    loudness: list[tuple[float, float]] = []
+    pauses: list[tuple[float, float]] = []
+    if record["has_audio"]:
+        share = 0.6 if video else 1.0
+        loudness, pauses = loudness_and_pauses(media_id, lambda f: progress(f * share), cancel)
+    cuts = detect_scenes(media_id, 0.3, lambda f: progress(0.6 + f * 0.4), cancel) if video else None
+    return score_moments(record["duration"], loudness, pauses, cuts, min_length, max_length, count)
+
+
+ANALYSIS_VERSION = 1
+
+
+def analysis_key(kind: str, params: dict[str, float]) -> str:
+    # The version retires cached results when detection or scoring changes.
+    return "-".join([f"v{ANALYSIS_VERSION}", kind] + [f"{k}{_n(params[k])}" for k in sorted(params)])
+
+
+def analysis_cached(media_id: str, kind: str, params: dict[str, float]) -> dict | None:
+    """A finished analysis saved beside the media, or None when it has not been run with these settings."""
+    media_record(media_id)
+    cached = media_dir(media_id) / f"analysis-{analysis_key(kind, params)}.json"
+    if not cached.is_file():
+        return None
+    return json.loads(cached.read_text(encoding="utf-8"))
+
+
+def analyse(
+    media_id: str,
+    kind: Literal["silence", "scenes", "moments"],
+    params: dict[str, float],
+    progress: Callable[[float], None] = lambda f: None,
+    cancel: threading.Event | None = None,
+) -> dict:
+    """Run (or reuse the cached result of) one analysis of a media file's proxy."""
+    record = media_record(media_id)
+    hit = analysis_cached(media_id, kind, params)
+    if hit is not None:
+        return hit
+    cached = media_dir(media_id) / f"analysis-{analysis_key(kind, params)}.json"
+    result: dict = {"kind": kind, "duration": record.get("duration")}
+    if kind == "silence":
+        ranges = detect_silence(media_id, params["noise_db"], params["min_seconds"], progress, cancel)
+        result["ranges"] = [list(r) for r in ranges]
+    elif kind == "scenes":
+        result["times"] = detect_scenes(media_id, params["threshold"], progress, cancel)
+    else:
+        lengths = (params["min_length"], params["max_length"])
+        result["moments"] = find_moments(media_id, *lengths, int(params["count"]), progress, cancel)
+    atomic_json(cached, result)
+    return result

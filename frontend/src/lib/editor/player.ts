@@ -12,6 +12,11 @@ const PREROLL = 0.75; // seconds: elements are seeked and paused this early so c
 const KEEP = 3; // seconds around the playhead that elements stay loaded
 const DRIFT = 0.25;
 const MAX_SIDE = 960;
+// Chrome refuses playbackRate above 16.
+const MAX_RATE = 16;
+
+/** One half of the trim view: a clip's frame at a source time. */
+export type TrimSide = { layer: Layer; time: number } | null;
 
 /** Canvas preview of the timeline: proxies play in hidden elements and are composited per frame. */
 export class Player {
@@ -53,8 +58,8 @@ export class Player {
     voice.el.muted = false;
   }
 
-  private voice(layer: Layer): Voice {
-    let voice = this.pool.get(layer.clip.id);
+  private voice(layer: Layer, key = layer.clip.id): Voice {
+    let voice = this.pool.get(key);
     if (!voice) {
       const el = document.createElement(layer.media.kind === 'audio' ? 'audio' : 'video');
       el.preload = 'auto';
@@ -64,7 +69,7 @@ export class Player {
       el.addEventListener('seeked', this.redraw);
       el.addEventListener('loadeddata', this.redraw);
       voice = { el, gain: null, node: null };
-      this.pool.set(layer.clip.id, voice);
+      this.pool.set(key, voice);
       this.connect(voice);
     }
     return voice;
@@ -98,8 +103,14 @@ export class Player {
     for (const voice of this.pool.values()) voice.el.pause();
   }
 
-  /** Sync every element to time t and draw the frame. */
-  update(seq: Sequence, layers: Layer[], t: number, playing: boolean) {
+  /**
+   * Sync every element to time t and draw the frame. `rate` is the shuttle speed: above 0 the elements
+   * play at that multiple; below 0 they are paused and seeked to each frame, silently, as media can't
+   * play backwards.
+   */
+  update(seq: Sequence, layers: Layer[], t: number, playing: boolean, rate = 1) {
+    const backwards = playing && rate < 0;
+    if (backwards) playing = false;
     const live = new Set<string>();
     const speaking = layers.some((l) => l.sound && !l.duck && t >= l.t0 && t < l.t1);
     const duck = speaking ? dbToGain(-seq.duck_db) : 1;
@@ -112,14 +123,15 @@ export class Player {
       const { el } = voice;
       const active = t >= layer.t0 && t < layer.t1;
       const target = sourceTime(layer, active ? t : layer.t0);
-      const gain = active && layer.sound ? soundGain(layer, t) * (layer.duck ? duck : 1) : 0;
+      const gain = active && layer.sound && !backwards ? soundGain(layer, t) * (layer.duck ? duck : 1) : 0;
       voice.gain?.gain.setTargetAtTime(gain, now, layer.duck ? 0.08 : 0.015);
       if (playing && active) {
-        el.playbackRate = layer.clip.speed;
+        const speed = Math.min(MAX_RATE, layer.clip.speed * rate);
+        if (el.playbackRate !== speed) el.playbackRate = speed;
         if (el.paused) {
           el.currentTime = target;
           el.play().catch(() => {});
-        } else if (Math.abs(el.currentTime - target) > DRIFT * layer.clip.speed) {
+        } else if (Math.abs(el.currentTime - target) > DRIFT * speed) {
           el.currentTime = target;
         }
       } else {
@@ -132,9 +144,45 @@ export class Player {
     this.draw(seq, layers, t);
   }
 
-  private draw(seq: Sequence, layers: Layer[], t: number) {
+  /**
+   * Two-up trim view: the outgoing frame on the left and the incoming frame on the right, each a
+   * half-size copy of the sequence frame. Uses its own elements so one clip can show both its ends.
+   */
+  trim(seq: Sequence, left: TrimSide, right: TrimSide) {
+    const g = this.context(seq);
+    if (!g) return;
+    const { width: w, height: h } = g.canvas;
+    [left, right].forEach((side, i) => {
+      if (!side) return;
+      const key = `${side.layer.clip.id}:trim-${i}`;
+      const frame = { x: (i * w) / 2, y: h / 4, w: w / 2, h: h / 2 };
+      let source: CanvasImageSource | null = null;
+      if (side.layer.media.kind === 'image') {
+        const img = this.image(side.layer.media.id);
+        if (img.complete && img.naturalWidth) source = img;
+      } else if (side.layer.picture) {
+        const { el } = this.voice(side.layer, key);
+        if (!el.paused) el.pause();
+        if (!el.seeking && Math.abs(el.currentTime - side.time) > 0.5 / seq.fps) el.currentTime = side.time;
+        if (el instanceof HTMLVideoElement && el.readyState >= 2) source = el;
+      }
+      if (!source) return;
+      const box = placement(seq, side.layer.clip, side.layer.media);
+      g.save();
+      g.beginPath();
+      g.rect(frame.x, frame.y, frame.w, frame.h);
+      g.clip();
+      g.drawImage(source, frame.x + box.x * frame.w, frame.y + box.y * frame.h, box.w * frame.w, box.h * frame.h);
+      g.restore();
+    });
+    g.fillStyle = '#5a615d';
+    g.fillRect(w / 2 - 1, h / 4, 2, h / 2);
+  }
+
+  /** Size the canvas to the sequence and clear it to black. */
+  private context(seq: Sequence): CanvasRenderingContext2D | null {
     const canvas = this.canvas;
-    if (!canvas) return;
+    if (!canvas) return null;
     const k = Math.min(1, MAX_SIDE / Math.max(seq.width, seq.height));
     const w = Math.round(seq.width * k);
     const h = Math.round(seq.height * k);
@@ -143,10 +191,17 @@ export class Player {
       canvas.height = h;
     }
     const g = canvas.getContext('2d');
-    if (!g) return;
+    if (!g) return null;
     g.globalAlpha = 1;
     g.fillStyle = '#000';
     g.fillRect(0, 0, w, h);
+    return g;
+  }
+
+  private draw(seq: Sequence, layers: Layer[], t: number) {
+    const g = this.context(seq);
+    if (!g) return;
+    const { width: w, height: h } = g.canvas;
     for (const layer of layers) {
       if (!layer.picture || t < layer.t0 || t >= layer.t1) continue;
       let source: CanvasImageSource | null = null;

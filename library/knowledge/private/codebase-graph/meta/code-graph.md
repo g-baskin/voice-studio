@@ -17,22 +17,22 @@ served there.
 
 | Nodes | Count |
 |---|---|
-| class | 53 |
-| function | 458 |
+| class | 56 |
+| function | 478 |
 | module | 36 |
-| page | 26 |
+| page | 29 |
 | process | 3 |
-| route | 99 |
+| route | 102 |
 | script | 25 |
 
 | Edges | Count |
 |---|---|
-| calls | 241 |
-| defines | 511 |
+| calls | 245 |
+| defines | 534 |
 | imports | 92 |
-| requests | 96 |
+| requests | 99 |
 | runs | 3 |
-| serves | 99 |
+| serves | 102 |
 | spawns | 3 |
 
 ## Modules, engine processes and web assets
