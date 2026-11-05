@@ -2,7 +2,7 @@
   import { thumbsUrl } from '#lib/editor/api.ts';
   import type { Editor } from '#lib/editor/editor.svelte.ts';
   import { MEDIA_TYPE, shortTime } from '#lib/editor/timeline.ts';
-  import type { Media } from '#lib/editor/types.ts';
+  import type { Media, Subclip } from '#lib/editor/types.ts';
 
   let { editor }: { editor: Editor } = $props();
 
@@ -48,6 +48,22 @@
     return [m.kind === 'image' ? 'Still image' : shortTime(m.duration ?? 0), size].filter(Boolean).join(' · ');
   }
 
+  function open(m: Media, sub: Subclip | null = null) {
+    editor.loadSource(m, sub);
+  }
+
+  function openKey(e: KeyboardEvent, m: Media, sub: Subclip | null = null) {
+    if (e.key !== 'Enter') return;
+    e.preventDefault();
+    e.stopPropagation();
+    open(m, sub);
+  }
+
+  function renameSub(sub: Subclip) {
+    const name = prompt('Subclip name', sub.name);
+    if (name !== null) editor.renameSubclip(sub.id, name);
+  }
+
   function remove(m: Media) {
     if (confirm(`Remove ${m.name} from the bin? Its file is deleted from this computer's Editor data.`))
       void editor.removeMedia(m);
@@ -90,9 +106,15 @@
             class="item"
             draggable={m.status === 'ready'}
             ondragstart={(e) => startDrag(e, m)}
-            title={m.status === 'ready' ? 'Drag onto the timeline' : undefined}
-            role="group"
-            aria-label={m.name}
+            ondblclick={() => open(m)}
+            onkeydown={(e) => openKey(e, m)}
+            title={m.status === 'ready'
+              ? 'Drag onto the timeline, or double-click to open in the source viewer'
+              : undefined}
+            role="button"
+            tabindex={m.status === 'ready' ? 0 : -1}
+            aria-label="{m.name}: press Enter to open in the source viewer"
+            class:open={editor.source?.media === m.id && !editor.source.subclip}
           >
             <span
               class="thumb {m.kind}"
@@ -125,6 +147,44 @@
             >
           </div>
         </li>
+        {#each editor.subclipsFor(m.id) as sub (sub.id)}
+          <li class="sub">
+            <div
+              class="item"
+              class:open={editor.source?.subclip === sub.id}
+              role="button"
+              tabindex="0"
+              aria-label="Subclip {sub.name}, {shortTime(
+                sub.source_out - sub.source_in,
+              )}: press Enter to open in the source viewer"
+              title="Double-click to open in the source viewer"
+              ondblclick={() => open(m, sub)}
+              onkeydown={(e) => openKey(e, m, sub)}
+            >
+              <span class="swatch {sub.color}" aria-hidden="true"></span>
+              <span class="text">
+                <span class="name">{sub.name}</span>
+                <span class="meta">{shortTime(sub.source_in)}–{shortTime(sub.source_out)}</span>
+              </span>
+            </div>
+            <div class="actions">
+              <button
+                type="button"
+                class="mini"
+                aria-label="Rename subclip {sub.name}"
+                title="Rename"
+                onclick={() => renameSub(sub)}>✎</button
+              >
+              <button
+                type="button"
+                class="mini"
+                aria-label="Delete subclip {sub.name}"
+                title="Delete subclip"
+                onclick={() => editor.removeSubclip(sub.id)}>×</button
+              >
+            </div>
+          </li>
+        {/each}
       {/each}
     </ul>
   {/if}
@@ -210,6 +270,45 @@
     min-width: 0;
     flex: 1;
     cursor: grab;
+  }
+  .item:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+  .item.open .name {
+    color: var(--accent);
+  }
+  li.sub {
+    padding-left: 22px;
+  }
+  .swatch {
+    flex: none;
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    background: var(--swatch, #3d7fb8);
+  }
+  .swatch.green {
+    --swatch: #3f9a63;
+  }
+  .swatch.red {
+    --swatch: #d24b4b;
+  }
+  .swatch.yellow {
+    --swatch: #d6a531;
+  }
+  .swatch.purple {
+    --swatch: #8a62c9;
+  }
+  .swatch.orange {
+    --swatch: #dc7d36;
+  }
+  .swatch.white {
+    --swatch: #e8e8e8;
+  }
+  .swatch.cyan {
+    --swatch: #3fb6c4;
   }
   .thumb {
     flex: none;

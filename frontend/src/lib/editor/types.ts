@@ -59,7 +59,20 @@ export type Clip = {
   opacity: number;
 };
 
-export type Marker = { time: number; label: string };
+export const MARKER_COLORS = ['green', 'red', 'purple', 'orange', 'yellow', 'white', 'blue', 'cyan'] as const;
+export type MarkerColor = (typeof MARKER_COLORS)[number];
+
+export type Marker = { time: number; label: string; color: MarkerColor };
+
+/** A named part of one media file, listed under that media in the bin. */
+export type Subclip = {
+  id: string;
+  media: string;
+  source_in: number;
+  source_out: number;
+  name: string;
+  color: MarkerColor;
+};
 
 export type Sequence = {
   version: 1;
@@ -74,6 +87,7 @@ export type Sequence = {
   tracks: Track[];
   clips: Clip[];
   markers: Marker[];
+  subclips: Subclip[];
 };
 
 export type SequenceSummary = { id: string; name: string; updated: number };
@@ -84,6 +98,10 @@ export type ExportJob = {
   progress: number;
   error: string | null;
   name: string;
+  /** Every file the job writes: one, or one per range in a batch. */
+  files: string[];
+  /** How many of those files are finished. */
+  done: number;
   created: number;
 };
 
@@ -103,4 +121,24 @@ export type Layer = {
   sound: boolean;
   gainDb: number;
   duck: boolean;
+};
+
+export type AnalysisKind = 'silence' | 'scenes' | 'moments';
+
+export type Moment = { start: number; end: number; score: number; reasons: string[] };
+
+export type AnalysisResult =
+  | { kind: 'silence'; duration: number; ranges: [number, number][] }
+  | { kind: 'scenes'; duration: number; times: number[] }
+  | { kind: 'moments'; duration: number; moments: Moment[] };
+
+export type Analysis = {
+  id: string;
+  media: string;
+  kind: AnalysisKind;
+  status: 'running' | 'done' | 'error' | 'cancelled';
+  progress: number;
+  error: string | null;
+  created: number;
+  result: AnalysisResult | null;
 };

@@ -18,6 +18,18 @@ all entries below describe unreleased source, not historical releases.
 
 ### Added
 
+- **Editor Clip mode** (`/editor?mode=clip`), for fast clipping over the same sequence ([guide](docs/editor-clip-mode.md)):
+  - **Editing:** a source viewer with its own In/Out, three-point insert, overwrite, append and smart insert (with
+    back-timing and V/A target tracks), lift and extract, and Q/W/E trims.
+  - **Tools and playback:** ripple, roll and slide tools with a two-frame trim view, and J/K/L shuttle up to 8×.
+  - **Organising:** subclips, and coloured markers with a marker list.
+  - **Analysis:** silence removal with review, scene detection to markers or splits, and a "moments" list ranked
+    by loudness, pauses and cuts (a sorting aid, not a prediction).
+  - **Output:** 9:16 and 1:1 presets with manual reframing, and batch export of each marker range or subclip as
+    its own file.
+  - **Compatibility:** old sequences load unchanged. Silence, scene and moment analysis are cancellable
+    background jobs that share the processing slot.
+  - **Changed key:** J now shuttles backwards instead of stepping one frame; ← and → step frames.
 - **Speak** (`/speak`): directed multi-speaker performances with inline directions, chunked recording that
   plays as it arrives, retakes, plain-language revisions and a joined download. Directions are reported as
   applied, approximated or unavailable. Inspired by Fish Audio's published design; no Fish Audio code or

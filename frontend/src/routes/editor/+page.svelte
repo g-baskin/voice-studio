@@ -1,12 +1,15 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { replaceState } from '$app/navigation';
   import { Editor } from '#lib/editor/editor.svelte.ts';
   import { PRODUCT } from '#lib/nav.ts';
   import ExportDialog from './ExportDialog.svelte';
+  import ClipPanel from './ClipPanel.svelte';
   import Inspector from './Inspector.svelte';
   import MediaBin from './MediaBin.svelte';
   import MenuBar, { type Menu } from './MenuBar.svelte';
   import Preview from './Preview.svelte';
+  import SourceMonitor from './SourceMonitor.svelte';
   import Timeline from './Timeline.svelte';
 
   const editor = new Editor();
@@ -14,6 +17,7 @@
   const mod = mac ? '⌘' : 'Ctrl+';
 
   let preview: Preview | undefined = $state();
+  let source: SourceMonitor | undefined = $state();
   let timeline: Timeline | undefined = $state();
   let exporter: ExportDialog | undefined = $state();
   let help: HTMLDialogElement | undefined = $state();
@@ -35,10 +39,17 @@
   const hasSelection = $derived(editor.selection.length > 0);
   const single = $derived(editor.selected.length === 1 ? editor.selected[0] : null);
   const singleMedia = $derived(single ? editor.mediaById.get(single.media) : undefined);
+  const clipMode = $derived(editor.mode === 'clip');
+  const hasSource = $derived(editor.source !== null);
+  const hasRange = $derived(editor.seq.range_in !== null && editor.seq.range_out !== null);
+  // The viewer that I, O, M and the transport keys drive.
+  const onSource = $derived(clipMode && editor.viewer === 'source' && hasSource);
 
   onMount(() => {
     const saved = Number(localStorage.getItem(TIMELINE_KEY));
     if (Number.isFinite(saved) && saved >= MIN_TIMELINE) timelineH = Math.round(saved);
+    const asked = new URLSearchParams(location.search).get('mode');
+    editor.setMode(asked === 'clip' || asked === 'edit' ? asked : editor.savedMode());
     void editor.init();
     const tl = timelineEl();
     const watch = new ResizeObserver(() => (shownH = Math.round(tl?.getBoundingClientRect().height ?? 0)));
@@ -100,6 +111,14 @@
     if (next === null) return;
     e.preventDefault();
     setTimelineHeight(next, maxTimeline(h0));
+  }
+
+  function setMode(mode: 'edit' | 'clip') {
+    editor.setMode(mode);
+    const url = new URL(location.href);
+    if (mode === 'clip') url.searchParams.set('mode', 'clip');
+    else url.searchParams.delete('mode');
+    replaceState(url, {});
   }
 
   function slipToFirstFrame() {
@@ -194,6 +213,48 @@
           run: slipToFirstFrame,
         },
         'separator',
+        { label: 'Insert from source', shortcut: ',', disabled: !hasSource, run: () => editor.sourceEdit('insert') },
+        {
+          label: 'Overwrite from source',
+          shortcut: '.',
+          disabled: !hasSource,
+          run: () => editor.sourceEdit('overwrite'),
+        },
+        {
+          label: 'Smart insert at nearest edit',
+          shortcut: '⇧,',
+          disabled: !hasSource,
+          run: () => editor.sourceEdit('smart'),
+        },
+        { label: 'Append to end', shortcut: '⇧.', disabled: !hasSource, run: () => editor.sourceEdit('append') },
+        { label: 'Make subclip', shortcut: `${mod}U`, disabled: !hasSource, run: () => editor.makeSubclip() },
+        'separator',
+        {
+          label: 'Ripple trim previous edit to playhead',
+          shortcut: 'Q',
+          disabled: !hasClips,
+          run: () => editor.trimEditToPlayhead('previous', true),
+        },
+        {
+          label: 'Ripple trim next edit to playhead',
+          shortcut: 'W',
+          disabled: !hasClips,
+          run: () => editor.trimEditToPlayhead('next', true),
+        },
+        {
+          label: 'Trim previous edit to playhead',
+          shortcut: '⌥Q',
+          disabled: !hasClips,
+          run: () => editor.trimEditToPlayhead('previous', false),
+        },
+        {
+          label: 'Trim next edit to playhead',
+          shortcut: '⌥W',
+          disabled: !hasClips,
+          run: () => editor.trimEditToPlayhead('next', false),
+        },
+        { label: 'Extend edit to playhead', shortcut: 'E', disabled: !single, run: () => editor.extendToPlayhead() },
+        'separator',
         {
           label: 'Mute clip',
           disabled: !single,
@@ -217,7 +278,11 @@
           disabled: editor.seq.range_in === null && editor.seq.range_out === null,
           run: () => editor.clearInOut(),
         },
+        { label: 'Mark clip', shortcut: 'X', disabled: !hasClips, run: () => editor.markClip() },
         { label: 'Add marker', shortcut: 'M', run: () => editor.addMarker(editor.playhead) },
+        'separator',
+        { label: 'Lift', shortcut: ';', disabled: !hasRange, run: () => editor.liftOrExtract(false) },
+        { label: 'Extract', shortcut: "'", disabled: !hasRange, run: () => editor.liftOrExtract(true) },
         'separator',
         { label: 'Add video track', run: () => editor.addTrack('video') },
         { label: 'Add audio track', run: () => editor.addTrack('audio') },
@@ -228,6 +293,9 @@
     {
       label: 'View',
       items: [
+        { label: 'Edit mode', checked: !clipMode, run: () => setMode('edit') },
+        { label: 'Clip mode', checked: clipMode, run: () => setMode('clip') },
+        'separator',
         { label: 'Zoom in', shortcut: '=', run: () => timeline?.setZoom(editor.zoom * 1.5) },
         { label: 'Zoom out', shortcut: '-', run: () => timeline?.setZoom(editor.zoom / 1.5) },
         { label: 'Zoom to fit', shortcut: '\\', run: () => timeline?.zoomToFit() },
@@ -241,6 +309,14 @@
         },
         { label: 'Razor tool', shortcut: 'C', checked: editor.tool === 'razor', run: () => (editor.tool = 'razor') },
         { label: 'Slip tool', shortcut: 'Y', checked: editor.tool === 'slip', run: () => (editor.tool = 'slip') },
+        {
+          label: 'Ripple tool',
+          shortcut: 'B',
+          checked: editor.tool === 'ripple',
+          run: () => (editor.tool = 'ripple'),
+        },
+        { label: 'Roll tool', shortcut: 'N', checked: editor.tool === 'roll', run: () => (editor.tool = 'roll') },
+        { label: 'Slide tool', shortcut: 'U', checked: editor.tool === 'slide', run: () => (editor.tool = 'slide') },
         'separator',
         { label: 'Taller tracks', run: () => editor.resizeTracks(1.25) },
         { label: 'Shorter tracks', run: () => editor.resizeTracks(0.8) },
@@ -265,6 +341,13 @@
     return target instanceof HTMLInputElement && !['checkbox', 'radio', 'button', 'range'].includes(target.type);
   }
 
+  let holdingK = false;
+
+  function keysUp(e: KeyboardEvent) {
+    // Option changes e.key on a Mac, so the physical key is checked too.
+    if (e.code === 'KeyK' || e.key.toLowerCase() === 'k') holdingK = false;
+  }
+
   function keys(e: KeyboardEvent) {
     if (e.defaultPrevented || typing(e.target)) return;
     const cmd = mac ? e.metaKey : e.ctrlKey;
@@ -282,34 +365,42 @@
       else if (key === 's') on(() => attempt(() => editor.save()));
       else if (key === 'e') on(() => hasClips && exporter?.open());
       else if (key === 'i') on(() => importer?.click());
+      else if (key === 'u') on(() => editor.makeSubclip());
       return;
     }
+    // Option changes the character on a Mac keyboard, so these match the physical key.
     if (e.altKey) {
-      if (e.code === 'KeyX') on(() => editor.clearInOut());
+      if (e.code === 'KeyX') on(() => (onSource ? editor.clearSourceMarks() : editor.clearInOut()));
+      else if (e.code === 'KeyQ') on(() => editor.trimEditToPlayhead('previous', false));
+      else if (e.code === 'KeyW') on(() => editor.trimEditToPlayhead('next', false));
       return;
     }
+    const player = onSource ? source : preview;
     // A focused button keeps Space and Enter for itself.
     const onButton =
       e.target instanceof HTMLButtonElement ||
       (e.target instanceof HTMLElement && e.target.closest('[role="menubar"]'));
     switch (key) {
       case ' ':
-        if (!onButton) on(() => preview?.toggle());
+        if (!onButton) on(() => player?.toggle());
         break;
       case 'k':
-        on(() => preview?.pause());
-        break;
-      case 'l':
-        on(() => preview?.play());
+        holdingK = true;
+        on(() => player?.shuttle('k'));
         break;
       case 'j':
-        on(() => preview?.step(-1));
+      case 'l':
+        // Holding K turns J and L into single-frame steps, as in other editors. Key repeat would race the
+        // shuttle to 8×, so only real presses change speed.
+        if (e.repeat && !holdingK) e.preventDefault();
+        else if (holdingK) on(() => player?.step((key === 'j' ? -1 : 1) / editor.seq.fps));
+        else on(() => player?.shuttle(key));
         break;
       case 'ArrowLeft':
-        on(() => preview?.step((e.shiftKey ? -10 : -1) / editor.seq.fps));
+        on(() => player?.step((e.shiftKey ? -10 : -1) / editor.seq.fps));
         break;
       case 'ArrowRight':
-        on(() => preview?.step((e.shiftKey ? 10 : 1) / editor.seq.fps));
+        on(() => player?.step((e.shiftKey ? 10 : 1) / editor.seq.fps));
         break;
       case 'ArrowUp':
         on(() => preview?.jumpEdit(-1));
@@ -318,19 +409,58 @@
         on(() => preview?.jumpEdit(1));
         break;
       case 'Home':
-        on(() => preview?.home(false));
+        on(() => player?.home(false));
         break;
       case 'End':
-        on(() => preview?.home(true));
+        on(() => player?.home(true));
         break;
       case 'i':
-        on(() => editor.setIn(editor.playhead));
+        if (onSource) on(() => editor.source && editor.setSourceIn(editor.source.playhead));
+        else on(() => editor.setIn(editor.playhead));
         break;
       case 'o':
-        on(() => editor.setOut(editor.playhead));
+        if (onSource) on(() => editor.source && editor.setSourceOut(editor.source.playhead));
+        else on(() => editor.setOut(editor.playhead));
         break;
       case 'm':
-        on(() => editor.addMarker(editor.playhead));
+        on(() => editor.markHere());
+        break;
+      case 'x':
+        on(() => editor.markClip());
+        break;
+      // Shift+, and Shift+. arrive as < and > on most layouts.
+      case ',':
+      case '<':
+        on(() => editor.sourceEdit(e.shiftKey ? 'smart' : 'insert'));
+        break;
+      case '.':
+      case '>':
+        on(() => editor.sourceEdit(e.shiftKey ? 'append' : 'overwrite'));
+        break;
+      // Unshifted only: some layouts type ; and ' with Shift (German Shift+, is ;), which must not lift.
+      case ';':
+        if (!e.shiftKey) on(() => editor.liftOrExtract(false));
+        break;
+      case "'":
+        if (!e.shiftKey) on(() => editor.liftOrExtract(true));
+        break;
+      case 'q':
+        on(() => editor.trimEditToPlayhead('previous', true));
+        break;
+      case 'w':
+        on(() => editor.trimEditToPlayhead('next', true));
+        break;
+      case 'e':
+        on(() => editor.extendToPlayhead());
+        break;
+      case 'b':
+        on(() => (editor.tool = 'ripple'));
+        break;
+      case 'n':
+        on(() => (editor.tool = 'roll'));
+        break;
+      case 'u':
+        on(() => (editor.tool = 'slide'));
         break;
       case 'v':
         on(() => (editor.tool = 'select'));
@@ -368,15 +498,26 @@
   }
 
   const SHORTCUTS = [
-    ['Space / L / K', 'Play, play, pause'],
-    ['J', 'Back one second'],
+    ['Space', 'Play or pause'],
+    ['J / K / L', 'Shuttle backwards, stop, forwards (press again: 2×, 4×, 8×)'],
+    ['K + J / K + L', 'Hold K and tap J or L to step one frame'],
     ['← →', 'Step one frame (Shift: ten frames)'],
     ['↑ ↓', 'Previous or next edit point'],
     ['Home / End', 'Start or end of the sequence'],
-    ['I / O', 'Mark in and out points'],
-    ['⌥X', 'Clear in and out'],
-    ['M', 'Add a marker'],
+    ['I / O', 'Mark in and out points in the focused viewer (source or program)'],
+    ['⌥X', 'Clear in and out in the focused viewer'],
+    ['X', 'Mark the clip under the playhead as the sequence in and out'],
+    ['M', 'Add a marker in the focused viewer'],
+    ['Enter / double-click', 'Open the bin item in the source viewer'],
+    [', / .', 'Insert (push later clips along) or overwrite from the source'],
+    ['⇧, / ⇧.', 'Smart insert at the nearest edit, or append to the end'],
+    ["; / '", 'Lift (leave a gap) or extract (close it) between the sequence in and out'],
+    [`${mod}U`, 'Make a subclip from the source in and out'],
+    ['Q / W', 'Ripple trim the previous or next edit to the playhead'],
+    ['⌥Q / ⌥W', 'Trim the previous or next edit to the playhead, leaving a gap'],
+    ['E', 'Extend the selected clip’s nearest edge to the playhead'],
     ['V / C / Y', 'Selection, razor or slip tool (slip slides a clip’s content, back to its first frame)'],
+    ['B / N / U', 'Ripple, roll or slide tool'],
     ['⌥⇧← →', 'Slip the focused clip’s content one frame'],
     ['S', 'Snapping on or off'],
     [`${mod}K`, 'Split at the playhead (selected clips, or every track)'],
@@ -393,7 +534,7 @@
 </script>
 
 <svelte:head><title>Editor · {PRODUCT}</title></svelte:head>
-<svelte:window onkeydown={keys} />
+<svelte:window onkeydown={keys} onkeyup={keysUp} onblur={() => (holdingK = false)} />
 
 <input
   bind:this={importer}
@@ -411,6 +552,15 @@
   <h1 class="visually-hidden">Editor</h1>
   <div class="bar">
     <MenuBar {menus} />
+    <div class="modes" role="group" aria-label="Editor mode">
+      <button type="button" aria-pressed={!clipMode} onclick={() => setMode('edit')}>Edit</button>
+      <button
+        type="button"
+        aria-pressed={clipMode}
+        title="Source viewer, three-point edits, moments and silences"
+        onclick={() => setMode('clip')}>Clip</button
+      >
+    </div>
     <div class="name">
       {#if renaming}
         <input
@@ -460,10 +610,17 @@
     </div>
   </div>
 
-  <div class="panels" bind:this={panelsEl}>
+  <div class="panels" class:clip={editor.mode === 'clip'} bind:this={panelsEl}>
     <MediaBin {editor} />
-    <Preview bind:this={preview} {editor} />
-    <Inspector {editor} />
+    {#if editor.mode === 'clip'}
+      <SourceMonitor bind:this={source} {editor} onplay={() => preview?.pause()} />
+    {/if}
+    <Preview bind:this={preview} {editor} onplay={() => source?.pause()} />
+    {#if editor.mode === 'clip'}
+      <ClipPanel {editor} />
+    {:else}
+      <Inspector {editor} />
+    {/if}
   </div>
   <div
     class="split"
@@ -525,6 +682,33 @@
     padding: 4px 10px;
     border-bottom: 1px solid var(--line);
     background: var(--card);
+  }
+  .modes {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .modes button {
+    font: inherit;
+    font-size: 13px;
+    padding: 3px 12px;
+    border: 0;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+  }
+  .modes button + button {
+    border-left: 1px solid var(--line);
+  }
+  .modes button[aria-pressed='true'] {
+    background: var(--accent);
+    color: var(--accent-ink);
+    font-weight: 600;
+  }
+  .modes button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
   }
   .name {
     display: flex;
@@ -593,6 +777,9 @@
     min-height: 0;
     border-bottom: 1px solid var(--line);
   }
+  .panels.clip {
+    grid-template-columns: minmax(180px, 220px) minmax(0, 1fr) minmax(0, 1fr) minmax(220px, 260px);
+  }
   .message {
     margin: 0;
     padding: 3px 12px;
@@ -650,6 +837,10 @@
     .panels {
       grid-template-columns: minmax(0, 1fr);
       grid-template-rows: 200px minmax(240px, 1fr) auto;
+    }
+    .panels.clip {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: 200px minmax(240px, 1fr) minmax(240px, 1fr) auto;
     }
     .editor {
       height: auto;

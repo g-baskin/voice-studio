@@ -7,11 +7,15 @@
     MAX_TRACK_HEIGHT,
     MAX_ZOOM,
     MEDIA_TYPE,
+    MARKER_HEX,
     MIN_TRACK_HEIGHT,
     MIN_ZOOM,
     onTrack,
+    rippleEdge,
+    rollEdit,
     rulerStep,
     shortTime,
+    slideClip,
     slipIn,
     SNAP_PX,
     snap,
@@ -22,11 +26,11 @@
     trackHeight,
     trimLimits,
   } from '#lib/editor/timeline.ts';
-  import type { Clip, Track } from '#lib/editor/types.ts';
+  import type { Clip, Media, Sequence, Track } from '#lib/editor/types.ts';
 
   let { editor }: { editor: Editor } = $props();
 
-  const HEAD_W = 172;
+  const HEAD_W = 200;
   const RULER_H = 30;
 
   let scroller: HTMLDivElement | undefined = $state();
@@ -161,9 +165,9 @@
       if (isMajor) g.fillText(major < 1 ? shortTime(t) : timecode(t, seq.fps).replace(/^00:/, ''), x + 4, 11);
     }
     g.stroke();
-    g.fillStyle = c.accent;
     for (const m of seq.markers) {
       const x = m.time * zoom - scrollLeft;
+      g.fillStyle = MARKER_HEX[m.color] ?? c.accent;
       g.beginPath();
       g.moveTo(x - 5, RULER_H - 10);
       g.lineTo(x + 5, RULER_H - 10);
@@ -247,18 +251,32 @@
   }
 
   $effect(() => {
-    void [theme, editor.assetVersion, zoom, scrollLeft, visibleW, seq.markers.length, seq.range_in, seq.range_out];
+    void [
+      theme,
+      editor.assetVersion,
+      zoom,
+      scrollLeft,
+      visibleW,
+      seq.markers.map((m) => `${m.time}${m.color}`).join(),
+      seq.range_in,
+      seq.range_out,
+    ];
     drawRuler();
     for (const t of seq.tracks) drawLane(t);
   });
 
   // ------------------------------------------------------------------ pointer editing
   type Grab = {
-    mode: 'move' | 'start' | 'end' | 'scrub' | 'slip';
+    mode: 'move' | 'start' | 'end' | 'scrub' | 'slip' | 'ripple' | 'roll' | 'slide';
     x0: number;
     started: boolean;
     primary: string;
     orig: Map<string, Clip>;
+    /** Ripple, roll and slide recompute from the sequence as it was when the drag began. */
+    base?: Sequence;
+    edge?: 'start' | 'end';
+    /** Roll: the clip on the other side of the cut. */
+    partner?: string;
   };
   let grab: Grab | null = null;
 
@@ -268,12 +286,12 @@
     return Math.max(0, (clientX - rect.left - HEAD_W + scroller.scrollLeft) / zoom);
   }
 
-  function snapped(t: number, exclude: Set<string>): number {
+  function snapped(t: number, exclude: Set<string>, from: Sequence = seq): number {
     if (!editor.snapping) {
       editor.snapLine = null;
       return t;
     }
-    const hit = snap(t, snapPoints(seq, editor.playhead, exclude), SNAP_PX / zoom);
+    const hit = snap(t, snapPoints(from, editor.playhead, exclude), SNAP_PX / zoom);
     editor.snapLine = hit.to;
     return hit.time;
   }
@@ -285,6 +303,47 @@
       t = snap(t, points, SNAP_PX / zoom).time;
     }
     editor.playhead = toFrame(seq, t);
+  }
+
+  // Touching neighbours on the same track, within half a frame.
+  function neighbour(c: Clip, side: 'before' | 'after', clips: Clip[] = seq.clips): Clip | null {
+    const half = 0.5 / seq.fps;
+    return (
+      clips.find(
+        (o) =>
+          o.track === c.track &&
+          o.id !== c.id &&
+          Math.abs(side === 'before' ? clipEnd(o) - c.start : o.start - clipEnd(c)) <= half,
+      ) ?? null
+    );
+  }
+
+  // The two frames either side of the edit being trimmed, shown in the program monitor.
+  function showTrim(outgoing: Clip | null, incoming: Clip | null) {
+    editor.trimView = {
+      left: outgoing && {
+        clip: outgoing.id,
+        time: Math.max(outgoing.source_in, outgoing.source_out - outgoing.speed / seq.fps),
+      },
+      right: incoming && { clip: incoming.id, time: incoming.source_in },
+    };
+  }
+
+  function trimTool(e: PointerEvent, target: Element, clip: Clip): Grab | null {
+    const tool = editor.tool as 'ripple' | 'roll' | 'slide';
+    const base = $state.snapshot(seq) as Sequence;
+    const orig = new Map([[clip.id, $state.snapshot(clip) as Clip]]);
+    if (tool === 'slide') return { mode: 'slide', x0: e.clientX, started: false, primary: clip.id, orig, base };
+    const marked = target.closest<HTMLElement>('[data-edge]')?.dataset.edge;
+    const t = timeAt(e.clientX);
+    const edge: 'start' | 'end' =
+      marked === 'start' || marked === 'end' ? marked : t - clip.start < clipEnd(clip) - t ? 'start' : 'end';
+    if (tool === 'ripple') return { mode: 'ripple', x0: e.clientX, started: false, primary: clip.id, orig, base, edge };
+    const partner = neighbour(clip, edge === 'end' ? 'after' : 'before');
+    // A free edge has nothing to roll against, so it trims like the selection tool.
+    if (!partner) return { mode: edge, x0: e.clientX, started: false, primary: clip.id, orig };
+    orig.set(partner.id, $state.snapshot(partner) as Clip);
+    return { mode: 'roll', x0: e.clientX, started: false, primary: clip.id, orig, base, edge, partner: partner.id };
   }
 
   function down(e: PointerEvent) {
@@ -325,6 +384,14 @@
       grid.setPointerCapture(e.pointerId);
       return;
     }
+    if (editor.tool === 'ripple' || editor.tool === 'roll' || editor.tool === 'slide') {
+      editor.selection = [clip.id];
+      editor.selectedTrack = null;
+      if (editor.isLocked(clip)) return;
+      grab = trimTool(e, target, clip);
+      grid.setPointerCapture(e.pointerId);
+      return;
+    }
     if (e.shiftKey || e.metaKey || e.ctrlKey)
       editor.selection = selectedIds.has(clip.id)
         ? editor.selection.filter((id) => id !== clip.id)
@@ -361,11 +428,16 @@
     if (!base || !live) return;
     const exclude = new Set(grab.orig.keys());
     const m = editor.mediaById.get(base.media);
+    if (grab.mode === 'ripple' || grab.mode === 'roll' || grab.mode === 'slide') {
+      trimDrag(grab, base, m, dt, exclude);
+      return;
+    }
     if (grab.mode === 'slip') {
       // Content follows the pointer: dragging right shows earlier frames, back to the very first one.
       const sourceIn = slipIn(base, m, base.source_in - dt * base.speed);
       live.source_out = sourceIn + (base.source_out - base.source_in);
       live.source_in = sourceIn;
+      showTrim({ ...live, source_out: live.source_in + live.speed / seq.fps }, live);
       editor.say(
         m?.kind === 'image'
           ? 'Still images have no content to slip.'
@@ -417,10 +489,55 @@
     }
   }
 
+  function trimDrag(g: Grab, c0: Clip, m: Media | undefined, dt: number, moving: Set<string>) {
+    const s0 = g.base;
+    if (!s0) return;
+    // Snap to the sequence as it was, ignoring clips this drag moves, so they never pull the edge.
+    const exclude = new Set(moving);
+    if (g.mode === 'ripple')
+      for (const o of s0.clips) if (o.track === c0.track && o.start >= clipEnd(c0) - 1e-6) exclude.add(o.id);
+    if (g.mode === 'slide')
+      for (const side of ['before', 'after'] as const) {
+        const n = neighbour(c0, side, s0.clips);
+        if (n) exclude.add(n.id);
+      }
+    const near = (t: number) => toFrame(seq, snapped(t, exclude, s0));
+    if (g.mode === 'ripple') {
+      const edge = g.edge ?? 'end';
+      const t = near((edge === 'end' ? clipEnd(c0) : c0.start) + dt);
+      seq.clips = rippleEdge(s0, c0, m, edge, t);
+    } else if (g.mode === 'roll') {
+      const partner = g.orig.get(g.partner ?? '');
+      if (!partner) return;
+      const [left, right] = g.edge === 'end' ? [c0, partner] : [partner, c0];
+      const t = near(clipEnd(left) + dt);
+      seq.clips = rollEdit(s0, left, editor.mediaById.get(left.media), right, editor.mediaById.get(right.media), t);
+    } else {
+      const start = Math.max(0, near(c0.start + dt));
+      seq.clips = slideClip(s0, c0, editor.mediaById, start - c0.start);
+    }
+    const live = seq.clips.find((c) => c.id === c0.id);
+    if (!live) return;
+    if (g.mode === 'slide') {
+      showTrim(neighbour(live, 'before'), neighbour(live, 'after'));
+      editor.say(`Clip now starts at ${timecode(live.start, seq.fps)}; its neighbours fill the change.`);
+    } else if (g.mode === 'roll') {
+      const other = seq.clips.find((c) => c.id === g.partner) ?? null;
+      const [left, right] = g.edge === 'end' ? [live, other] : [other, live];
+      showTrim(left, right);
+      if (right) editor.say(`Cut rolled to ${timecode(right.start, seq.fps)}.`);
+    } else {
+      const atEnd = g.edge !== 'start';
+      showTrim(atEnd ? live : neighbour(live, 'before'), atEnd ? neighbour(live, 'after') : live);
+      editor.say(`Clip is now ${clipDuration(live).toFixed(2)} seconds; later clips on its track follow.`);
+    }
+  }
+
   function up() {
     if (!grab) return;
     const done = grab;
     grab = null;
+    editor.trimView = null;
     if (done.mode === 'scrub' || !done.started) return;
     editor.endGesture(done.mode === 'move' ? [...done.orig.keys()] : []);
   }
@@ -428,6 +545,7 @@
   function escape(e: KeyboardEvent) {
     if (e.key === 'Escape' && grab?.started) {
       grab = null;
+      editor.trimView = null;
       editor.cancelGesture();
     }
   }
@@ -607,6 +725,32 @@
       </button>
       <button
         type="button"
+        aria-pressed={editor.tool === 'ripple'}
+        title="Ripple tool (B): drag a clip edge; later clips on the track move with it"
+        onclick={() => (editor.tool = 'ripple')}
+      >
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3v10M6 8h8M11 5l3 3-3 3M2 4v8" /></svg>Ripple
+      </button>
+      <button
+        type="button"
+        aria-pressed={editor.tool === 'roll'}
+        title="Roll tool (N): drag a cut between two clips; the total length stays the same"
+        onclick={() => (editor.tool = 'roll')}
+      >
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2v12M5 5L2 8l3 3M11 5l3 3-3 3" /></svg>Roll
+      </button>
+      <button
+        type="button"
+        aria-pressed={editor.tool === 'slide'}
+        title="Slide tool (U): drag a clip between its neighbours, which lengthen or shorten to fill"
+        onclick={() => (editor.tool = 'slide')}
+      >
+        <svg viewBox="0 0 16 16" aria-hidden="true"
+          ><rect x="5" y="4" width="6" height="8" rx="1" /><path d="M1 8h3M12 8h3M3 6l-2 2 2 2M13 6l2 2-2 2" /></svg
+        >Slide
+      </button>
+      <button
+        type="button"
         aria-pressed={editor.snapping}
         title="Snapping (S)"
         onclick={() => (editor.snapping = !editor.snapping)}
@@ -669,6 +813,8 @@
     class="scroll"
     class:razor={editor.tool === 'razor'}
     class:slip={editor.tool === 'slip'}
+    class:trimming={editor.tool === 'ripple' || editor.tool === 'roll'}
+    class:sliding={editor.tool === 'slide'}
     bind:this={scroller}
     bind:clientWidth={viewW}
     onscroll={() => (scrollLeft = scroller?.scrollLeft ?? 0)}
@@ -696,12 +842,25 @@
       </div>
 
       {#each seq.tracks as t (t.id)}
+        {@const targeted = editor.targetIds[t.kind] === t.id}
         <div
           class="head"
           class:selected={editor.selectedTrack === t.id}
           class:video={t.kind === 'video'}
           style:height="{trackHeight(t)}px"
         >
+          <button
+            type="button"
+            class="patch"
+            class:video={t.kind === 'video'}
+            aria-pressed={targeted}
+            aria-label="Target {t.name} for source {t.kind === 'video' ? 'picture' : 'sound'}"
+            title={targeted
+              ? `Source ${t.kind === 'video' ? 'picture' : 'sound'} edits land on ${t.name}`
+              : `Send source ${t.kind === 'video' ? 'picture' : 'sound'} edits to ${t.name}`}
+            disabled={t.locked}
+            onclick={() => editor.setTarget(t.kind, t.id)}>{t.kind === 'video' ? 'V' : 'A'}</button
+          >
           <button
             type="button"
             class="name"
@@ -906,8 +1065,12 @@
   .scroll.razor .clip {
     cursor: crosshair;
   }
-  .scroll.slip .clip {
+  .scroll.slip .clip,
+  .scroll.sliding .clip {
     cursor: col-resize;
+  }
+  .scroll.trimming .clip {
+    cursor: ew-resize;
   }
   .grid {
     position: relative;
@@ -961,7 +1124,6 @@
   .head {
     display: flex;
     align-items: center;
-    justify-content: space-between;
     gap: 4px;
     padding: 0 6px 0 4px;
     border-bottom: 1px solid var(--line);
@@ -1005,7 +1167,40 @@
   .name:hover {
     background: var(--bg);
   }
+  .patch {
+    flex: none;
+    width: 20px;
+    height: 22px;
+    font: inherit;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--muted);
+    background: transparent;
+    border: 1px dashed var(--line);
+    border-radius: 4px;
+    padding: 0;
+    cursor: pointer;
+  }
+  .patch[aria-pressed='true'] {
+    color: #fff;
+    background: #3d7fb8;
+    border: 1px solid #3d7fb8;
+  }
+  .patch.video[aria-pressed='true'] {
+    color: var(--accent-ink);
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+  .patch:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  .patch:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
   .toggles {
+    margin-left: auto;
     display: flex;
     gap: 2px;
   }
