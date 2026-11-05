@@ -33,6 +33,8 @@ export type Track = {
   locked: boolean;
   volume: number;
   duck: boolean;
+  /** Timeline row height in pixels; null uses the default for the kind. */
+  height: number | null;
 };
 
 export type Transition = { kind: 'dissolve'; duration: number };

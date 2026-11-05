@@ -4,17 +4,22 @@
     clamp,
     clipDuration,
     clipEnd,
+    MAX_TRACK_HEIGHT,
     MAX_ZOOM,
     MEDIA_TYPE,
+    MIN_TRACK_HEIGHT,
     MIN_ZOOM,
     onTrack,
     rulerStep,
     shortTime,
+    slipIn,
     SNAP_PX,
     snap,
     snapPoints,
     timecode,
     toFrame,
+    TRACK_HEIGHT,
+    trackHeight,
     trimLimits,
   } from '#lib/editor/timeline.ts';
   import type { Clip, Track } from '#lib/editor/types.ts';
@@ -23,7 +28,6 @@
 
   const HEAD_W = 172;
   const RULER_H = 30;
-  const HEIGHT = { video: 62, audio: 50 } as const;
 
   let scroller: HTMLDivElement | undefined = $state();
   let grid: HTMLDivElement | undefined = $state();
@@ -46,17 +50,53 @@
   }
 
   // ------------------------------------------------------------------ zoom and scrolling
+  // Several zoom steps can land in one frame (pinch, wheel); each builds on the last target, not the stale scroll.
+  let pendingLeft: number | null = null;
+
   export function setZoom(next: number, anchor = editor.playhead) {
     if (!scroller) return;
-    const screen = anchor * zoom - scroller.scrollLeft;
+    const screen = anchor * zoom - (pendingLeft ?? scroller.scrollLeft);
     editor.zoom = clamp(next, MIN_ZOOM, MAX_ZOOM);
+    pendingLeft = Math.max(0, anchor * editor.zoom - screen);
     requestAnimationFrame(() => {
-      if (scroller) scroller.scrollLeft = Math.max(0, anchor * editor.zoom - screen);
+      if (scroller && pendingLeft !== null) scroller.scrollLeft = pendingLeft;
+      pendingLeft = null;
     });
   }
 
+  /** Wheel scrolls through time like an editor: Shift scrolls tracks, Ctrl/⌘ or a pinch zooms at the pointer. */
+  function wheel(e: WheelEvent) {
+    if (!scroller) return;
+    const unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? scroller.clientHeight : 1;
+    const dx = e.deltaX * unit;
+    const dy = e.deltaY * unit;
+    if (e.ctrlKey || e.metaKey) {
+      e.preventDefault();
+      setZoom(zoom * Math.exp(-dy * 0.0025), timeAt(e.clientX));
+      return;
+    }
+    const overHeads = e.clientX - scroller.getBoundingClientRect().left < HEAD_W;
+    if (e.shiftKey) {
+      e.preventDefault();
+      scroller.scrollTop += dy || dx;
+    } else if (!overHeads && Math.abs(dy) > Math.abs(dx)) {
+      e.preventDefault();
+      scroller.scrollLeft += dy;
+    }
+  }
+
+  $effect(() => {
+    const node = scroller;
+    if (!node) return;
+    // Not passive: the wheel must not also scroll the page.
+    node.addEventListener('wheel', wheel, { passive: false });
+    return () => node.removeEventListener('wheel', wheel);
+  });
+
   export function zoomToFit() {
     setZoom((visibleW - 40) / Math.max(editor.duration, 10), 0);
+    // Fit always shows the sequence from its very start, wherever the view was scrolled.
+    pendingLeft = 0;
     if (scroller) scroller.scrollLeft = 0;
   }
 
@@ -135,7 +175,7 @@
   function drawLane(t: Track) {
     const canvas = arts.get(t.id);
     if (!canvas) return;
-    const h = HEIGHT[t.kind];
+    const h = trackHeight(t);
     const g = prepare(canvas, visibleW, h);
     if (!g) return;
     const c = colors();
@@ -214,7 +254,7 @@
 
   // ------------------------------------------------------------------ pointer editing
   type Grab = {
-    mode: 'move' | 'start' | 'end' | 'scrub';
+    mode: 'move' | 'start' | 'end' | 'scrub' | 'slip';
     x0: number;
     started: boolean;
     primary: string;
@@ -271,6 +311,20 @@
       editor.splitAt(t, [clip]);
       return;
     }
+    if (editor.tool === 'slip') {
+      editor.selection = [clip.id];
+      editor.selectedTrack = null;
+      if (editor.isLocked(clip)) return;
+      grab = {
+        mode: 'slip',
+        x0: e.clientX,
+        started: false,
+        primary: clip.id,
+        orig: new Map([[clip.id, $state.snapshot(clip) as Clip]]),
+      };
+      grid.setPointerCapture(e.pointerId);
+      return;
+    }
     if (e.shiftKey || e.metaKey || e.ctrlKey)
       editor.selection = selectedIds.has(clip.id)
         ? editor.selection.filter((id) => id !== clip.id)
@@ -307,6 +361,18 @@
     if (!base || !live) return;
     const exclude = new Set(grab.orig.keys());
     const m = editor.mediaById.get(base.media);
+    if (grab.mode === 'slip') {
+      // Content follows the pointer: dragging right shows earlier frames, back to the very first one.
+      const sourceIn = slipIn(base, m, base.source_in - dt * base.speed);
+      live.source_out = sourceIn + (base.source_out - base.source_in);
+      live.source_in = sourceIn;
+      editor.say(
+        m?.kind === 'image'
+          ? 'Still images have no content to slip.'
+          : `Clip now starts at ${shortTime(sourceIn)} of ${m?.name ?? 'the source'}.`,
+      );
+      return;
+    }
     if (grab.mode === 'move') {
       const length = clipDuration(base);
       const raw = base.start + dt;
@@ -405,6 +471,44 @@
     };
   });
 
+  // ------------------------------------------------------------------ track height
+  let sizing: { id: string; y0: number; h0: number } | null = null;
+
+  function startResize(e: PointerEvent, t: Track) {
+    if (e.button !== 0) return;
+    e.preventDefault();
+    e.stopPropagation();
+    sizing = { id: t.id, y0: e.clientY, h0: trackHeight(t) };
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+  }
+
+  function resizing(e: PointerEvent) {
+    if (sizing) editor.resizeTrack(sizing.id, sizing.h0 + e.clientY - sizing.y0);
+  }
+
+  function endResize() {
+    sizing = null;
+  }
+
+  function resizeKey(e: KeyboardEvent, t: Track) {
+    const step = e.shiftKey ? 24 : 8;
+    const h = trackHeight(t);
+    const next =
+      e.key === 'ArrowUp' || e.key === 'ArrowLeft'
+        ? h - step
+        : e.key === 'ArrowDown' || e.key === 'ArrowRight'
+          ? h + step
+          : e.key === 'Home'
+            ? MIN_TRACK_HEIGHT
+            : e.key === 'End'
+              ? MAX_TRACK_HEIGHT
+              : null;
+    if (next === null) return;
+    e.preventDefault();
+    e.stopPropagation();
+    editor.resizeTrack(t.id, next);
+  }
+
   // ------------------------------------------------------------------ keyboard
   function clipKey(e: KeyboardEvent, clip: Clip) {
     if (e.key === 'Enter' || e.key === ' ') {
@@ -415,6 +519,24 @@
           ? editor.selection.filter((id) => id !== clip.id)
           : [...editor.selection, clip.id]
         : [clip.id];
+      return;
+    }
+    if (e.altKey && e.shiftKey && (e.key === 'ArrowLeft' || e.key === 'ArrowRight') && !editor.isLocked(clip)) {
+      // Alt+Shift+arrow slips the content one frame without moving the clip.
+      e.preventDefault();
+      e.stopPropagation();
+      const sourceIn = slipIn(
+        clip,
+        editor.mediaById.get(clip.media),
+        clip.source_in + ((e.key === 'ArrowLeft' ? 1 : -1) * clip.speed) / seq.fps,
+      );
+      if (sourceIn !== clip.source_in)
+        editor.commit((s) => {
+          const c = s.clips.find((x) => x.id === clip.id);
+          if (!c) return;
+          c.source_out = sourceIn + (c.source_out - c.source_in);
+          c.source_in = sourceIn;
+        });
       return;
     }
     if (e.altKey && (e.key === 'ArrowLeft' || e.key === 'ArrowRight') && !editor.isLocked(clip)) {
@@ -473,6 +595,15 @@
         <svg viewBox="0 0 16 16" aria-hidden="true"
           ><circle cx="4" cy="12" r="2" /><circle cx="12" cy="12" r="2" /><path d="M5 10l7-8M11 10L4 2" /></svg
         >Razor
+      </button>
+      <button
+        type="button"
+        aria-pressed={editor.tool === 'slip'}
+        title="Slip tool (Y): drag inside a clip to slide its content, back to its first frame"
+        onclick={() => (editor.tool = 'slip')}
+      >
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M1 8h14M4 5L1 8l3 3M12 5l3 3-3 3M6 3v10M10 3v10" /></svg
+        >Slip
       </button>
       <button
         type="button"
@@ -537,6 +668,7 @@
   <div
     class="scroll"
     class:razor={editor.tool === 'razor'}
+    class:slip={editor.tool === 'slip'}
     bind:this={scroller}
     bind:clientWidth={viewW}
     onscroll={() => (scrollLeft = scroller?.scrollLeft ?? 0)}
@@ -568,7 +700,7 @@
           class="head"
           class:selected={editor.selectedTrack === t.id}
           class:video={t.kind === 'video'}
-          style:height="{HEIGHT[t.kind]}px"
+          style:height="{trackHeight(t)}px"
         >
           <button
             type="button"
@@ -630,8 +762,26 @@
               >
             </button>
           </div>
+          <div
+            class="resize"
+            role="slider"
+            tabindex="0"
+            aria-label="Height of {t.name}"
+            aria-orientation="vertical"
+            aria-valuemin={MIN_TRACK_HEIGHT}
+            aria-valuemax={MAX_TRACK_HEIGHT}
+            aria-valuenow={trackHeight(t)}
+            aria-valuetext="{trackHeight(t)} pixels"
+            title="Drag to make {t.name} taller or shorter (double-click resets)"
+            onpointerdown={(e) => startResize(e, t)}
+            onpointermove={resizing}
+            onpointerup={endResize}
+            onpointercancel={endResize}
+            ondblclick={() => editor.resizeTrack(t.id, TRACK_HEIGHT[t.kind])}
+            onkeydown={(e) => resizeKey(e, t)}
+          ></div>
         </div>
-        <div class="lane" class:locked={t.locked} data-lane={t.id} style:height="{HEIGHT[t.kind]}px">
+        <div class="lane" class:locked={t.locked} data-lane={t.id} style:height="{trackHeight(t)}px">
           <canvas class="art" use:art={t.id} style:left="{scrollLeft}px" style:width="{visibleW}px"></canvas>
           {#each onTrack(seq, t.id) as c (c.id)}
             {@const w = clipDuration(c) * zoom}
@@ -756,6 +906,9 @@
   .scroll.razor .clip {
     cursor: crosshair;
   }
+  .scroll.slip .clip {
+    cursor: col-resize;
+  }
   .grid {
     position: relative;
     display: grid;
@@ -812,6 +965,21 @@
     gap: 4px;
     padding: 0 6px 0 4px;
     border-bottom: 1px solid var(--line);
+  }
+  .resize {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -3px;
+    height: 7px;
+    z-index: 2;
+    cursor: row-resize;
+    touch-action: none;
+  }
+  .resize:hover,
+  .resize:focus-visible {
+    background: linear-gradient(transparent 2px, var(--accent) 2px 5px, transparent 5px);
+    outline: none;
   }
   .head.video {
     background: color-mix(in srgb, var(--accent) 5%, var(--card));

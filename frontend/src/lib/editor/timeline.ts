@@ -13,6 +13,9 @@ export const MIN_ZOOM = 2;
 export const MAX_ZOOM = 400;
 export const IMAGE_SECONDS = 5;
 export const SNAP_PX = 8;
+export const TRACK_HEIGHT = { video: 62, audio: 50 } as const;
+export const MIN_TRACK_HEIGHT = 24;
+export const MAX_TRACK_HEIGHT = 240;
 /** Drag type for media dragged from the bin onto the timeline. */
 export const MEDIA_TYPE = 'application/x-editor-media';
 
@@ -32,7 +35,7 @@ export function uid(prefix: string): string {
 }
 
 export function track(kind: TrackKind, name: string, duck = false, id = uid(kind[0])): Track {
-  return { id, kind, name, muted: false, hidden: false, locked: false, volume: 0, duck };
+  return { id, kind, name, muted: false, hidden: false, locked: false, volume: 0, duck, height: null };
 }
 
 export function newSequence(name: string): Sequence {
@@ -72,6 +75,15 @@ export function shortTime(t: number): string {
   const m = Math.floor(t / 60);
   const s = t - m * 60;
   return `${m}:${s.toFixed(1).padStart(4, '0')}`;
+}
+
+export const trackHeight = (t: Track) => t.height ?? TRACK_HEIGHT[t.kind];
+
+/** Slip: slide a clip's content under it. Returns the new source in, kept within the media. */
+export function slipIn(c: Clip, m: Media | undefined, sourceIn: number): number {
+  if (!m || m.kind === 'image') return c.source_in;
+  const span = c.source_out - c.source_in;
+  return clamp(sourceIn, 0, Math.max(0, (m.duration ?? span) - span));
 }
 
 export const onTrack = (s: Sequence, trackId: string) =>

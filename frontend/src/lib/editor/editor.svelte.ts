@@ -1,5 +1,6 @@
 import * as api from './api.ts';
 import {
+  clamp,
   clipEnd,
   clipFor,
   newSequence,
@@ -8,8 +9,12 @@ import {
   seqDuration,
   settle,
   splitClip,
+  MAX_TRACK_HEIGHT,
+  MIN_TRACK_HEIGHT,
   toFrame,
   track,
+  TRACK_HEIGHT,
+  trackHeight,
   trackKindFor,
   uid,
 } from './timeline.ts';
@@ -20,7 +25,7 @@ const SAVE_DELAY = 700;
 const POLL_MS = 1000;
 
 export type SaveState = 'saved' | 'saving' | 'unsaved' | 'error';
-export type Tool = 'select' | 'razor';
+export type Tool = 'select' | 'razor' | 'slip';
 
 /** Everything the Editor page shares: the open sequence, the media bin, selection, playhead and history. */
 export class Editor {
@@ -312,6 +317,21 @@ export class Editor {
   // ------------------------------------------------------------------ editing
   isLocked(c: Clip) {
     return this.seq.tracks.find((t) => t.id === c.track)?.locked ?? true;
+  }
+
+  /** Track height is a view setting: saved with the sequence but not an undo step. */
+  resizeTrack(id: string, height: number) {
+    const t = this.seq.tracks.find((x) => x.id === id);
+    if (!t) return;
+    const next = height === TRACK_HEIGHT[t.kind] ? null : clamp(Math.round(height), MIN_TRACK_HEIGHT, MAX_TRACK_HEIGHT);
+    if (t.height === next) return;
+    t.height = next;
+    this.changed();
+  }
+
+  /** Grow or shrink every track by a factor; 0 resets them all. */
+  resizeTracks(factor: number) {
+    for (const t of this.seq.tracks) this.resizeTrack(t.id, factor ? trackHeight(t) * factor : TRACK_HEIGHT[t.kind]);
   }
 
   firstTrack(kind: TrackKind): string {

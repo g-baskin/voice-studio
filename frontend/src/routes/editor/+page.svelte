@@ -20,6 +20,15 @@
   let importer: HTMLInputElement | undefined = $state();
   let renaming = $state(false);
   let nameDraft = $state('');
+  let panelsEl: HTMLDivElement | undefined = $state();
+  // Timeline height in pixels; null keeps the default share of the window.
+  let timelineH: number | null = $state(null);
+  let sizing: { y0: number; h0: number; max: number } | null = null;
+  let shownH = $state(0);
+
+  const TIMELINE_KEY = 'sharkaudio.editor.timelineHeight';
+  const MIN_TIMELINE = 160;
+  const MIN_PANELS = 160;
 
   const SAVE_TEXT = { saved: 'All changes saved', saving: 'Saving...', unsaved: 'Unsaved changes', error: 'Not saved' };
   const hasClips = $derived(editor.seq.clips.length > 0);
@@ -28,14 +37,80 @@
   const singleMedia = $derived(single ? editor.mediaById.get(single.media) : undefined);
 
   onMount(() => {
+    const saved = Number(localStorage.getItem(TIMELINE_KEY));
+    if (Number.isFinite(saved) && saved >= MIN_TIMELINE) timelineH = Math.round(saved);
     void editor.init();
+    const tl = timelineEl();
+    const watch = new ResizeObserver(() => (shownH = Math.round(tl?.getBoundingClientRect().height ?? 0)));
+    if (tl) watch.observe(tl);
     const leave = () => editor.flushOnExit();
     window.addEventListener('pagehide', leave);
     return () => {
       window.removeEventListener('pagehide', leave);
+      watch.disconnect();
       editor.stop();
     };
   });
+
+  function timelineEl(): HTMLElement | null {
+    return document.querySelector('.editor > .timeline');
+  }
+
+  function setTimelineHeight(h: number | null, max = Infinity) {
+    timelineH = h === null ? null : Math.round(Math.max(MIN_TIMELINE, Math.min(h, max)));
+    if (timelineH === null) localStorage.removeItem(TIMELINE_KEY);
+    else localStorage.setItem(TIMELINE_KEY, String(timelineH));
+  }
+
+  // Room the timeline may take: everything above the panels' minimum height.
+  function maxTimeline(h0: number) {
+    return h0 + Math.max(0, (panelsEl?.getBoundingClientRect().height ?? 0) - MIN_PANELS);
+  }
+
+  function startSplit(e: PointerEvent) {
+    if (e.button !== 0) return;
+    const h0 = timelineEl()?.getBoundingClientRect().height ?? 0;
+    e.preventDefault();
+    sizing = { y0: e.clientY, h0, max: maxTimeline(h0) };
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+  }
+
+  function moveSplit(e: PointerEvent) {
+    if (sizing) setTimelineHeight(sizing.h0 - (e.clientY - sizing.y0), sizing.max);
+  }
+
+  function splitKey(e: KeyboardEvent) {
+    const h0 = timelineEl()?.getBoundingClientRect().height ?? 0;
+    const step = e.shiftKey ? 80 : 20;
+    const next =
+      e.key === 'ArrowUp'
+        ? h0 + step
+        : e.key === 'ArrowDown'
+          ? h0 - step
+          : e.key === 'Home'
+            ? MIN_TIMELINE
+            : e.key === 'End'
+              ? Infinity
+              : null;
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      setTimelineHeight(null);
+      return;
+    }
+    if (next === null) return;
+    e.preventDefault();
+    setTimelineHeight(next, maxTimeline(h0));
+  }
+
+  function slipToFirstFrame() {
+    editor.commit((s) => {
+      const c = s.clips.find((x) => x.id === single?.id);
+      if (!c) return;
+      c.source_out -= c.source_in;
+      c.source_in = 0;
+    });
+    editor.say('Clip now starts at the first frame of its source.');
+  }
 
   function attempt(work: () => Promise<unknown>) {
     void work().catch((error: unknown) => editor.fail(error));
@@ -113,6 +188,11 @@
           disabled: !single || singleMedia?.kind !== 'video' || !singleMedia.has_audio,
           run: () => single && editor.detachAudio(single),
         },
+        {
+          label: 'Slip to first frame',
+          disabled: !single || singleMedia?.kind === 'image' || single.source_in <= 0,
+          run: slipToFirstFrame,
+        },
         'separator',
         {
           label: 'Mute clip',
@@ -160,6 +240,12 @@
           run: () => (editor.tool = 'select'),
         },
         { label: 'Razor tool', shortcut: 'C', checked: editor.tool === 'razor', run: () => (editor.tool = 'razor') },
+        { label: 'Slip tool', shortcut: 'Y', checked: editor.tool === 'slip', run: () => (editor.tool = 'slip') },
+        'separator',
+        { label: 'Taller tracks', run: () => editor.resizeTracks(1.25) },
+        { label: 'Shorter tracks', run: () => editor.resizeTracks(0.8) },
+        { label: 'Reset track heights', run: () => editor.resizeTracks(0) },
+        { label: 'Reset timeline size', disabled: timelineH === null, run: () => setTimelineHeight(null) },
       ],
     },
     {
@@ -252,6 +338,9 @@
       case 'c':
         on(() => (editor.tool = 'razor'));
         break;
+      case 'y':
+        on(() => (editor.tool = 'slip'));
+        break;
       case 's':
         on(() => (editor.snapping = !editor.snapping));
         break;
@@ -287,7 +376,8 @@
     ['I / O', 'Mark in and out points'],
     ['⌥X', 'Clear in and out'],
     ['M', 'Add a marker'],
-    ['V / C', 'Selection tool or razor tool'],
+    ['V / C / Y', 'Selection, razor or slip tool (slip slides a clip’s content, back to its first frame)'],
+    ['⌥⇧← →', 'Slip the focused clip’s content one frame'],
     ['S', 'Snapping on or off'],
     [`${mod}K`, 'Split at the playhead (selected clips, or every track)'],
     [`${mod}D`, 'Cross dissolve into the selected clip'],
@@ -295,6 +385,10 @@
     ['Alt-drag', 'Move without snapping'],
     [`${mod}Z / ${mac ? '⇧⌘Z' : 'Ctrl+Y'}`, 'Undo or redo'],
     ['= / - / \\', 'Zoom in, zoom out, zoom to fit'],
+    ['Wheel', 'Scroll the timeline through time (Shift: scroll tracks)'],
+    [`${mod}wheel / pinch`, 'Zoom the timeline at the pointer'],
+    ['Drag a track’s bottom edge', 'Make that track taller or shorter (double-click resets)'],
+    ['Drag the bar above the timeline', 'Give the timeline or the preview more room'],
   ];
 </script>
 
@@ -313,7 +407,7 @@
   }}
 />
 
-<div class="editor">
+<div class="editor" style:--timeline-h={timelineH === null ? null : `${timelineH}px`}>
   <h1 class="visually-hidden">Editor</h1>
   <div class="bar">
     <MenuBar {menus} />
@@ -366,11 +460,29 @@
     </div>
   </div>
 
-  <div class="panels">
+  <div class="panels" bind:this={panelsEl}>
     <MediaBin {editor} />
     <Preview bind:this={preview} {editor} />
     <Inspector {editor} />
   </div>
+  <div
+    class="split"
+    role="slider"
+    tabindex="0"
+    aria-label="Timeline height"
+    aria-orientation="vertical"
+    aria-valuemin={MIN_TIMELINE}
+    aria-valuemax={Math.max(MIN_TIMELINE, shownH + Math.max(0, (panelsEl?.clientHeight ?? 0) - MIN_PANELS))}
+    aria-valuenow={shownH}
+    aria-valuetext="{shownH} pixels"
+    title="Drag to resize the timeline and preview (double-click resets)"
+    onpointerdown={startSplit}
+    onpointermove={moveSplit}
+    onpointerup={() => (sizing = null)}
+    onpointercancel={() => (sizing = null)}
+    ondblclick={() => setTimelineHeight(null)}
+    onkeydown={splitKey}
+  ></div>
   <Timeline bind:this={timeline} {editor} />
   <p class="message" class:bad={editor.messageBad} role="status" aria-live="polite">{editor.message}</p>
 </div>
@@ -402,7 +514,7 @@
     display: grid;
     /* minmax(0) keeps the wide timeline scrolling inside its panel instead of widening the page. */
     grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: auto minmax(220px, 1fr) minmax(220px, 42vh) auto;
+    grid-template-rows: auto minmax(160px, 1fr) 6px minmax(160px, var(--timeline-h, 42vh)) auto;
     height: calc(100dvh - 57px);
     min-height: 620px;
   }
@@ -464,6 +576,16 @@
   .exp {
     padding: 5px 16px;
     font-size: 0.88rem;
+  }
+  .split {
+    cursor: row-resize;
+    background: var(--line);
+    touch-action: none;
+  }
+  .split:hover,
+  .split:focus-visible {
+    background: var(--accent);
+    outline: none;
   }
   .panels {
     display: grid;
@@ -532,6 +654,9 @@
     .editor {
       height: auto;
       grid-template-rows: auto auto minmax(260px, auto) auto;
+    }
+    .split {
+      display: none;
     }
   }
 </style>

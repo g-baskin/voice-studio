@@ -337,3 +337,15 @@ def test_premiere_xml_leaves_out_muted_sound(tmp_path):
     seq = sequence([clip("on", "a1", tone["id"], 0, 0, 1), clip("off", "a1", tone["id"], 1, 0, 1, muted=True)])
     root = ET.fromstring(ed.premiere_xml(seq, ed.media_for(seq)).split("\n", 2)[2])
     assert len(root.findall("./sequence/media/audio/track/clipitem")) == 1
+
+
+def test_track_heights_are_saved_and_bounded():
+    seq = sequence([])
+    seq.tracks[1].height = 140
+    saved = ed.save_sequence(seq)
+    assert ed.read_sequence(saved["id"])["tracks"][1]["height"] == 140
+    assert ed.read_sequence(saved["id"])["tracks"][0]["height"] is None
+    raw = seq.model_dump()
+    raw["tracks"][0]["height"] = 1000
+    with pytest.raises(ValidationError):
+        ed.Sequence.model_validate(raw)

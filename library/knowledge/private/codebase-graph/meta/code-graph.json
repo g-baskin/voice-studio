@@ -6606,7 +6606,7 @@
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.Clip",
    "kind": "class",
-   "line": 96
+   "line": 98
   },
   {
    "file": "src/naturalvoice/editor.py",
@@ -6618,19 +6618,19 @@
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.Layer",
    "kind": "class",
-   "line": 457
+   "line": 459
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.Marker",
    "kind": "class",
-   "line": 124
+   "line": 126
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.Sequence",
    "kind": "class",
-   "line": 129
+   "line": 131
   },
   {
    "file": "src/naturalvoice/editor.py",
@@ -6642,67 +6642,67 @@
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.Transition",
    "kind": "class",
-   "line": 91
+   "line": 93
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor._frames",
    "kind": "function",
-   "line": 730
+   "line": 732
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor._n",
    "kind": "function",
-   "line": 566
+   "line": 568
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor._rate",
    "kind": "function",
-   "line": 734
+   "line": 736
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor._run",
    "kind": "function",
-   "line": 268
+   "line": 270
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.atempo",
    "kind": "function",
-   "line": 544
+   "line": 546
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.build_command",
    "kind": "function",
-   "line": 570
+   "line": 572
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.delete_media",
    "kind": "function",
-   "line": 409
+   "line": 411
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.delete_sequence",
    "kind": "function",
-   "line": 448
+   "line": 450
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.export_range",
    "kind": "function",
-   "line": 557
+   "line": 559
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.handles",
    "kind": "function",
-   "line": 480
+   "line": 482
   },
   {
    "file": "src/naturalvoice/editor.py",
@@ -6714,19 +6714,19 @@
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.kind_for",
    "kind": "function",
-   "line": 225
+   "line": 227
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.list_media",
    "kind": "function",
-   "line": 213
+   "line": 215
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.list_sequences",
    "kind": "function",
-   "line": 419
+   "line": 421
   },
   {
    "file": "src/naturalvoice/editor.py",
@@ -6738,73 +6738,73 @@
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.media_for",
    "kind": "function",
-   "line": 672
+   "line": 674
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.media_record",
    "kind": "function",
-   "line": 206
+   "line": 208
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.new_media",
    "kind": "function",
-   "line": 236
+   "line": 238
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.peaks",
    "kind": "function",
-   "line": 274
+   "line": 276
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.placement",
    "kind": "function",
-   "line": 533
+   "line": 535
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.plan",
    "kind": "function",
-   "line": 497
+   "line": 499
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.premiere_xml",
    "kind": "function",
-   "line": 739
+   "line": 741
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.probe",
    "kind": "function",
-   "line": 175
+   "line": 177
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.process_media",
    "kind": "function",
-   "line": 312
+   "line": 314
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.proxy_file",
    "kind": "function",
-   "line": 395
+   "line": 397
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.read_sequence",
    "kind": "function",
-   "line": 432
+   "line": 434
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.render",
    "kind": "function",
-   "line": 687
+   "line": 689
   },
   {
    "file": "src/naturalvoice/editor.py",
@@ -6816,13 +6816,13 @@
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.save_media",
    "kind": "function",
-   "line": 264
+   "line": 266
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.save_sequence",
    "kind": "function",
-   "line": 439
+   "line": 441
   },
   {
    "file": "src/naturalvoice/editor.py",
@@ -6834,19 +6834,19 @@
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.thumbnail_plan",
    "kind": "function",
-   "line": 307
+   "line": 309
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.transition_half",
    "kind": "function",
-   "line": 488
+   "line": 490
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.users_of",
    "kind": "function",
-   "line": 405
+   "line": 407
   },
   {
    "file": "src/naturalvoice/editor_api.py",

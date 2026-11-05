@@ -86,6 +86,8 @@ class Track(BaseModel):
     locked: bool = False
     volume: float = Field(0, ge=-60, le=12)
     duck: bool = False
+    # Timeline row height in pixels; None keeps the default for the track kind.
+    height: int | None = Field(None, ge=24, le=240)
 
 
 class Transition(BaseModel):

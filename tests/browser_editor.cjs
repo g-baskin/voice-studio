@@ -35,6 +35,80 @@ function fixture(dir) {
 }
 
 const clips = (page) => page.locator('[data-clip]');
+const height = (loc) => loc.evaluate((el) => el.getBoundingClientRect().height);
+
+async function drag(page, loc, dx, dy) {
+  const box = await loc.boundingBox();
+  const x = box.x + box.width / 2;
+  const y = box.y + box.height / 2;
+  await page.mouse.move(x, y);
+  await page.mouse.down();
+  for (let i = 1; i <= 8; i++) await page.mouse.move(x + (dx * i) / 8, y + (dy * i) / 8);
+  await page.mouse.up();
+}
+
+// Scrolling, zooming, resizing and slipping a clip back to its first frame.
+async function timelineGestures(page) {
+  const scroller = page.locator('.timeline .scroll');
+  const zoom = page.getByLabel('Timeline zoom');
+  await page.locator('body').click({ position: { x: 5, y: 890 } });
+  await page.keyboard.press('Escape');
+  for (let i = 0; i < 4; i++) await page.keyboard.press('=');
+  const lane = page.locator('[data-lane="v1"]');
+  const laneBox = await lane.boundingBox();
+  await page.mouse.move(laneBox.x + 400, laneBox.y + laneBox.height / 2);
+  const left0 = await scroller.evaluate((el) => el.scrollLeft);
+  await page.mouse.wheel(0, 300);
+  await page.waitForFunction((l) => document.querySelector('.timeline .scroll').scrollLeft > l, left0);
+  const zoom0 = Number(await zoom.inputValue());
+  await page.keyboard.down('Control');
+  await page.mouse.wheel(0, -200);
+  await page.keyboard.up('Control');
+  assert.ok(Number(await zoom.inputValue()) > zoom0, 'Ctrl+wheel zooms in');
+  assert.equal(await page.evaluate(() => window.scrollY), 0);
+  await page.keyboard.press('\\');
+  await page.waitForFunction(() => document.querySelector('.timeline .scroll').scrollLeft === 0);
+  assert.equal(await scroller.evaluate((el) => el.scrollLeft), 0, 'fit shows the very beginning');
+
+  // A track's bottom edge makes it taller; double-click puts it back.
+  const h0 = await height(lane);
+  const handle = page.getByRole('slider', { name: 'Height of V1' });
+  await drag(page, handle, 0, 40);
+  assert.ok(Math.abs((await height(lane)) - (h0 + 40)) <= 2, 'track grows with the drag');
+  await handle.dblclick();
+  assert.equal(await height(lane), h0);
+
+  // Slip slides the content under a clip without moving it, and stops at the source's first frame.
+  const piece = clips(page).filter({ hasText: 'Interview' }).nth(1);
+  await piece.click();
+  const sourceIn = page.getByLabel('Source in (s)');
+  assert.equal(await sourceIn.inputValue(), '2.000');
+  const label = await piece.getAttribute('aria-label');
+  await page.keyboard.press('y');
+  await drag(page, piece, 120, 0);
+  const slipped = Number(await sourceIn.inputValue());
+  assert.ok(slipped > 0 && slipped < 2, `slipped part way to ${slipped}`);
+  await drag(page, piece, 400, 0);
+  assert.equal(await sourceIn.inputValue(), '0.000');
+  assert.equal(await piece.getAttribute('aria-label'), label);
+  await page.keyboard.press(process.platform === 'darwin' ? 'Meta+z' : 'Control+z');
+  assert.equal(await sourceIn.inputValue(), slipped.toFixed(3));
+  await page.getByRole('menuitem', { name: 'Clip' }).click();
+  await page.getByRole('menuitem', { name: 'Slip to first frame' }).click();
+  assert.equal(await sourceIn.inputValue(), '0.000');
+  await page.keyboard.press('v');
+
+  // The bar above the timeline trades room between the preview and the timeline, and is remembered.
+  const timeline = page.locator('.editor > .timeline');
+  const t0 = await height(timeline);
+  const split = page.getByRole('slider', { name: 'Timeline height' });
+  await drag(page, split, 0, -120);
+  assert.ok(Math.abs((await height(timeline)) - (t0 + 120)) <= 2, 'timeline grows with the drag');
+  assert.ok(Number(await page.evaluate(() => localStorage.getItem('sharkaudio.editor.timelineHeight'))) > t0);
+  await split.dblclick();
+  assert.equal(await height(timeline), t0);
+  await page.waitForFunction(() => document.querySelector('.save')?.textContent === 'All changes saved');
+}
 
 (async () => {
   fs.mkdirSync(OUT, { recursive: true });
@@ -146,6 +220,7 @@ const clips = (page) => page.locator('[data-clip]');
         // Reloaded in dark mode: the saved sequence and media come back.
         await clips(page).first().waitFor();
         assert.equal(await clips(page).count(), 4);
+        await timelineGestures(page);
       }
       // The timeline scrolls inside its panel; the page itself never scrolls sideways.
       assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth));
