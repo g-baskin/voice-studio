@@ -121,3 +121,14 @@ def test_frames_hardlink_shared_states_and_respect_the_limits(tmp_path, monkeypa
 def test_srt_lists_pages_with_timeline_times():
     found = cap.pages([[0.0, 0.5, "Hi"], [3661.25, 3661.5, "later."]], 3, 24)
     assert cap.srt(found) == "1\n00:00:00,000 --> 00:00:00,800\nHi\n\n2\n01:01:01,250 --> 01:01:01,800\nlater.\n"
+
+
+@pytest.mark.parametrize("style", ["pop", "karaoke", "bold", "clean"])
+def test_caption_words_never_touch_even_when_the_active_word_pops(style):
+    caps = ed.Captions.model_validate({"style": style})
+    page = {"t0": 0.0, "t1": 1.5, "words": [[0.0, 0.5, "Most"], [0.5, 1.0, "people"], [1.0, 1.5, "never"]]}
+    for active in range(3):
+        strip = np.asarray(cap.draw_state(caps, 960, 540, page, active, 0, cap.fonts_for(caps.font)))
+        ink = strip[:, :, 3].max(axis=0) > 0
+        runs = int(ink[0]) + int(np.count_nonzero(ink[1:] & ~ink[:-1]))
+        assert runs == (1 if style in ("clean",) else 3), f"{style}: active word {active} runs into its neighbours"

@@ -146,19 +146,28 @@ export function drawCaptions(g: CanvasRenderingContext2D, caps: Captions, page: 
   let widths: number[] = [];
   let space = 0;
   let lines: number[][] = [];
+  let stroke = 0;
+  const peak = caps.style === 'pop' ? POP_SCALES[0] : 1;
   for (const factor of SHRINK) {
     px = Math.max(8, Math.floor(base * factor + 0.5));
     g.font = font(px);
-    space = g.measureText(' ').width;
+    stroke = Math.floor(caps.stroke * px + 0.5);
+    // Outlines sit outside the glyphs, so the gap keeps a full space between them.
+    space = g.measureText(' ').width + 2 * stroke;
     widths = texts.map((s) => g.measureText(s).width);
-    lines = wrap(widths, space, WRAP * width);
+    // Wrap as if every word were popped, so lines stay put while the highlight moves.
+    lines = wrap(
+      widths.map((w) => w * peak),
+      space,
+      WRAP * width,
+    );
     if (lines.length <= MAX_LINES) break;
   }
+  const slots = widths.map((w, i) => (i === active ? w * peak : w));
   const lineH = px * LINE;
   const first = top + (tall - lines.length * lineH) / 2;
-  const stroke = Math.floor(caps.stroke * px + 0.5);
   const pad = BOX_PAD * px;
-  const lineWidth = (line: number[]) => line.reduce((sum, i) => sum + widths[i], 0) + space * (line.length - 1);
+  const lineWidth = (line: number[]) => line.reduce((sum, i) => sum + slots[i], 0) + space * (line.length - 1);
   g.save();
   g.textAlign = 'center';
   g.textBaseline = 'middle';
@@ -174,7 +183,7 @@ export function drawCaptions(g: CanvasRenderingContext2D, caps: Captions, page: 
     let x = (width - lineWidth(line)) / 2;
     const cy = first + lineH * (row + 0.5);
     for (const i of line) {
-      const cx = x + widths[i] / 2;
+      const cx = x + slots[i] / 2;
       let colour = caps.color;
       let scale = 1;
       let boxed = false;
@@ -194,7 +203,7 @@ export function drawCaptions(g: CanvasRenderingContext2D, caps: Captions, page: 
       }
       g.fillStyle = colour;
       g.fillText(texts[i], cx, cy);
-      x += widths[i] + space;
+      x += slots[i] + space;
     }
   });
   g.restore();

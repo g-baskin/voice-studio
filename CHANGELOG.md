@@ -39,6 +39,8 @@ all entries below describe unreleased source, not historical releases.
   - **Hooks:** candidate Shorts that start and end on sentence boundaries, ranked by structure and pace, with
     optional AI reordering that sends only the hook texts.
   - **Playback fix:** reverse playback in the program viewer now stops at the start of the sequence.
+  - **Caption spacing fix:** the highlighted pop word and the black outlines no longer run into neighbouring
+    words; the preview and export use the same spacing.
   - **New direct dependency:** Pillow, which was already installed through another package.
 - **Speak** (`/speak`): directed multi-speaker performances with inline directions, chunked recording that
   plays as it arrives, retakes, plain-language revisions and a joined download. Directions are reported as
