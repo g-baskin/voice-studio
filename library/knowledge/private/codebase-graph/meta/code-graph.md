@@ -17,23 +17,22 @@ served there.
 
 | Nodes | Count |
 |---|---|
-| class | 30 |
-| function | 347 |
-| module | 29 |
-| page | 4 |
+| class | 62 |
+| function | 536 |
+| module | 38 |
+| page | 32 |
 | process | 3 |
-| route | 70 |
-| script | 6 |
+| route | 111 |
+| script | 26 |
 
 | Edges | Count |
 |---|---|
-| calls | 196 |
-| defines | 377 |
-| imports | 73 |
-| loads | 5 |
-| requests | 66 |
+| calls | 292 |
+| defines | 598 |
+| imports | 102 |
+| requests | 108 |
 | runs | 3 |
-| serves | 70 |
+| serves | 111 |
 | spawns | 3 |
 
 ## Modules, engine processes and web assets
@@ -44,16 +43,24 @@ Module imports, process spawns and page script loads. Symbol, route and call edg
 flowchart LR
   analyze --> humanize
   analyze --> quality
+  backup_api --> backup
+  backup_api --> sample_library_api
+  backup_api --> server
+  backup_api --> voices
   bench --> analyze
   bench --> audio
   bench --> enhance
   bench --> humanize
   bench --> quality
   bench --> tts
+  captions --> editor
+  captions --> transcript
+  cli --> access
   cli --> analyze
   cli --> audio
   cli --> bench
   cli --> humanize
+  cli --> server
   cli --> studio
   cli --> tts
   cli --> voices
@@ -66,6 +73,15 @@ flowchart LR
   clone_api --> clone
   clone_api --> server
   clone_api --> voices
+  editor --> audio
+  editor --> captions
+  editor --> sample_library
+  editor --> voices
+  editor_api --> captions
+  editor_api --> editor
+  editor_api --> llm
+  editor_api --> server
+  editor_api --> transcript
   enhance --> quality
   enhance --> tts
   humanize --> enhance
@@ -83,18 +99,26 @@ flowchart LR
   scriptgen --> rewrite
   scriptgen_api --> llm
   scriptgen_api --> scriptgen
+  server --> access
   server --> audio
+  server --> backup_api
   server --> clone_api
+  server --> editor_api
   server --> humanize
   server --> llm_api
   server --> rewrite_api
   server --> sample_library_api
   server --> scriptgen_api
+  server --> shark_api
   server --> studio_api
   server --> tts
   server --> voicelab_api
   server --> voices
   server --> workflow
+  shark --> studio
+  shark_api --> server
+  shark_api --> shark
+  shark_api --> studio
   studio --> audio
   studio --> clone
   studio --> humanize
@@ -104,6 +128,10 @@ flowchart LR
   studio_api --> audio
   studio_api --> server
   studio_api --> studio
+  transcript --> audio
+  transcript --> editor
+  transcript --> llm
+  transcript --> sample_library
   tts --> clone
   tts --> humanize
   tts --> voices
@@ -121,9 +149,4 @@ flowchart LR
   engines_chatterbox_worker_py -.-> engines_chatterbox_worker
   engines_media_download_py -.-> engines_media_download
   engines_media_worker_py -.-> engines_media_worker
-  index_html --> workflow_js
-  samples_html --> samples_js
-  studio_html --> studio_js
-  voicelab_html --> clone_js
-  voicelab_html --> voicelab_js
 ```

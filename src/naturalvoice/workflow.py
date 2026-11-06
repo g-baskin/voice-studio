@@ -11,6 +11,10 @@ import pyloudnorm as pyln
 from . import audio, analyze, humanize as hz
 
 
+class AudioInputError(ValueError):
+    """A problem with the user's recording that they can fix; the web app shows its message as-is."""
+
+
 def segment(src: Path, dst: Path, start: float, seconds: float) -> tuple[np.ndarray, int]:
     # Decode only the selected window, not an entire video. Never interpolate shell commands.
     subprocess.run(
@@ -40,7 +44,7 @@ def segment(src: Path, dst: Path, start: float, seconds: float) -> tuple[np.ndar
     )
     data, sr = audio.load(dst)
     if len(data) < sr * 0.1:
-        raise ValueError("This section is empty or too short. Choose an earlier start time.")
+        raise AudioInputError("This section is empty or too short. Choose an earlier start time.")
     return data, sr
 
 
@@ -141,7 +145,7 @@ def process(src: Path, dst: Path, settings, mode: str, start: float, seconds: fl
     else:
         data, sr = audio.load(src)
     if len(data) < sr * 0.1 or not np.isfinite(data).all():
-        raise ValueError("Audio must contain at least 0.1 seconds of finite samples.")
+        raise AudioInputError("Audio must contain at least 0.1 seconds of finite samples.")
     if mode == "analyze":
         return {"suggestion": recommend(data, sr), "start": start, "seconds": round(len(data) / sr, 2)}
     progress("Cleaning selected section" if mode == "preview" else "Cleaning", 0.1)

@@ -1,6 +1,7 @@
 """Product versions must agree before a build can be released."""
 
 from pathlib import Path
+import json
 import plistlib
 import tomllib
 
@@ -9,7 +10,7 @@ import pytest
 from naturalvoice import __version__
 
 
-@pytest.mark.parametrize("surface", ["runtime", "lock", "desktop-build", "desktop-display"])
+@pytest.mark.parametrize("surface", ["runtime", "lock", "desktop-build", "desktop-display", "web-ui"])
 def test_product_versions_match_package_metadata(surface: str) -> None:
     root = Path(__file__).resolve().parents[1]
     project = tomllib.loads((root / "pyproject.toml").read_text())
@@ -25,5 +26,6 @@ def test_product_versions_match_package_metadata(surface: str) -> None:
         "lock": locked_version,
         "desktop-build": desktop["CFBundleVersion"],
         "desktop-display": desktop["CFBundleShortVersionString"],
+        "web-ui": json.loads((root / "frontend/package.json").read_text())["version"],
     }
     assert versions[surface] == expected, f"{surface} version differs from pyproject.toml"

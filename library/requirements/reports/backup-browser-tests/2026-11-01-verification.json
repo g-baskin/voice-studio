@@ -1,0 +1,73 @@
+{
+  "candidate_manifest_sha256": "be8b71dcf79438c3fc5d6647a9bb74c5bcb0e1ce109914bbf189598ce10e21df",
+  "cwd": "/Users/dellcbyerllc/projects/.worktrees/voice-studio/backup-browser-tests",
+  "environment": {
+    "python": "3.12.1",
+    "pytest": "9.1.1",
+    "chromium": "153.0.8010.12",
+    "python_environment": "existing main-checkout .venv with UV_NO_SYNC=1",
+    "playwright": "existing GG Coder sidecar installation; PLAYWRIGHT_MODULE override",
+    "models": "temporary worktree links to already installed models/engines, removed after checks"
+  },
+  "checks": [
+    {
+      "command": "npm run check",
+      "status": "PASS",
+      "detail": "ruff, eslint, shellcheck, formatter checks, DOM declarations, code graph, mypy and all three tsc projects; final run after all source changes"
+    },
+    {
+      "command": "uv run --locked pytest -ra",
+      "status": "PASS",
+      "detail": "211 passed, none skipped, including five slow engine tests. Before the final two runner/ignore regression tests were added; product and existing tests unchanged.",
+      "log": "/Users/dellcbyerllc/.gg/bg/9feef770.log",
+      "log_sha256": "133fc5b01a79df80f8b6effc6777c4eacc316917b86a705a99037fb4d62f2353"
+    },
+    {
+      "command": "uv run --locked pytest -q -m 'not slow'",
+      "status": "PASS",
+      "detail": "208 passed, 5 deliberately deselected. Final candidate including both added regression tests; the unchanged five slow tests passed in the preceding full run.",
+      "log": "/Users/dellcbyerllc/.gg/bg/25c6ef09.log",
+      "log_sha256": "17f47a3238fcddf891f4789ad851ee3c51330d95bc9fa14badd419e52fb6f441"
+    },
+    {
+      "command": "npm run test:browser -- backup motion templates workflow stars",
+      "status": "PASS",
+      "detail": "5/5; includes real server restart into restored data and application-level project loading.",
+      "log": "/Users/dellcbyerllc/.gg/bg/4a5a9058.log",
+      "log_sha256": "7fbf0dfc61f92124235cece3344f29edffdd71cbe6f8efc07caf3730bf5b1470"
+    },
+    {
+      "command": "npm run test:browser -- studio voicelab clone samples",
+      "status": "PASS",
+      "detail": "4/4 with installed models/engines; final isolated runner.",
+      "log": "/Users/dellcbyerllc/.gg/bg/688c6d38.log",
+      "log_sha256": "24e6183739f427bcac5aed2bc9d111a2f057cd10f133b0342655f02b5d08b653"
+    },
+    {
+      "command": "uv build --offline --no-python-downloads --out-dir <temporary directory>",
+      "status": "PASS",
+      "detail": "sdist and wheel built; backup.py, backup_api.py, web/backup.html and web/backup.js in wheel compared byte-for-byte with the final candidate"
+    },
+    {
+      "command": "standalone disposable restore drill",
+      "status": "PASS",
+      "detail": "1,080,000 synthetic bytes, 2 files, 0.0107 seconds; post-backup canary absent in restore and preserved in original. Not a full-library RTO."
+    },
+    {
+      "command": "git diff --check",
+      "status": "PASS"
+    }
+  ],
+  "wheel": {
+    "path": "/tmp/voice-studio-build-RcZXx1/voice_studio-0.3.0-py3-none-any.whl",
+    "sha256": "0121c1724c3da0d14d49147607b3212c8bafb76e0c66847debe726ac7041342e"
+  },
+  "limitations": [
+    "No actual user data was exported/restored",
+    "No native phone/Safari/Firefox testing",
+    "No 4 GB scale or disk-full end-to-end drill",
+    "No automated off-device backups or scheduled retention",
+    "Earlier failed browser CDP response inspection replaced by real UI/file assertions; earlier mypy missing-loader guard fixed",
+    "Static reviews are not runtime evidence; source and execution evidence are separate"
+  ]
+}

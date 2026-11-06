@@ -67,7 +67,7 @@ def test_openrouter_env_key_uses_openrouter_defaults(monkeypatch):
     assert llm.chat("sys", "usr") == "Hello there."
     c = seen["cfg"]
     assert c["base_url"] == "https://openrouter.ai/api/v1" and c["model"] == "openai/gpt-4o-mini"
-    assert c["headers"]["X-Title"] == "Voice Studio"
+    assert c["headers"]["X-Title"] == "Shark Audio"
     messages = FakeClient.sent["messages"]
     assert isinstance(messages, list)
     assert messages[0] == {"role": "system", "content": "sys"}
@@ -144,7 +144,7 @@ def test_errors_are_plain_and_never_echo_the_key(monkeypatch, exc, phrase):
 
 
 def test_api_connect_saves_only_after_a_working_test(monkeypatch, tmp_path):
-    c = TestClient(server.app)
+    c = TestClient(server.app, base_url="http://127.0.0.1", client=("127.0.0.1", 50000))
     patch_client(monkeypatch, error=err(openai.AuthenticationError, 401))
     r = c.put("/api/llm/key", json={"api_key": KEY})
     assert r.status_code == 502 and "rejected" in r.json()["detail"] and KEY not in r.text

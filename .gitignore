@@ -3,6 +3,8 @@ __pycache__/
 models/
 bench/audio/
 samples/
+!frontend/src/routes/samples/
+!frontend/src/lib/samples/
 *.pyc
 .env
 .env.*
@@ -11,10 +13,12 @@ samples/
 .ruff_cache/
 .mypy_cache/
 node_modules/
+.svelte-kit/
 .DS_Store
 dist/
 build/
 bench/refs/
 data/
+voice-studio-restored-*/
 engines/*/.venv/
 engines/*/models/

@@ -1,5 +1,5 @@
 // Star a voice in Voice Lab; check ordering, filter, persistence, Studio + Clean pickers. Cleans up after itself.
-const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
+const chromium = require('./browser_support.cjs');
 const assert = require('node:assert/strict');
 const BASE = process.env.NV_URL || 'http://127.0.0.1:8765';
 (async () => {
@@ -8,7 +8,7 @@ const BASE = process.env.NV_URL || 'http://127.0.0.1:8765';
   try {
     const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
     page.on('pageerror', (e) => errors.push(e.message));
-    await page.goto(BASE + '/voicelab.html');
+    await page.goto(BASE + '/voice-lab');
     await page.waitForSelector('#libList li');
     await page.fill('#libSearch', 'bella');
     const star = page.getByRole('button', { name: 'Star Bella' });
@@ -40,7 +40,7 @@ const BASE = process.env.NV_URL || 'http://127.0.0.1:8765';
     // Studio picker lists starred voices first.
     const studio = await browser.newPage();
     studio.on('pageerror', (e) => errors.push(e.message));
-    await studio.goto(BASE + '/studio.html');
+    await studio.goto(BASE + '/studio');
     await studio.waitForSelector('.line select, select[aria-label*="oice"]');
     const labels = await studio.$$eval('optgroup', (gs) => gs.map((g) => g.label));
     assert.ok(
@@ -50,18 +50,25 @@ const BASE = process.env.NV_URL || 'http://127.0.0.1:8765';
     // Clean page quick voice picker too.
     const clean = await browser.newPage();
     clean.on('pageerror', (e) => errors.push(e.message));
-    await clean.goto(BASE + '/index.html');
+    await clean.goto(BASE + '/');
     await clean.waitForFunction(() => document.querySelector('#voice optgroup'));
     assert.equal(await clean.$eval('#voice optgroup', (g) => g.label), '\u2605 Starred');
     // Mobile width.
     await page.setViewportSize({ width: 390, height: 844 });
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
     await page.fill('#libSearch', 'bella');
-    await page.screenshot({ path: '/tmp/nv-stars-mobile.png' });
+    await page.screenshot({
+      path: require('node:path').join(process.env.NV_SCREENSHOTS || require('node:os').tmpdir(), 'nv-stars-mobile.png'),
+    });
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.selectOption('#libKind', 'starred');
     await page.fill('#libSearch', '');
-    await page.screenshot({ path: '/tmp/nv-stars-desktop.png' });
+    await page.screenshot({
+      path: require('node:path').join(
+        process.env.NV_SCREENSHOTS || require('node:os').tmpdir(),
+        'nv-stars-desktop.png',
+      ),
+    });
     // Clean up: unstar.
     await page.getByRole('button', { name: 'Star Bella' }).click();
     await page.waitForFunction(() => document.querySelectorAll('#libList li').length === 0);

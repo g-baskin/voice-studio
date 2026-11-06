@@ -1,4 +1,4 @@
-const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
+const chromium = require('./browser_support.cjs');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 
@@ -37,7 +37,7 @@ async function idle(page) {
     page.setDefaultTimeout(90000);
     const errors = [];
     page.on('pageerror', (e) => errors.push(e.message));
-    await page.goto('http://127.0.0.1:8765');
+    await page.goto(process.env.NV_URL || 'http://127.0.0.1:8765');
     await page.waitForSelector('#template:not([disabled])');
     await page.selectOption('#template', 'clean');
     await page.locator('summary', { hasText: 'My saved templates' }).click();
@@ -112,9 +112,21 @@ async function idle(page) {
     assert.equal(zip.subarray(0, 2).toString(), 'PK');
     await page.setViewportSize({ width: 390, height: 844 });
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
-    await page.screenshot({ path: '/tmp/naturalvoice-workflow-mobile.png', fullPage: true });
+    await page.screenshot({
+      path: require('node:path').join(
+        process.env.NV_SCREENSHOTS || require('node:os').tmpdir(),
+        'naturalvoice-workflow-mobile.png',
+      ),
+      fullPage: true,
+    });
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.screenshot({ path: '/tmp/naturalvoice-workflow-desktop.png', fullPage: true });
+    await page.screenshot({
+      path: require('node:path').join(
+        process.env.NV_SCREENSHOTS || require('node:os').tmpdir(),
+        'naturalvoice-workflow-desktop.png',
+      ),
+      fullPage: true,
+    });
     assert.deepEqual(errors, []);
     // Stop control: while first upload is held, request stop; no second file should be sent.
     await page.click('#clearQueue');

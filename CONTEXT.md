@@ -1,6 +1,6 @@
 # Domain glossary
 
-Voice Studio — The complete local voice-production application. Avoid: using Studio for the whole product.
+Shark Audio — The complete local voice-production application, formerly Voice Studio. Avoid: using Studio for the whole product.
 
 Studio — The workspace for scripts, delivery, rendering, captions and dubbing.
 

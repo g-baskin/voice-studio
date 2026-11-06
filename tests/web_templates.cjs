@@ -1,104 +1,28 @@
-// Execute the shipped inline script with a minimal DOM; no browser install needed.
+// Exercise the Clean page's TypeScript logic directly (Node type stripping); no browser install needed.
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
-const vm = require('node:vm');
 const path = require('node:path');
-const page = fs.readFileSync(path.join(__dirname, '../src/naturalvoice/web/index.html'), 'utf8');
-const script =
-  page.match(/<script>([\s\S]*?)<\/script>/)[1] +
-  '\n' +
-  fs.readFileSync(path.join(__dirname, '../src/naturalvoice/web/workflow.js'), 'utf8');
+const { pathToFileURL } = require('node:url');
+const lib = path.join(__dirname, '../frontend/src/lib/clean');
+const page = fs.readFileSync(path.join(__dirname, '../frontend/src/routes/+page.svelte'), 'utf8');
 const presets = JSON.parse(process.argv[2]);
 const keys = ['ai_clean', 'dereverb', 'demetal', 'deharsh', 'warmth', 'denoise', 'room_tone'];
+const load = (name) => import(pathToFileURL(path.join(lib, name)).href);
 
-async function boot(failSettings = false) {
-  const nodes = new Map();
-  function node(id) {
-    if (!nodes.has(id))
-      nodes.set(id, {
-        value: '',
-        disabled: false,
-        textContent: '',
-        files: [],
-        style: {},
-        dataset: {},
-        selectedOptions: [{ textContent: 'Test template' }],
-        append() {},
-        replaceChildren() {},
-        setAttribute() {},
-        classList: { add() {}, remove() {}, toggle() {} },
-        click() {
-          this.clicked = true;
-        },
-        set innerHTML(html) {
-          this.html = html;
-          for (const match of html.matchAll(/id="([^"]+)"/g)) node(match[1]);
-        },
-      });
-    return nodes.get(id);
-  }
-  for (const match of page.split('<script>')[0].matchAll(/id="([^"]+)"/g)) node(match[1]);
-  node('template').value = 'ad';
-  node('cleanBtn').disabled = true;
-  node('prog div');
-  const requests = [];
-  const events = {};
-  const context = vm.createContext({
-    document: {
-      querySelector(s) {
-        assert.ok(nodes.has(s.slice(1)), `Missing element ${s}`);
-        return nodes.get(s.slice(1));
-      },
-      querySelectorAll() {
-        return [];
-      },
-      createElement() {
-        return node('generated-' + Math.random());
-      },
-    },
-    window: {
-      addEventListener(name, handler) {
-        events[name] = handler;
-      },
-    },
-    navigator: {},
-    localStorage: {
-      getItem() {
-        return null;
-      },
-    },
-    setTimeout,
-    clearTimeout,
-    FormData: class {
-      constructor() {
-        this.values = new Map();
-      }
-      append(k, v) {
-        this.values.set(k, v);
-      }
-    },
-    fetch: async (url, options) => {
-      if (url === 'api/presets') return { ok: !failSettings, json: async () => presets };
-      if (url === 'api/voices') return { ok: false };
-      assert.equal(url, 'api/clean');
-      requests.push(options.body.values);
-      return { ok: false, json: async () => ({ detail: 'Intercepted test upload' }) };
-    },
-    setInterval() {
-      return 1;
-    },
-    clearInterval() {},
-  });
-  vm.runInContext(script, context);
-  node('file').files = [{ name: 'voice.wav', type: 'audio/wav', size: 100 }];
-  node('file').onchange();
-  assert.equal(node('cleanBtn').disabled, true, 'Do not upload before settings load');
-  await new Promise((resolve) => setImmediate(resolve));
-  return { node, requests, events };
+function file(name, size = 100) {
+  return new File([new Uint8Array(size)], name);
 }
 
 (async () => {
-  const { node, requests } = await boot();
+  const t = await load('templates.ts');
+  const q = await load('queue.ts');
+  const v = await load('voices.ts');
+  assert.deepEqual(
+    t.SLIDERS.map(([k]) => k),
+    keys,
+  );
+  for (const [k] of t.SLIDERS) assert.ok(page.includes('id="s-{key}"') && page.includes('id="v-{key}"'), k);
+  const ready = t.validatePresets(presets);
   const expected = {
     clean: [0, 0, 0.25, 0.2, 0.25, 0, 0],
     ad: [1, 0.3, 0.7, 0.6, 0.5, 0, 0],
@@ -107,49 +31,147 @@ async function boot(failSettings = false) {
     noise: [1, 0, 0.25, 0.2, 0.25, 0.2, 0],
     strong: [1, 0.6, 1, 0.9, 0.7, 0, 0],
   };
-  assert.equal(node('cleanBtn').disabled, false);
+  assert.deepEqual(
+    t.TEMPLATES.map((x) => x.key),
+    Object.keys(expected),
+  );
+  assert.equal(t.DEFAULT_TEMPLATE, 'ad');
   for (const [name, values] of Object.entries(expected)) {
-    assert.ok(page.includes(`option value="${name}"`));
-    node('template').value = name;
-    node('template').onchange();
+    const template = t.templateFor(name, {});
+    const settings = t.settingsFor(template, ready);
     keys.forEach((k, i) => {
-      assert.equal(Number(node(`s-${k}`).value), values[i], `${name}: ${k}`);
-      assert.equal(node(`v-${k}`).textContent, `${Math.round(values[i] * 100)}%`);
+      assert.equal(settings[k], values[i], `${name}: ${k}`);
+      assert.equal(t.percent(settings[k]), `${Math.round(values[i] * 100)}%`);
     });
-    assert.ok(node('templateHelp').textContent.length > 10);
+    assert.ok(template.description.length > 10);
     // Every control resets, including a room-tone override from a previous run.
-    keys.forEach((k) => {
-      node(`s-${k}`).value = 0.95;
-    });
-    node('s-room_tone').oninput({ target: node('s-room_tone') });
-    assert.match(node('templateState').textContent, /Custom settings/);
-    node('resetTemplate').onclick();
-    keys.forEach((k, i) => assert.equal(Number(node(`s-${k}`).value), values[i]));
+    const edited = { ...settings };
+    keys.forEach((k) => (edited[k] = 0.95));
+    assert.deepEqual(t.settingsFor(template, ready), settings);
     // The upload uses what is displayed, not hidden preset defaults.
-    await node('cleanBtn').onclick();
-    const sent = requests.at(-1);
+    const sent = q.cleanForm(
+      file('voice.wav'),
+      'clean',
+      { preset: template.preset, controls: settings, label: name },
+      {
+        start: 0,
+        seconds: 15,
+      },
+    );
     keys.forEach((k, i) => assert.equal(Number(sent.get(k)), values[i]));
+    assert.equal(sent.get('preset'), template.preset);
+    assert.equal(sent.get('mode'), 'clean');
   }
-  node('s-warmth').value = 0.15;
-  node('s-warmth').oninput({ target: node('s-warmth') });
-  await node('cleanBtn').onclick();
-  assert.equal(Number(requests.at(-1).get('warmth')), 0.15);
-  node('drop').onclick();
-  assert.equal(node('file').clicked, true);
-  let prevented = false;
-  node('drop').ondrop({
-    preventDefault() {
-      prevented = true;
+  const custom = { ...t.settingsFor(t.templateFor('ad', {}), ready), warmth: 0.15 };
+  const form = q.cleanForm(
+    file('voice.wav'),
+    'clean',
+    { preset: 'standard', controls: custom, label: 'x' },
+    {
+      start: 0,
+      seconds: 15,
     },
-    dataTransfer: { files: [{ name: 'ad.mp4', size: 100 }] },
-  });
-  assert.equal(prevented, true);
-  assert.equal(node('fileName').textContent, 'ad.mp4');
-  const failed = await boot(true);
-  assert.equal(failed.node('cleanBtn').disabled, true);
-  assert.match(failed.node('templateHelp').textContent, /Refresh/);
+  );
+  assert.equal(Number(form.get('warmth')), 0.15);
+
+  // Saved templates: same storage key and shape; invalid entries are dropped, room tone is kept.
+  assert.equal(t.SAVED_KEY, 'naturalvoice.templates.v1');
+  const good = {
+    name: '<b>Mine</b>',
+    preset: 'light',
+    settings: { ...expected.clean.reduce((o, x, i) => ({ ...o, [keys[i]]: x }), {}), room_tone: 0.05 },
+  };
+  const saved = t.parseSaved(
+    JSON.stringify({
+      'saved-abc': good,
+      bad: good,
+      'saved-x': { ...good, preset: 'loud' },
+      'saved-y': { ...good, settings: { ...good.settings, warmth: 2 } },
+    }),
+  );
+  assert.deepEqual(Object.keys(saved), ['saved-abc']);
+  assert.equal(t.settingsFor(t.templateFor('saved-abc', saved), ready).room_tone, 0.05);
+  assert.equal(t.templateLabel('saved-abc', saved), 'Saved: <b>Mine</b>');
+  assert.deepEqual(t.parseSaved('{oops'), {});
+  assert.deepEqual(t.parseSaved('[1]'), {});
+  assert.equal(t.templateFor('constructor', {}), undefined);
+
+  // Loading failure: incomplete settings throw, and nothing can run before settings load.
+  assert.throws(() => t.validatePresets({ light: {} }), /Incomplete/);
+  const base = {
+    templatesReady: false,
+    hasFile: true,
+    busy: false,
+    queue: [],
+    savedSelected: false,
+    downloading: false,
+  };
+  assert.equal(q.actions(base).run, true, 'Do not upload before settings load');
+  assert.equal(q.actions(base).settings, true);
+  assert.equal(q.actions({ ...base, templatesReady: true }).run, false);
+  assert.equal(q.actions({ ...base, templatesReady: true, busy: true }).run, true);
+  assert.equal(q.actions({ ...base, templatesReady: true, hasFile: false }).run, true);
+
+  // File handling: supported types, size limits and the 20-file queue cap.
+  const picked = q.acceptFiles(0, [file('ad.mp4'), file('notes.txt'), file('empty.wav', 0)]);
+  assert.deepEqual(
+    picked.accepted.map((x) => x.file.name),
+    ['ad.mp4'],
+  );
+  assert.deepEqual(picked.rejected, ['notes.txt: unsupported type.', 'empty.wav: empty or larger than 500 MB.']);
+  assert.deepEqual(q.acceptFiles(20, [file('a.wav')]).rejected, ['Queue limit: 20 files.']);
+  assert.throws(() => q.section(0, 25), /length from 10 to 20/);
+  assert.deepEqual(q.section(1, 15), { start: 1, seconds: 15 });
+
+  // Job polling reports progress and surfaces server errors.
+  const replies = [
+    { job: 'j1' },
+    { status: 'running', progress: 0.5, step: 'Cleaning' },
+    { status: 'done', progress: 1, result: { mode: 'clean' } },
+  ];
+  const seen = [];
+  const done = await q.runJob(
+    { file: file('voice.wav') },
+    'clean',
+    { preset: 'standard', controls: custom, label: 'x' },
+    { start: 0, seconds: 15 },
+    {
+      fetch: async (url) => {
+        seen.push(url);
+        return new Response(JSON.stringify(replies.shift()));
+      },
+      status() {},
+      progress() {},
+      wait: async () => {},
+    },
+  );
+  assert.deepEqual(seen, ['/api/clean', '/api/jobs/j1', '/api/jobs/j1']);
+  assert.equal(done.job, 'j1');
+  await assert.rejects(
+    q.responseJSON(new Response('{"detail":"Intercepted test upload"}', { status: 400 })),
+    /Intercepted test upload/,
+  );
+  await assert.rejects(q.responseJSON(new Response('nope', { status: 500 })), /unreadable/);
+
+  // Results table and voice grouping.
+  const rows = q.metricRows({ listener: 3, metallic: 5, echo_db: null }, { listener: 3.5, metallic: 6, echo_db: -40 });
+  assert.equal(rows[0].tone, 'good');
+  assert.equal(rows[3].tone, 'worse');
+  assert.equal(rows[2].before, 'Unavailable');
+  assert.equal(q.batchSummary(2, 1, true).startsWith('2 completed, 1 failed. Stopped'), true);
+  const catalog = [
+    { id: 'af_heart', name: 'Heart', kind: 'stock', language: 'en', gender: 'f' },
+    { id: 'c1', name: '<i>Me</i>', kind: 'clone' },
+  ];
+  assert.deepEqual(
+    v.voiceGroups(catalog).map((g) => g.label),
+    ['Stock voices', 'Cloned voices'],
+  );
+  assert.equal(v.voiceGroups(catalog)[1].voices[0].text, '<i>Me</i>');
+  assert.equal(v.defaultVoice(catalog), 'af_heart');
+  assert.equal(v.voiceGroups([{ ...catalog[1], starred: true }])[0].label, '\u2605 Starred');
   console.log(
-    'Six templates: controls, percentages, reset, manual overrides, upload payloads, loading failure, and file handlers passed.',
+    'Six templates: controls, percentages, reset, manual overrides, upload payloads, loading failure, saved templates, queue limits, job polling and voices passed.',
   );
 })().catch((error) => {
   console.error(error);

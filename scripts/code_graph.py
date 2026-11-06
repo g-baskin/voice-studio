@@ -27,8 +27,9 @@ _TEMPLATE = re.compile(r"\$\{[^{}]*\}")
 _API_LITERAL = re.compile(r"""['"`](/?api/[^'"`?#\s]*)""")
 # A bare area prefix such as '/api/studio', joined at run time to relative paths like json('/projects').
 _API_BASE = re.compile(r"""['"`](/?api/[a-z]+)['"`]""")
+# `import ... from '#lib/studio/api.ts'`: a page joins its relative paths to the area base its lib module names.
+_LIB_IMPORT = re.compile(r"""from\s+['"]#lib/([^'"]+)['"]""")
 _RELATIVE = re.compile(r"""['"`](/(?!api/)[A-Za-z0-9_${}./-]*)""")
-_SCRIPT_SRC = re.compile(r"""<script[^>]*\ssrc=["']([^"']+\.js)["']""")
 
 
 @dataclass
@@ -153,18 +154,29 @@ def add_engines(graph: Graph, root: Path) -> None:
             graph.node(f"process:{script}", "process", script)
 
 
+def _web_sources(root: Path) -> list[tuple[Path, str]]:
+    """(file, kind): SvelteKit route components are pages, lib modules are scripts, plus the service worker."""
+    front = root / "frontend" / "src"
+    found = [(p, "page") for p in sorted((front / "routes").rglob("*.svelte"))]
+    found += [(p, "script") for p in sorted((front / "routes").rglob("*.ts"))]
+    found += [(p, "script") for p in sorted((front / "lib").rglob("*.ts"))]
+    found += [(p, "script") for p in sorted((root / "src" / PACKAGE / "web").glob("*.js"))]
+    return found
+
+
 def add_web(graph: Graph, root: Path, routes: dict[str, set[str]]) -> None:
-    web = root / "src" / PACKAGE / "web"
-    for path in sorted(web.glob("*.html")) + sorted(web.glob("*.js")):
+    lib = root / "frontend" / "src" / "lib"
+    for path, kind in _web_sources(root):
         rel = path.relative_to(root).as_posix()
         # Collapse template substitutions first so quotes inside `${...}` cannot end a literal early.
         text = _TEMPLATE.sub("{}", path.read_text())
-        ident = graph.node(f"web:{path.name}", "page" if path.suffix == ".html" else "script", rel)
-        for src in sorted(set(_SCRIPT_SRC.findall(text))):
-            if (web / src).exists():
-                graph.edge(ident, f"web:{src}", "loads")
+        ident = graph.node(f"web:{rel.removeprefix('frontend/src/')}", kind, rel)
         candidates = set(_API_LITERAL.findall(text))
-        for base in set(_API_BASE.findall(text)):
+        bases = set(_API_BASE.findall(text))
+        for module in sorted(set(_LIB_IMPORT.findall(text))):
+            if (lib / module).is_file():
+                bases |= set(_API_BASE.findall((lib / module).read_text()))
+        for base in bases:
             candidates |= {base + relative for relative in _RELATIVE.findall(text)}
         for literal in sorted(candidates):
             key = route_key(literal)

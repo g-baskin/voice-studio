@@ -1,8 +1,8 @@
 {
-  "name": "Voice Studio",
-  "short_name": "Voice Studio",
+  "name": "Shark Audio",
+  "short_name": "Shark Audio",
   "description": "Make AI voices sound human: no metallic tone, no echo. Write, clean, design and clone voices.",
-  "start_url": "./",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#0b1310",
   "theme_color": "#0b1310",

@@ -16,7 +16,7 @@ def client(monkeypatch, tmp_path):
     monkeypatch.setattr(voices, "DATA_DIR", tmp_path / "data")
     monkeypatch.setattr(studio_api, "WORK", tmp_path / "work")
     monkeypatch.setattr(studio_api, "jobs", {})
-    return TestClient(server.app)
+    return TestClient(server.app, base_url="http://127.0.0.1", client=("127.0.0.1", 50000))
 
 
 # ---------------------------------------------------------------- parsing
@@ -167,6 +167,21 @@ def test_bad_line_does_not_kill_render(client):
     assert s["status"] == "done" and s["result"]["errors"][0]["line"] == 2
     s = _wait(client, client.post("/api/studio/render", json={"project": proj, "stop_on_error": True}).json()["job"])
     assert s["status"] == "error" and "Line 2" in s["error"]
+
+
+def test_unexpected_line_failure_is_logged_but_shown_generically(monkeypatch, caplog):
+    def render_line(line, dictionary=None, polish=False):
+        if line["text"] == "Bad":
+            raise TypeError("engine internals")
+        return np.zeros(2400, dtype=np.float32), []
+
+    monkeypatch.setattr(st, "render_line", render_line)
+    project = {"lines": [{"text": "Good", "id": "a"}, {"text": "Bad", "id": "b"}]}
+    with caplog.at_level("ERROR", logger="naturalvoice.studio"):
+        rendered, errors, _ = st._render_project_lines(project, st.RenderOptions(), lambda *a: None, None)
+    assert len(rendered) == 1
+    assert errors == [{"line": 2, "id": "b", "error": "The voice engine failed on this line."}]
+    assert "Studio line 2 failed unexpectedly" in caplog.text and "engine internals" in caplog.text
 
 
 def test_preview_cached(client):

@@ -1,6 +1,6 @@
 # Build and release guide
 
-Voice Studio currently ships as a source checkout, not a hosted service or standalone installer.
+Shark Audio currently ships as a source checkout, not a hosted service or standalone installer.
 The macOS app starts the engine in that checkout. Python wheels/source distributions are build artifacts;
 they do not bundle ffmpeg, model downloads, a Python runtime or the optional cloning environment.
 Do not advertise them as standalone desktop installs.

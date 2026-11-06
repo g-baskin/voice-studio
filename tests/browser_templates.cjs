@@ -1,5 +1,5 @@
 // Optional real-browser smoke test. Set PLAYWRIGHT_MODULE if Playwright is supplied by GG Coder.
-const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
+const chromium = require('./browser_support.cjs');
 const assert = require('node:assert/strict');
 
 (async () => {
@@ -8,7 +8,7 @@ const assert = require('node:assert/strict');
     const page = await browser.newPage();
     const errors = [];
     page.on('pageerror', (error) => errors.push(error.message));
-    await page.goto('http://127.0.0.1:8765');
+    await page.goto(process.env.NV_URL || 'http://127.0.0.1:8765');
     await page.waitForSelector('#template:not([disabled])');
     const keys = ['ai_clean', 'dereverb', 'demetal', 'deharsh', 'warmth', 'denoise', 'room_tone'];
     const templates = {

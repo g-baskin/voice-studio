@@ -1,0 +1,53 @@
+{
+  "cases": [
+    {
+      "words_per_page": 3,
+      "max_chars": 16,
+      "words": [
+        [0.0, 0.3, "Did"],
+        [0.3, 0.5, "you"],
+        [0.5, 0.8, "know"],
+        [0.8, 1.1, "that"],
+        [1.1, 1.6, "captions?"],
+        [2.5, 2.8, "They"],
+        [2.8, 3.0, "help."],
+        [3.0, 3.2, "Extraordinarily"],
+        [3.2, 3.6, "long"],
+        [3.6, 3.9, "words"],
+        [3.9, 4.2, "wrap"]
+      ],
+      "pages": [
+        { "t0": 0.0, "t1": 0.8, "text": "Did you know" },
+        { "t0": 0.8, "t1": 1.9, "text": "that captions?" },
+        { "t0": 2.5, "t1": 3.0, "text": "They help." },
+        { "t0": 3.0, "t1": 3.2, "text": "Extraordinarily" },
+        { "t0": 3.2, "t1": 4.5, "text": "long words wrap" }
+      ],
+      "at": [
+        [0.1, "Did you know"],
+        [0.85, "that captions?"],
+        [2.0, ""],
+        [3.1, "Extraordinarily"],
+        [4.4, "long words wrap"],
+        [4.6, ""]
+      ]
+    },
+    {
+      "words_per_page": 1,
+      "max_chars": 40,
+      "words": [
+        [0.0, 0.2, "a"],
+        [0.2, 0.4, "b"]
+      ],
+      "pages": [
+        { "t0": 0.0, "t1": 0.2, "text": "a" },
+        { "t0": 0.2, "t1": 0.7, "text": "b" }
+      ],
+      "at": [
+        [0.1, "a"],
+        [0.5, "b"],
+        [0.8, ""]
+      ]
+    }
+  ]
+}

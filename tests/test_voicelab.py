@@ -18,7 +18,7 @@ def client(monkeypatch, tmp_path):
     monkeypatch.setattr(voicelab_api, "WORK", tmp_path / "work")
     monkeypatch.setattr(voicelab_api, "match_jobs", {})
     monkeypatch.setattr(vl, "MEASURE_LINE", SHORT)  # keep renders short in tests
-    return TestClient(server.app)
+    return TestClient(server.app, base_url="http://127.0.0.1", client=("127.0.0.1", 50000))
 
 
 def recipe(*pairs, **controls):

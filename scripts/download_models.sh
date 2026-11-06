@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Download the base models Voice Studio needs (about 385 MB) into models/. Safe to re-run: verified files are skipped.
+# Download the base models Shark Audio needs (about 385 MB) into models/. Safe to re-run: verified files are skipped.
 # Usage: scripts/download_models.sh [target-dir]      (default: models/)
 # Optional extras: scripts/setup_clone_engine.sh installs the voice-cloning engine (about 3.3 GB).
 set -euo pipefail

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import contextlib
 import math
 import logging
 import re
@@ -9,26 +10,51 @@ import zipfile
 import shutil
 import tempfile
 import threading
+import time
 import uuid
 from pathlib import Path
 
-from fastapi import FastAPI, File, Form, HTTPException, UploadFile
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
+from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.background import BackgroundTask
 from pydantic import BaseModel, Field
 
-from . import audio, humanize as hz
+from . import access, audio, humanize as hz
 
 WEB = Path(__file__).parent / "web"
+# SvelteKit build of every page (source: frontend/). WEB keeps shared assets: CSS, icons, manifest, service worker.
+UI = Path(__file__).parent / "ui"
 WORK = Path(tempfile.gettempdir()) / "naturalvoice"
 WORK.mkdir(exist_ok=True)
 MAX_BYTES = 500 * 1024 * 1024
+KEEP_JOBS = 50  # finished jobs kept for download; more than one full 20-file batch
+STALE_SECONDS = 86400
+# Only names this module creates are ever removed from WORK.
+JOB_DIR = re.compile(r"[0-9a-f]{32}")
+SCRATCH_FILE = re.compile(r"(?:speech-[0-9a-f]{32}\.wav|batch-[0-9a-f]{32}\.zip)")
 
-app = FastAPI(title="Voice Studio")
+app = FastAPI(title="Shark Audio")
 jobs: dict[str, dict] = {}
 # One processing job at a time bounds CPU/memory; the browser batch queue is sequential.
 processing = threading.BoundedSemaphore(1)
+
+
+def _prune() -> None:
+    """Drop the oldest finished jobs, then files that earlier server runs left behind."""
+    finished = [k for k, j in list(jobs.items()) if j["status"] != "running"]
+    for k in finished[: max(len(finished) - KEEP_JOBS, 0)]:
+        shutil.rmtree(WORK / k, ignore_errors=True)
+        jobs.pop(k, None)
+    cutoff = time.time() - STALE_SECONDS
+    for p in sorted(WORK.iterdir()):
+        with contextlib.suppress(FileNotFoundError):
+            if p.stat().st_mtime >= cutoff:
+                continue
+            if p.is_dir() and JOB_DIR.fullmatch(p.name) and p.name not in jobs:
+                shutil.rmtree(p, ignore_errors=True)
+            elif p.is_file() and SCRATCH_FILE.fullmatch(p.name):
+                p.unlink()
 
 
 def _settings_from_form(preset, **kw):
@@ -92,6 +118,11 @@ async def clean(
         raise HTTPException(400, "Unsupported audio/video file type.")
     if not processing.acquire(blocking=False):
         raise HTTPException(429, "Another file is processing. Wait for it to finish, then retry.")
+    try:
+        _prune()
+    except BaseException:
+        processing.release()
+        raise
     job = uuid.uuid4().hex
     d = WORK / job
     src = d / f"input{suffix}"
@@ -116,7 +147,7 @@ async def clean(
     jobs[job] = {"status": "running", "step": "Starting", "progress": 0.0, "name": file.filename, "mode": mode}
 
     def run():
-        from .workflow import process
+        from .workflow import AudioInputError, process
 
         def prog(name, f):
             jobs[job].update(step=name, progress=round(f, 2))
@@ -128,7 +159,7 @@ async def clean(
             logging.getLogger(__name__).exception("Audio job failed")
             public = (
                 str(e)
-                if isinstance(e, ValueError) and str(e).startswith(("This section", "Audio must"))
+                if isinstance(e, AudioInputError)
                 else (
                     "Could not process this recording. Check that it contains playable audio, or try converting it to WAV/MP4."
                 )
@@ -222,18 +253,37 @@ def speak(
     except (RuntimeError, ValueError) as e:
         raise HTTPException(400, str(e))
     path = WORK / f"speech-{uuid.uuid4().hex}.wav"
-    audio.save(path, out, sr)
-    return FileResponse(path, media_type="audio/wav", filename="natural-voice.wav")
+    try:
+        audio.save(path, out, sr)
+    except BaseException:
+        path.unlink(missing_ok=True)
+        raise
+    return FileResponse(
+        path,
+        media_type="audio/wav",
+        filename="natural-voice.wav",
+        background=BackgroundTask(path.unlink, missing_ok=True),
+    )
 
 
 # Feature routers must be registered before the static mount, which catches everything else.
 from . import clone_api, llm_api, rewrite_api, sample_library_api, scriptgen_api, studio_api, voicelab_api  # noqa: E402
 
+from . import backup_api  # noqa: E402
+from . import editor_api  # noqa: E402
+from . import shark_api  # noqa: E402
+
+app.add_middleware(backup_api.BackupGate)
 app.add_middleware(sample_library_api.SampleUploadLimit)
+# Added last so it runs first: nothing, including the upload limit, sees a refused request.
+app.add_middleware(access.LocalAccess)
 
 for _r in (
+    backup_api.router,
+    shark_api.router,
     voicelab_api.router,
     studio_api.router,
+    editor_api.router,
     clone_api.router,
     sample_library_api.router,
     rewrite_api.router,
@@ -242,4 +292,45 @@ for _r in (
 ):
     app.include_router(_r)
 
+# Clean page addresses for the SvelteKit build; the old .html addresses redirect so bookmarks keep working.
+PAGES = {
+    "/": UI / "index.html",
+    "/studio": UI / "studio.html",
+    "/voice-lab": UI / "voice-lab.html",
+    "/samples": UI / "samples.html",
+    "/speak": UI / "speak.html",
+    "/backup": UI / "backup.html",
+    "/editor": UI / "editor.html",
+}
+OLD_ADDRESSES = {
+    "/index.html": "/",
+    "/studio.html": "/studio",
+    "/voicelab.html": "/voice-lab",
+    "/samples.html": "/samples",
+    "/backup.html": "/backup",
+}
+
+
+def _serve_page(path: Path):
+    def page() -> FileResponse:
+        return FileResponse(path, media_type="text/html", headers={"Cache-Control": "no-cache"})
+
+    return page
+
+
+def _redirect_to(target: str):
+    # Temporary redirects: a browser must not cache them if this app is rolled back.
+    def moved(request: Request) -> RedirectResponse:
+        query = request.url.query
+        return RedirectResponse(target + (f"?{query}" if query else ""), status_code=302)
+
+    return moved
+
+
+for _path, _file in PAGES.items():
+    app.add_api_route(_path, _serve_page(_file), methods=["GET", "HEAD"], include_in_schema=False)
+for _old, _new in OLD_ADDRESSES.items():
+    app.add_api_route(_old, _redirect_to(_new), methods=["GET", "HEAD"], include_in_schema=False)
+
+app.mount("/_app", StaticFiles(directory=UI / "_app"), name="ui")
 app.mount("/", StaticFiles(directory=WEB, html=True), name="web")

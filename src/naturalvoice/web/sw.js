@@ -1,9 +1,7 @@
 // Minimal service worker: caches the app shell so it installs as an app on phones/desktops.
-const CACHE = 'naturalvoice-v4';
+const CACHE = 'naturalvoice-v6';
 const SHELL = [
-  './',
-  'index.html',
-  'workflow.js',
+  '/',
   'app.css',
   'manifest.webmanifest',
   'icon.svg',

@@ -1,5 +1,5 @@
 // Run only against a server with disposable NATURALVOICE_DATA. Writes synthetic media.
-const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
+const chromium = require('./browser_support.cjs');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
@@ -34,7 +34,7 @@ function wav() {
   try {
     const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
     page.on('pageerror', (error) => errors.push(error.message));
-    await page.goto(BASE + '/samples.html');
+    await page.goto(BASE + '/samples');
     await page.waitForFunction(() => document.getElementById('status').textContent.includes('engine ready'));
     await page.screenshot({ path: path.join(OUT, 'desktop-empty.png'), fullPage: true });
     // Keyboard reaches the skip link and the main content without a pointer.

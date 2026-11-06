@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Voice Studio">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Shark Audio">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="0.9" y2="1"><stop offset="0" stop-color="#18271f"/><stop offset="1" stop-color="#0b1310"/></linearGradient>
     <radialGradient id="halo" cx="0.72" cy="0.5" r="0.55"><stop offset="0" stop-color="#2fa36b" stop-opacity="0.35"/><stop offset="1" stop-color="#2fa36b" stop-opacity="0"/></radialGradient>

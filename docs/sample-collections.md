@@ -1,6 +1,6 @@
 # Voice sample collections
 
-Open **Voice Lab > Voice sample collections** (`/samples.html`); the Voice Lab Clone tab also links here. This is local reference-based
+Open **Voice Lab > Voice sample collections** (`/samples`); the Voice Lab Clone tab also links here. This is local reference-based
 cloning, not model training. New recordings can improve references, but more audio does not guarantee
 better output. The owner explicitly deferred actual model training on this Intel Mac.
 
