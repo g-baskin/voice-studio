@@ -512,6 +512,241 @@ async function clipMode(page, scheme, talk, dir) {
   assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth));
 }
 
+// A seeded transcript for Talk.mp4: the shared caption fixture's words, then a filler and two more sentences.
+const CAPTION_CASE = JSON.parse(fs.readFileSync(path.join(__dirname, 'fixtures', 'caption_pages.json'), 'utf8'))
+  .cases[0];
+const TALK_WORDS = [
+  ...CAPTION_CASE.words,
+  [6.0, 6.3, 'um'],
+  [6.3, 6.6, 'You'],
+  [6.6, 6.9, 'can'],
+  [6.9, 7.2, 'cut'],
+  [7.2, 7.5, '3'],
+  [7.5, 7.9, 'words.'],
+  [9.0, 9.4, 'But'],
+  [9.4, 9.8, 'this'],
+  [9.8, 10.4, 'works.'],
+];
+
+// One output frame as raw RGB, scaled down so frames are cheap to compare.
+const frameAt = (file, t) =>
+  execFileSync(
+    'ffmpeg',
+    ['-v', 'error', '-ss', String(t), '-i', file, '-frames:v', '1', '-s', '320x180'].concat([
+      '-f',
+      'rawvideo',
+      '-pix_fmt',
+      'rgb24',
+      '-',
+    ]),
+  );
+const changed = (a, b) => {
+  let n = 0;
+  for (let i = 0; i < a.length; i++) if (Math.abs(a[i] - b[i]) > 48) n++;
+  return n;
+};
+
+// Shorts: transcript words, cleanup, word-by-word captions, hooks, SRT and a captioned export.
+async function shorts(page, scheme, dir) {
+  const saved = () => page.waitForFunction(() => document.querySelector('.save')?.textContent === 'All changes saved');
+  await page.goto(BASE + '/editor?mode=clip');
+  await saved();
+  const mon = page.getByRole('region', { name: 'Source monitor' });
+  const prog = page.getByRole('region', { name: 'Program monitor' });
+  const panel = page.getByRole('complementary', { name: 'Clip tools' });
+  const length = async () => secs(await page.getByLabel('Sequence length').textContent());
+  const undo = () => page.keyboard.press('ControlOrMeta+z');
+  const near = (a, b, what) => assert.ok(Math.abs(a - b) < 0.07, `${what}: ${a} vs ${b}`);
+  const goFrame = async (n) => {
+    await prog.getByText('Program', { exact: true }).click();
+    await page.keyboard.press('Home');
+    for (let i = 0; i < Math.floor(n / 10); i++) await page.keyboard.press('Shift+ArrowRight');
+    for (let i = 0; i < n % 10; i++) await page.keyboard.press('ArrowRight');
+  };
+
+  // Seed the transcript through the API (same origin), so no speech model is needed.
+  const id = await page.evaluate(async (words) => {
+    const list = await (await fetch('/api/editor/media')).json();
+    const talk = list.find((m) => m.name === 'Talk.mp4');
+    const put = await fetch(`/api/editor/media/${talk.id}/transcript`, {
+      method: 'PUT',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ words }),
+    });
+    if (!put.ok) throw new Error(`transcript ${put.status}`);
+    return talk.id;
+  }, TALK_WORDS);
+  assert.match(id, /^[0-9a-f]{32}$/);
+  await page.reload();
+  await saved();
+  await newSequence(page);
+  await loadSource(page);
+  // The whole file, appended: its picture and sound sit on V1, which captions follow.
+  await mon.getByText('Source', { exact: true }).click();
+  await page.keyboard.press('Alt+x');
+  await page.keyboard.press('Shift+.');
+  near(await length(), 12, 'appended');
+  await saved();
+
+  // T opens the Transcript tab; clicking a word finds it in the source viewer.
+  await page.locator('body').click({ position: { x: 5, y: 890 } });
+  await page.keyboard.press('t');
+  assert.equal(await panel.getByRole('tab', { name: 'Transcript' }).getAttribute('aria-selected'), 'true');
+  const words = panel.getByRole('group', { name: 'Transcript words' }).getByRole('button');
+  assert.equal(await words.count(), TALK_WORDS.length);
+  await words.filter({ hasText: /^They$/ }).click();
+  near(secs(await mon.getByLabel('Source playhead time').textContent()), 2.5, 'seek');
+  // Shift-click selects a run; Delete cuts it (0.5 s) from the timeline in one undo step.
+  await words.filter({ hasText: /^help\.$/ }).click({ modifiers: ['Shift'] });
+  await page.keyboard.press('Delete');
+  near(await length(), 11.5, 'words cut');
+  await undo();
+  near(await length(), 12, 'words restored');
+  // Keyboard: arrows move along the words, Shift+arrow selects a run, F2 fixes the focused word, Escape keeps it.
+  await words.filter({ hasText: /^They$/ }).click();
+  await page.keyboard.press('Shift+ArrowRight');
+  await page.keyboard.press('Shift+ArrowRight');
+  assert.ok(await panel.getByRole('button', { name: 'Cut 3 words from the timeline' }).isEnabled());
+  assert.equal(await page.evaluate(() => document.activeElement?.textContent), 'Extraordinarily');
+  await page.keyboard.press('F2');
+  const fix = panel.getByLabel('Fix the word');
+  assert.equal(await fix.evaluate((el) => el === document.activeElement), true);
+  assert.equal(await fix.inputValue(), 'Extraordinarily');
+  await page.keyboard.press('Escape');
+  assert.equal(await words.count(), TALK_WORDS.length);
+  // The known filler "um" is listed; removing it cuts 0.3 s.
+  const fillers = panel.getByRole('list', { name: 'Fillers' }).getByRole('listitem');
+  await fillers.filter({ hasText: '“um”' }).getByRole('checkbox').check();
+  await panel.getByRole('button', { name: 'Remove 1 filler' }).click();
+  near(await length(), 11.7, 'filler cut');
+  await undo();
+  // Pauses over 0.6 s shrink to 0.25 s: 0.9, 1.8 and 1.1 s gaps lose 3.05 s together.
+  await panel.getByRole('button', { name: 'Shorten pauses' }).click();
+  near(await length(), 8.95, 'pauses');
+  await undo();
+  near(await length(), 12, 'pauses restored');
+  await page.screenshot({ path: path.join(OUT, `shorts-transcript-${scheme}.png`) });
+
+  // Captions follow the playhead page by page, matching the shared fixture.
+  await panel.getByRole('tab', { name: 'Captions' }).click();
+  await panel.getByRole('switch', { name: /Show captions/ }).check();
+  await saved();
+  // The fixture's page limits: three words and 16 letters.
+  await panel.getByLabel('Words at once').fill(String(CAPTION_CASE.words_per_page));
+  await panel.getByLabel('Words at once').press('Tab');
+  await panel.getByLabel('Letters per line').fill(String(CAPTION_CASE.max_chars));
+  await panel.getByLabel('Letters per line').press('Tab');
+  await saved();
+  for (const [t] of CAPTION_CASE.at) {
+    const frame = Math.round(t * FPS);
+    const at = frame / FPS;
+    const page0 = CAPTION_CASE.pages.find((p) => p.t0 <= at && at < p.t1);
+    await goFrame(frame);
+    assert.equal(await page.locator('#caption-now').textContent(), page0 ? page0.text : '', `caption at ${at}`);
+  }
+  // A style change is one saved edit that survives a reload.
+  await panel.getByRole('group', { name: 'Caption style' }).getByRole('button', { name: 'Karaoke' }).click();
+  await saved();
+  await page.reload();
+  await saved();
+  await panel.getByRole('tab', { name: 'Captions' }).click();
+  const karaoke = panel.getByRole('group', { name: 'Caption style' }).getByRole('button', { name: 'Karaoke' });
+  assert.equal(await karaoke.getAttribute('aria-pressed'), 'true');
+  await panel.getByRole('group', { name: 'Caption style' }).getByRole('button', { name: 'Pop' }).click();
+  await saved();
+  const srt = await Promise.all([
+    page.waitForEvent('download'),
+    panel.getByRole('button', { name: 'Download SRT' }).click(),
+  ]).then(([d]) => d);
+  const srtPath = path.join(dir, `captions-${scheme}.srt`);
+  await srt.saveAs(srtPath);
+  const srtText = fs.readFileSync(srtPath, 'utf8');
+  assert.match(srtText, /^1\r?\n00:00:00,000 --> 00:00:00,800\r?\nDid you know/);
+  await goFrame(12);
+  await page.waitForFunction(() => document.querySelector('#caption-now')?.textContent === 'Did you know');
+  await page.waitForTimeout(300);
+  await page.screenshot({ path: path.join(OUT, `shorts-captions-${scheme}.png`) });
+  await prog.locator('canvas').screenshot({ path: path.join(OUT, `shorts-preview-frame-${scheme}.png`) });
+
+  // Removing the track captions follow sends them back to the first track with sound, and the sequence still saves.
+  const wordsFrom = panel.getByLabel('Words from');
+  const trackOptions = () => wordsFrom.locator('option').evaluateAll((os) => os.map((o) => [o.value, o.textContent]));
+  const before = new Set((await trackOptions()).map(([v]) => v));
+  await page.getByTitle('Add an audio track').click();
+  await saved();
+  const [addedId, addedName] = (await trackOptions()).find(([v]) => !before.has(v));
+  await wordsFrom.selectOption(addedId);
+  await saved();
+  const modes = page.getByRole('group', { name: 'Editor mode' });
+  await modes.getByRole('button', { name: 'Edit', exact: true }).click();
+  await page.getByRole('button', { name: addedName, exact: true }).click();
+  await page.getByRole('button', { name: 'Remove track' }).click();
+  await saved();
+  await modes.getByRole('button', { name: 'Clip', exact: true }).click();
+  await panel.getByRole('tab', { name: 'Captions' }).click();
+  assert.equal(await panel.getByLabel('Words from').inputValue(), '');
+
+  // Hooks: whole-sentence windows, ranked; Add appends one to the sequence.
+  await panel.getByRole('tab', { name: 'Hooks' }).click();
+  await panel.getByLabel('File').selectOption({ label: 'Talk.mp4' });
+  await panel.getByLabel('Shortest (s)').fill('5');
+  await panel.getByLabel('Longest (s)').fill('12');
+  await panel.getByLabel('How many').fill('3');
+  await panel.getByRole('button', { name: 'Find hooks' }).click();
+  const hooks = panel.getByRole('list', { name: 'Hooks' }).getByRole('listitem');
+  await hooks.first().waitFor();
+  const found = await hooks.count();
+  assert.ok(found >= 1 && found <= 3, `hooks ${found}`);
+  await page.screenshot({ path: path.join(OUT, `shorts-hooks-${scheme}.png`) });
+  await hooks.first().getByRole('button', { name: 'Add', exact: true }).click();
+  assert.ok((await length()) > 12 + 4.9, `hook added: ${await length()}`);
+  await undo();
+  near(await length(), 12, 'hook undone');
+  await saved();
+
+  if (scheme === 'light') {
+    // A captioned export: the still bars differ only where the caption is drawn.
+    await page.getByRole('button', { name: 'Export', exact: true }).click();
+    const dialog = page.getByRole('dialog', { name: 'Export' });
+    await dialog.getByLabel('Quality').selectOption('draft');
+    assert.equal(await dialog.getByLabel('Burn in captions').isChecked(), true);
+    await dialog.getByRole('button', { name: 'Export video' }).click();
+    const link = dialog.getByRole('link', { name: /Download / });
+    await link.waitFor({ timeout: 180000 });
+    const download = await Promise.all([page.waitForEvent('download'), link.click()]).then(([d]) => d);
+    const video = path.join(dir, 'captioned.mp4');
+    await download.saveAs(video);
+    const captioned = frameAt(video, 0.4);
+    const plain = frameAt(video, 2.1);
+    assert.ok(changed(captioned, plain) > 200, 'caption pixels at 0.4 s');
+    assert.ok(changed(frameAt(video, 2.2), plain) < 50, 'no caption between pages');
+    execFileSync(
+      'ffmpeg',
+      ['-y', '-v', 'error', '-ss', '0.4', '-i', video, '-frames:v', '1'].concat([
+        path.join(OUT, 'shorts-export-frame.png'),
+      ]),
+    );
+    await dialog.getByRole('button', { name: 'Close' }).click();
+
+    // Without the speech engine, the Transcript tab explains the one-time setup.
+    await page.route('**/api/editor/transcribe/status', async (route) => {
+      const reply = await route.fetch();
+      await route.fulfill({ response: reply, json: { ...(await reply.json()), installed: false } });
+    });
+    await page.reload();
+    await saved();
+    await panel.getByRole('tab', { name: 'Transcript' }).click();
+    await panel.getByLabel('File').selectOption({ label: 'Interview take 1.mp4' });
+    const note = panel.getByRole('note');
+    await note.waitFor();
+    assert.match(await note.textContent(), /scripts\/setup_speech_model\.sh/);
+    assert.match(await note.textContent(), /CC-BY-4\.0/);
+    await page.screenshot({ path: path.join(OUT, 'shorts-setup.png') });
+    await page.unroute('**/api/editor/transcribe/status');
+  }
+  assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth));
+}
+
 (async () => {
   fs.mkdirSync(OUT, { recursive: true });
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'editor-fixture-'));
@@ -640,6 +875,7 @@ async function clipMode(page, scheme, talk, dir) {
       page.on('pageerror', (error) => errors.push(error.message));
       page.on('console', (m) => m.type() === 'error' && errors.push(m.text()));
       await clipMode(page, scheme, talk, dir);
+      await shorts(page, scheme, dir);
       await context.close();
     }
     assert.deepEqual(errors, []);

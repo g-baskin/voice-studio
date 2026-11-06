@@ -10,12 +10,14 @@
   let dialog: HTMLDialogElement | undefined = $state();
   let range = $state<'all' | 'inout' | 'markers' | 'subclips'>('all');
   let quality = $state('standard');
+  let burn = $state(true);
   let job = $state<ExportJob | null>(null);
   let error = $state('');
   let timer: ReturnType<typeof setTimeout> | undefined;
 
   const seq = $derived(editor.seq);
   const hasRange = $derived(seq.range_in !== null || seq.range_out !== null);
+  const captioned = $derived(!!seq.captions?.enabled && editor.captionPages.length > 0);
   const running = $derived(job?.status === 'running');
   const MAX_BATCH = 50;
   const byMarker = $derived(markerRanges(seq, editor.duration));
@@ -51,7 +53,10 @@
     error = '';
     try {
       const ranges = batch ? $state.snapshot(batch).slice(0, MAX_BATCH) : null;
-      job = await api.startExport($state.snapshot(seq), range === 'inout', quality, ranges);
+      const out = $state.snapshot(seq) as typeof seq;
+      // Leaving captions out of one export does not change the sequence.
+      if (out.captions && !burn) out.captions = { ...out.captions, enabled: false };
+      job = await api.startExport(out, range === 'inout', quality, ranges);
       poll(job.id);
     } catch (e) {
       error = e instanceof Error ? e.message : 'Could not start the export.';
@@ -135,6 +140,12 @@
           <option value="draft">Draft (fast check)</option>
         </select>
       </label>
+      {#if captioned}
+        <label class="radio"><input type="checkbox" bind:checked={burn} />Burn in captions</label>
+        {#if burn}
+          <p class="hint">Captioned exports take a little longer and can be up to 30 minutes long.</p>
+        {/if}
+      {/if}
       <p class="hint">
         {seq.width} × {seq.height} at {seq.fps} fps, rendered from your original files, not the previews.
       </p>
@@ -183,7 +194,8 @@
     </div>
     <p class="hint">
       The Premiere Pro file (FCP 7 XML) keeps cuts, tracks, dissolves, speed, opacity, levels and markers. It points at
-      the original files on this computer. Scale, position and ducking are not carried over.
+      the original files on this computer. Scale, position, ducking and captions are not carried over; download an SRT
+      from the Captions tab for those.
     </p>
   </form>
 </dialog>

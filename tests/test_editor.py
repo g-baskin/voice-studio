@@ -555,3 +555,189 @@ def test_api_batch_exports_each_range_as_its_own_file(tmp_path):
         assert ed.probe(saved)["duration"] == pytest.approx(1.0, abs=0.1)
     assert c.get(f"/api/editor/exports/{job['id']}/file?index=2").status_code == 404
     assert c.get(f"/api/editor/exports/{job['id']}/file?index=-1").status_code == 404
+
+
+def test_captions_are_optional_bounded_and_track_checked():
+    raw = sequence([]).model_dump()
+    raw.pop("captions")
+    assert ed.Sequence.model_validate(raw).captions is None
+    seq = ed.Sequence.model_validate(raw | {"captions": {"track": "a1", "style": "karaoke"}})
+    assert seq.captions and seq.captions.words_per_page == 3 and seq.captions.highlight == "#ffd400"
+    saved = ed.save_sequence(seq)
+    assert ed.read_sequence(saved["id"])["captions"]["style"] == "karaoke"
+    for bad in (
+        {"track": "zz"},
+        {"size": 0.2},
+        {"y": 0.05},
+        {"words_per_page": 9},
+        {"color": "red"},
+        {"highlight": "#fff; x"},
+        {"font": "../../etc/passwd"},
+        {"style": "neon"},
+    ):
+        with pytest.raises(ValidationError):
+            ed.Sequence.model_validate(raw | {"captions": bad})
+
+
+def test_caption_strips_are_one_guarded_image_input_overlaid_last(tmp_path):
+    red = add(make(tmp_path / "red.mp4", "color=c=red:s=320x180:r=25", "sine=f=300", seconds=2))
+    seq = sequence([clip("c1", "v1", red["id"], 0, 0, 2)], captions={"y": 0.5})
+    args, graph, _ = ed.build_command(seq, ed.media_for(seq), tmp_path / "o.mp4", captions_frames=tmp_path / "caps")
+    patterns = [a for a in args if a.endswith("%07d.png")]
+    assert patterns == [str(tmp_path / "caps" / "frames" / "%07d.png")]
+    at = args.index(patterns[0])
+    assert args[at - 3 : at] == ["-f", "image2", "-i"] and args[at - 3 - len(ed.INPUT_GUARD) : at - 3] == ed.INPUT_GUARD
+    assert graph.count("[cap]overlay") == 1 and "overlay=x=0:y=72:" in graph
+    assert graph.index("[cap]overlay") < graph.index("format=yuv420p[vout]")
+    plain, plain_graph, _ = ed.build_command(seq, ed.media_for(seq), tmp_path / "o.mp4")
+    assert not any(a.endswith(".png") for a in plain) and "[cap]" not in plain_graph
+
+
+def test_burned_in_captions_appear_only_in_their_band_and_time(tmp_path):
+    from naturalvoice import transcript as tr
+
+    video = add(make(tmp_path / "talk.mp4", "testsrc2=s=320x180:r=25", "sine=f=300", seconds=4))
+    tr.save_transcript(video["id"], [[1.0, 1.4, "Hello"], [1.4, 1.9, "world."]])
+    clips = [clip("c1", "v1", video["id"], 0, 0, 4), clip("c2", "a1", video["id"], 0, 0, 4)]
+    caps = {"style": "pop", "color": "#ffffff", "highlight": "#ffff00", "size": 0.1, "y": 0.5}
+    out, plain = tmp_path / "captioned.mp4", tmp_path / "plain.mp4"
+    ed.render(sequence(clips, captions=caps), out, False, "high", lambda f: None, threading.Event())
+    ed.render(sequence(clips), plain, False, "high", lambda f: None, threading.Event())
+    assert not any(p.name.endswith(".captions") for p in tmp_path.iterdir()), "caption strips are removed"
+
+    def picture(video_path: Path, at: float) -> np.ndarray:
+        raw = subprocess.run(
+            [FF, "-v", "error", "-ss", str(at), "-i", str(video_path), "-frames:v", "1"]
+            + ["-f", "rawvideo", "-pix_fmt", "rgb24", "-"],
+            check=True,
+            capture_output=True,
+        ).stdout
+        frame = np.frombuffer(raw, dtype=np.uint8).reshape(180, 320, 3).astype(float)
+        return frame
+
+    top, tall = 90 - 29, 58  # 18 px text, 58 px strip centred at half height
+    during = np.abs(picture(out, 1.6) - picture(plain, 1.6)).mean(axis=(1, 2))
+    assert during[top : top + tall].max() > 20, "caption pixels inside the band"
+    assert during[: top - 2].max() < 3 and during[top + tall + 2 :].max() < 3, "nothing outside the band"
+    after = np.abs(picture(out, 3.0) - picture(plain, 3.0)).mean(axis=(1, 2))
+    assert after.max() < 3, "no caption once the page has ended"
+
+
+def fake_speech_engine(tmp_path: Path, monkeypatch, body: str) -> None:
+    import sys
+
+    from naturalvoice import transcript as tr
+
+    script = tmp_path / "fake_transcribe.py"
+    script.write_text("import json, sys, time\nsys.stdin.readline()\n" + body, encoding="utf-8")
+    monkeypatch.setattr(tr, "installed", lambda: True)
+    monkeypatch.setattr(tr, "worker_command", lambda: [sys.executable, str(script)])
+
+
+SPEECH = (
+    "print(json.dumps({'progress': 1.0}), flush=True)\n"
+    "print(json.dumps({'duration': 2, 'words': [[0.1, 0.3, 'Um,'], [0.3, 0.6, 'why'], [0.6, 0.9, 'captions?']]}))\n"
+)
+
+
+def test_api_transcripts_run_guard_edits_and_feed_hooks_and_srt(tmp_path, monkeypatch):
+    from naturalvoice import editor_api, server
+    from naturalvoice import transcript as tr
+
+    c = client()
+    media = add(make(tmp_path / "talk.mp4", "testsrc2=s=320x180:r=25", "sine=f=300", seconds=2))
+    url = f"/api/editor/media/{media['id']}/transcript"
+    monkeypatch.setattr(tr, "installed", lambda: False)
+    status = c.get("/api/editor/transcribe/status").json()
+    assert status["installed"] is False and "setup_speech_model.sh" in status["setup"]
+    assert c.post(url, json={}).status_code == 503
+    assert c.get(url).json() is None
+    assert c.post(f"/api/editor/media/{media['id']}/hooks", json={}).status_code == 404
+
+    fake_speech_engine(tmp_path, monkeypatch, SPEECH)
+    with server.processing:
+        assert c.post(url, json={}).status_code == 429
+    job = c.post(url, json={})
+    assert job.status_code == 202 and "cancel" not in job.json()
+    done = poll(c, f"{url}/job/{job.json()['id']}")
+    assert done["status"] == "done"
+    data = c.get(url).json()
+    assert [w[2] for w in data["words"]] == ["Um,", "why", "captions?"]
+    assert data["fillers"] == [{"kind": "word", "index": 0}] and data["silence"] == tr.SILENCE_PARAMS
+
+    assert c.put(url, json={"words": [[0.5, 0.2, "x"]]}).status_code == 400
+    assert c.put(url, json={"words": "x"}).status_code == 422
+    assert c.put(url, json={"words": [[0.1, 0.3, "Hey,"], [0.3, 0.6, "why"]]}).json()["edited"] is True
+    assert c.post(url, json={}).status_code == 409, "edits are not replaced without confirmation"
+    editor_api.transcriptions["t" * 32] = {"id": "t" * 32, "media": media["id"], "status": "running", "created": 0}
+    try:
+        assert c.put(url, json={"words": []}).status_code == 409
+        assert c.delete(f"/api/editor/media/{media['id']}").status_code == 409
+    finally:
+        editor_api.transcriptions.pop("t" * 32)
+
+    hooks = c.post(f"/api/editor/media/{media['id']}/hooks", json={"min_len": 5, "max_len": 60})
+    assert hooks.status_code == 200 and hooks.json() == {"hooks": [], "ranked_by": "structure"}
+    assert c.post(f"/api/editor/media/{media['id']}/hooks", json={"min_len": 60, "max_len": 10}).status_code == 422
+    assert c.post(f"/api/editor/media/{media['id']}/hooks", json={"count": 21}).status_code == 422
+
+    seq = sequence([clip("c1", "a1", media["id"], 1.0, 0, 2)], captions={}).model_dump()
+    srt = c.post("/api/editor/sequences/captions.srt", json=seq)
+    assert srt.status_code == 200 and srt.headers["x-content-type-options"] == "nosniff"
+    assert srt.headers["content-type"].startswith("text/plain") and "attachment" in srt.headers["content-disposition"]
+    assert srt.text == "1\n00:00:01,100 --> 00:00:01,900\nHey, why\n"
+    empty = sequence([clip("c1", "v1", media["id"], 0, 0, 2)], captions={"track": "a2"}).model_dump()
+    assert c.post("/api/editor/sequences/captions.srt", json=empty).status_code == 400
+    gone = sequence([clip("c1", "a1", "f" * 32, 1.0, 0, 2)], captions={}).model_dump()
+    assert c.post("/api/editor/sequences/captions.srt", json=gone).status_code == 400
+
+    from naturalvoice import captions as cap
+
+    monkeypatch.setattr(cap, "MAX_SECONDS", 1)
+    refused = c.post("/api/editor/exports", json={"sequence": seq})
+    assert refused.status_code == 400 and "30 minutes" in refused.json()["detail"]
+
+
+def test_api_hooks_rank_with_ai_only_when_connected(tmp_path, monkeypatch):
+    from naturalvoice import llm
+    from naturalvoice import transcript as tr
+
+    c = client()
+    media = add(make(tmp_path / "long.wav", "sine=f=200", seconds=40))
+    words = []
+    for n in range(4):
+        base = n * 9.0
+        text = f"Why does number {n} matter to you? It changes how the whole story is told today."
+        for i, token in enumerate(text.split()):
+            words.append([round(base + i * 0.5, 3), round(base + i * 0.5 + 0.4, 3), token])
+    tr.save_transcript(media["id"], words)
+    url = f"/api/editor/media/{media['id']}/hooks"
+    found = c.post(url, json={"min_len": 5, "max_len": 10, "count": 4}).json()
+    assert found["ranked_by"] == "structure" and len(found["hooks"]) >= 2
+    monkeypatch.setattr(llm, "config", lambda: None)
+    assert c.post(url, json={"min_len": 5, "max_len": 10, "use_ai": True}).status_code == 400
+    monkeypatch.setattr(llm, "config", lambda: {"label": "test model"})
+    monkeypatch.setattr(llm, "chat", lambda *a, **k: "[1, 0]")
+    ranked = c.post(url, json={"min_len": 5, "max_len": 10, "count": 4, "use_ai": True}).json()
+    assert ranked["ranked_by"] == "ai" and [h["id"] for h in ranked["hooks"]][:2] == [1, 0]
+
+    def offline(*a, **k):
+        raise RuntimeError("Couldn't reach the model.")
+
+    monkeypatch.setattr(llm, "chat", offline)
+    failed = c.post(url, json={"min_len": 5, "max_len": 10, "use_ai": True})
+    assert failed.status_code == 502 and failed.json()["detail"] == "Couldn't reach the model."
+
+
+def test_api_caption_fonts_are_allowlisted():
+    from naturalvoice import captions as cap
+
+    c = client()
+    for key in ("../../etc/passwd", "Arial Bold.ttf", "unknown"):
+        assert c.get(f"/api/editor/caption-fonts/{key}").status_code == 404
+    reply = c.get("/api/editor/caption-fonts/sans-bold")
+    if cap.font_file("sans-bold") is None:
+        assert reply.status_code == 404
+    else:
+        assert reply.status_code == 200 and reply.headers["content-type"] == "font/ttf"
+        assert reply.content == cap.font_file("sans-bold").read_bytes()  # type: ignore[union-attr]

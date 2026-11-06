@@ -18,6 +18,7 @@ pure edit functions: `frontend/src/lib/editor/timeline.ts`.
   - **Scenes**
   - **Markers:** jump, rename, colour or delete each one.
   - **Subclips:** make from the source In/Out, rename, open or delete.
+  - **Transcript**, **Captions** and **Hooks:** see [Shorts](editor-shorts.md).
 
 Keys act on the **focused viewer**: click its title, or use it last. I, O, M, ⌥X, J/K/L, the arrows and Home/End
 all follow that focus.

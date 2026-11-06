@@ -1,4 +1,18 @@
-import type { Analysis, AnalysisKind, ExportJob, Media, Sequence, SequenceSummary } from './types.ts';
+import type {
+  Analysis,
+  AnalysisKind,
+  CaptionFont,
+  ExportJob,
+  FillerCandidate,
+  HookCandidate,
+  Media,
+  Sequence,
+  SequenceSummary,
+  TranscribeStatus,
+  Transcript,
+  TranscriptJob,
+  Word,
+} from './types.ts';
 
 type Detail = { loc?: (string | number)[]; msg?: string };
 
@@ -74,3 +88,40 @@ export const startAnalysis = (media: string, kind: AnalysisKind, params: Analysi
 export const analysisStatus = (media: string, id: string) => json<Analysis>(`/media/${media}/analysis/${id}`);
 export const cancelAnalysis = (media: string, id: string) =>
   json<Analysis>(`/media/${media}/analysis/${id}/cancel`, { method: 'POST' });
+
+export const transcribeStatus = () => json<TranscribeStatus>('/transcribe/status');
+export const startTranscript = (media: string, overwrite = false) =>
+  json<TranscriptJob>(`/media/${media}/transcript`, send('POST', { overwrite }));
+export const transcriptJob = (media: string, id: string) => json<TranscriptJob>(`/media/${media}/transcript/job/${id}`);
+export const cancelTranscript = (media: string, id: string) =>
+  json<TranscriptJob>(`/media/${media}/transcript/job/${id}/cancel`, { method: 'POST' });
+
+/** A saved transcript plus filler picks; `silence` names the silence analysis still needed for gap picks. */
+export type TranscriptReply = Transcript & {
+  fillers: FillerCandidate[];
+  silence: { noise_db: number; min_seconds: number } | null;
+};
+
+/** The media's transcript, or null when it has none yet. */
+/** The media's transcript, or null before it has been transcribed. */
+export const getTranscript = (media: string, extra = false) =>
+  json<TranscriptReply | null>(`/media/${media}/transcript?extra=${extra}`);
+export const saveTranscript = (media: string, words: Word[]) =>
+  json<Transcript>(`/media/${media}/transcript`, send('PUT', { words }));
+
+export type HookParams = { min_len: number; max_len: number; count: number; use_ai: boolean };
+export const findHooks = (media: string, params: HookParams) =>
+  json<{ hooks: HookCandidate[]; ranked_by: 'structure' | 'ai' }>(`/media/${media}/hooks`, send('POST', params));
+
+export const captionFontUrl = (key: CaptionFont) => `/api/editor/caption-fonts/${key}`;
+
+/** Download the sequence's captions as a SubRip (.srt) file. */
+export async function downloadSrt(seq: Sequence): Promise<void> {
+  const blob = await (await call('/sequences/captions.srt', send('POST', seq))).blob();
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `${seq.name.replace(/[^A-Za-z0-9 _.-]+/g, '').trim() || 'sequence'}.srt`;
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}

@@ -1,4 +1,6 @@
 import * as api from './api.ts';
+import { DEFAULT_CAPTIONS, captionTrack, gapCuts, pages, pauseSpans, timelineWords, wordCuts } from './captions.ts';
+import type { Page } from './captions.ts';
 import {
   clamp,
   clipEnd,
@@ -37,13 +39,19 @@ import type { EditSpan, SilenceCut, SourcePick, Targets } from './timeline.ts';
 import type {
   Analysis,
   AnalysisKind,
+  CaptionFont,
+  Captions,
   Clip,
+  FillerCandidate,
   MarkerColor,
   Media,
   Sequence,
   SequenceSummary,
   Subclip,
   TrackKind,
+  TranscribeStatus,
+  TranscriptJob,
+  Word,
 } from './types.ts';
 
 const HISTORY = 100;
@@ -113,8 +121,26 @@ export class Editor {
   trimView = $state<TrimView | null>(null);
   /** Latest analysis per media and kind, keyed `${media}:${kind}`. */
   analyses = $state<Record<string, Analysis>>({});
+  /** Whether local speech-to-text is installed, and the AI connected for hook ranking. */
+  speech = $state<TranscribeStatus | null>(null);
+  /** Saved transcript per media: null when it has none, absent until loaded. */
+  transcripts = $state<Record<string, api.TranscriptReply | null>>({});
+  /** Also list “like”, “you know” and “I mean” as fillers on every transcript load. */
+  extraFillers = $state(false);
+  /** Latest transcription job per media. */
+  transcriptions = $state<Record<string, TranscriptJob>>({});
+  /** Caption font family per font key, once loaded for the preview. */
+  fonts = $state<Partial<Record<CaptionFont, string>>>({});
 
   mediaById = $derived(new Map(this.media.map((m) => [m.id, m])));
+  /** Caption pages on the timeline, from the transcripts of the caption track's clips. */
+  captionPages = $derived.by((): Page[] => {
+    const caps = this.seq.captions;
+    if (!caps?.enabled) return [];
+    const words: Record<string, Word[]> = {};
+    for (const [id, t] of Object.entries(this.transcripts)) if (t) words[id] = t.words;
+    return pages(timelineWords(this.seq, words), caps.words_per_page, caps.max_chars);
+  });
   layers = $derived(plan(this.seq, this.mediaById));
   duration = $derived(seqDuration(this.seq));
   selected = $derived(this.seq.clips.filter((c) => this.selection.includes(c.id)));
@@ -137,6 +163,10 @@ export class Editor {
   private peaks = new Map<string, Uint8Array | null>();
   private thumbs = new Map<string, HTMLImageElement>();
   private analysisTimers = new Map<string, ReturnType<typeof setTimeout>>();
+  private transcriptTimers = new Map<string, ReturnType<typeof setTimeout>>();
+  private loadingTranscripts = new Set<string>();
+  private reloadTranscripts = new Set<string>();
+  private loadingFonts = new Set<CaptionFont>();
 
   say(text: string, bad = false) {
     this.message = text;
@@ -443,6 +473,7 @@ export class Editor {
     this.commit((s) => {
       s.tracks = s.tracks.filter((x) => x.id !== id);
       s.clips = s.clips.filter((c) => c.track !== id);
+      if (s.captions?.track === id) s.captions = { ...s.captions, track: null };
     });
     if (this.selectedTrack === id) this.selectedTrack = null;
   }
@@ -931,6 +962,12 @@ export class Editor {
       this.say('No silences chosen.');
       return;
     }
+    const removed = this.rippleCuts(spans);
+    this.say(`Removed ${spans.length} silence${spans.length === 1 ? '' : 's'} (${removed.toFixed(1)} s).`);
+  }
+
+  /** Ripple-delete timeline spans as one undo step; returns the seconds removed. */
+  private rippleCuts(spans: SilenceCut[]): number {
     const unlocked = this.unlocked();
     const before = this.duration;
     // Latest first, so each cut's times are still right when it is made; like ripple delete, a cut
@@ -940,9 +977,182 @@ export class Editor {
         s.clips = extractRange(s, a, b, new Set(tracks.filter((id) => unlocked.has(id))));
     });
     this.selection = [];
-    this.say(
-      `Removed ${spans.length} silence${spans.length === 1 ? '' : 's'} (${(before - this.duration).toFixed(1)} s).`,
+    return before - this.duration;
+  }
+
+  // ------------------------------------------------------------------ transcripts and captions
+  async loadSpeechStatus() {
+    try {
+      this.speech = await api.transcribeStatus();
+    } catch (error) {
+      this.fail(error);
+    }
+  }
+
+  /** Fetch a media's saved transcript (once, unless forced). */
+  async loadTranscript(mediaId: string, force = false) {
+    if (!force && mediaId in this.transcripts) return;
+    if (this.loadingTranscripts.has(mediaId)) {
+      // A forced reload during a load runs once that load ends, so it sees the newest words and settings.
+      if (force) this.reloadTranscripts.add(mediaId);
+      return;
+    }
+    this.loadingTranscripts.add(mediaId);
+    try {
+      this.transcripts = { ...this.transcripts, [mediaId]: await api.getTranscript(mediaId, this.extraFillers) };
+    } catch (error) {
+      this.fail(error);
+    } finally {
+      this.loadingTranscripts.delete(mediaId);
+    }
+    if (this.reloadTranscripts.delete(mediaId)) await this.loadTranscript(mediaId, true);
+  }
+
+  /** Load the transcripts and the font the captions need. */
+  prepareCaptions() {
+    const caps = this.seq.captions;
+    if (!caps?.enabled) return;
+    const trackId = captionTrack(this.seq);
+    for (const c of this.seq.clips) if (c.track === trackId) void this.loadTranscript(c.media);
+    void this.loadFont(caps.font);
+  }
+
+  /** Clips a transcript edit of this media applies to: its unlocked clips plus their linked picture or sound. */
+  private transcriptClips(mediaId: string): Clip[] {
+    const open = this.seq.clips.filter((c) => c.media === mediaId && !this.isLocked(c));
+    return linkedClips(open, this.clipsOf(mediaId));
+  }
+
+  async transcribe(m: Media, overwrite = false) {
+    if (this.transcriptions[m.id]?.status === 'running') return;
+    try {
+      this.followTranscript(await api.startTranscript(m.id, overwrite));
+    } catch (error) {
+      this.fail(error);
+    }
+  }
+
+  private followTranscript(job: TranscriptJob) {
+    this.transcriptions = { ...this.transcriptions, [job.media]: job };
+    clearTimeout(this.transcriptTimers.get(job.media));
+    if (job.status !== 'running') {
+      this.transcriptTimers.delete(job.media);
+      if (job.status === 'error') this.say(job.error ?? 'The transcription failed.', true);
+      if (job.status === 'done') {
+        const name = this.mediaById.get(job.media)?.name ?? 'The media';
+        this.say(`${name} is transcribed.`);
+        void this.loadTranscript(job.media, true);
+      }
+      return;
+    }
+    this.transcriptTimers.set(
+      job.media,
+      setTimeout(async () => {
+        try {
+          this.followTranscript(await api.transcriptJob(job.media, job.id));
+        } catch (error) {
+          this.transcriptTimers.delete(job.media);
+          this.transcriptions = {
+            ...this.transcriptions,
+            [job.media]: { ...job, status: 'error', error: String(error) },
+          };
+          this.fail(error);
+        }
+      }, ANALYSIS_POLL_MS),
     );
+  }
+
+  async cancelTranscribe(mediaId: string) {
+    const job = this.transcriptions[mediaId];
+    if (job?.status !== 'running') return;
+    try {
+      await api.cancelTranscript(mediaId, job.id);
+    } catch (error) {
+      this.fail(error);
+    }
+  }
+
+  /** Save the owner's word edits (text fixes); the transcript is then marked edited. */
+  async saveWords(mediaId: string, words: Word[]) {
+    try {
+      await api.saveTranscript(mediaId, words);
+      await this.loadTranscript(mediaId, true);
+      this.say('Transcript saved.');
+    } catch (error) {
+      this.fail(error);
+    }
+  }
+
+  /** Remove the chosen words (by index) from the timeline as one undo step. */
+  removeWords(mediaId: string, indices: number[]) {
+    const words = this.transcripts[mediaId]?.words ?? [];
+    const cuts = wordCuts(this.transcriptClips(mediaId), words, indices);
+    if (!cuts.length) {
+      this.say('Those words are not on the timeline.');
+      return;
+    }
+    const removed = this.rippleCuts(cuts);
+    this.say(`Removed ${indices.length} word${indices.length === 1 ? '' : 's'} (${removed.toFixed(1)} s).`);
+  }
+
+  /** Shorten every pause between words longer than `longer` seconds to `keep` seconds, as one undo step. */
+  shortenPauses(mediaId: string, longer: number, keep: number) {
+    const words = this.transcripts[mediaId]?.words ?? [];
+    const cuts = gapCuts(this.transcriptClips(mediaId), pauseSpans(words, longer, keep));
+    if (!cuts.length) {
+      this.say(`No pauses longer than ${longer.toFixed(2)} s on the timeline.`);
+      return;
+    }
+    const removed = this.rippleCuts(cuts);
+    this.say(`Shortened ${cuts.length} pause${cuts.length === 1 ? '' : 's'} (${removed.toFixed(1)} s).`);
+  }
+
+  /** Remove the ticked filler words and sounding gaps, as one undo step. */
+  removeFillers(mediaId: string, chosen: FillerCandidate[]) {
+    const words = this.transcripts[mediaId]?.words ?? [];
+    const spans = chosen.flatMap((f): [number, number][] => {
+      if (f.kind === 'gap') return [[f.t0, f.t1]];
+      const w = words[f.index];
+      return w ? [[w[0], w[1]]] : [];
+    });
+    const cuts = gapCuts(this.transcriptClips(mediaId), spans);
+    if (!cuts.length) {
+      this.say('No chosen fillers are on the timeline.');
+      return;
+    }
+    const removed = this.rippleCuts(cuts);
+    this.say(`Removed ${chosen.length} filler${chosen.length === 1 ? '' : 's'} (${removed.toFixed(1)} s).`);
+  }
+
+  /** Change caption settings as one undo step; the first change turns captions on with the defaults. */
+  setCaptions(patch: Partial<Captions>) {
+    this.commit((s) => {
+      s.captions = { ...DEFAULT_CAPTIONS, ...(s.captions ?? {}), ...patch };
+    });
+    this.prepareCaptions();
+  }
+
+  toggleCaptions() {
+    const on = !this.seq.captions?.enabled;
+    this.setCaptions({ enabled: on });
+    this.say(on ? 'Captions on.' : 'Captions off.');
+  }
+
+  /** Load a caption font for the preview from the same allowlisted file the export uses. */
+  async loadFont(key: CaptionFont) {
+    if (this.fonts[key] || this.loadingFonts.has(key)) return;
+    this.loadingFonts.add(key);
+    const family = `Caption ${key}`;
+    try {
+      const face = new FontFace(family, `url(${api.captionFontUrl(key)})`);
+      document.fonts.add(await face.load());
+      this.fonts = { ...this.fonts, [key]: family };
+    } catch {
+      // Not installed here: the export falls back to a built-in font, and so does the preview.
+      this.fonts = { ...this.fonts, [key]: 'sans-serif' };
+    } finally {
+      this.loadingFonts.delete(key);
+    }
   }
 
   /** Scene changes (source times) as timeline times, through every clip of this media that shows them. */

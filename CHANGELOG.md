@@ -30,6 +30,16 @@ all entries below describe unreleased source, not historical releases.
   - **Compatibility:** old sequences load unchanged. Silence, scene and moment analysis are cancellable
     background jobs that share the processing slot.
   - **Changed key:** J now shuttles backwards instead of stepping one frame; ← and → step frames.
+- **Editor Shorts** in Clip mode ([guide](docs/editor-shorts.md)):
+  - **Transcripts:** local English speech-to-text with word timings (NVIDIA Parakeet TDT 0.6B v2, CC-BY-4.0,
+    installed separately with `scripts/setup_speech_model.sh`). You can edit words and delete them from the
+    timeline.
+  - **Clean up:** filler and pause removal, reviewed before anything is cut.
+  - **Captions:** word-by-word captions in the preview and burned into exports, plus an SRT download.
+  - **Hooks:** candidate Shorts that start and end on sentence boundaries, ranked by structure and pace, with
+    optional AI reordering that sends only the hook texts.
+  - **Playback fix:** reverse playback in the program viewer now stops at the start of the sequence.
+  - **New direct dependency:** Pillow, which was already installed through another package.
 - **Speak** (`/speak`): directed multi-speaker performances with inline directions, chunked recording that
   plays as it arrives, retakes, plain-language revisions and a joined download. Directions are reported as
   applied, approximated or unavailable. Inspired by Fish Audio's published design; no Fish Audio code or

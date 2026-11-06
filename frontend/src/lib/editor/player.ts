@@ -1,6 +1,8 @@
 import { proxyUrl } from './api.ts';
+import { drawCaptions, pageAt } from './captions.ts';
+import type { Page } from './captions.ts';
 import { dbToGain, pictureAlpha, placement, soundGain, sourceTime } from './timeline.ts';
-import type { Layer, Sequence } from './types.ts';
+import type { Captions, Layer, Sequence } from './types.ts';
 
 type Voice = {
   el: HTMLMediaElement;
@@ -18,6 +20,9 @@ const MAX_RATE = 16;
 /** One half of the trim view: a clip's frame at a source time. */
 export type TrimSide = { layer: Layer; time: number } | null;
 
+/** Captions to draw over the frame, once their font has loaded. */
+export type CaptionLayer = { caps: Captions; pages: Page[]; family: string } | null;
+
 /** Canvas preview of the timeline: proxies play in hidden elements and are composited per frame. */
 export class Player {
   private pool = new Map<string, Voice>();
@@ -25,6 +30,8 @@ export class Player {
   private audio: AudioContext | null = null;
   private canvas: HTMLCanvasElement | null = null;
   private redraw: () => void;
+  /** Set by the preview; drawn over the picture layers. */
+  captions: CaptionLayer = null;
 
   constructor(redraw: () => void) {
     this.redraw = redraw;
@@ -218,5 +225,7 @@ export class Player {
       g.drawImage(source, box.x * w, box.y * h, box.w * w, box.h * h);
     }
     g.globalAlpha = 1;
+    const page = this.captions && pageAt(this.captions.pages, t);
+    if (this.captions && page) drawCaptions(g, this.captions.caps, page, t, this.captions.family);
   }
 }

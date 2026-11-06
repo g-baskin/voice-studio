@@ -2,10 +2,16 @@
   import type { Editor } from '#lib/editor/editor.svelte.ts';
   import { MARKER_HEX, timecode, type SilenceCut } from '#lib/editor/timeline.ts';
   import { MARKER_COLORS, type AnalysisKind, type MarkerColor, type Media } from '#lib/editor/types.ts';
+  import CaptionsPanel from './CaptionsPanel.svelte';
+  import HooksPanel from './HooksPanel.svelte';
+  import TranscriptPanel from './TranscriptPanel.svelte';
 
   let { editor }: { editor: Editor } = $props();
 
   const TABS = [
+    { id: 'transcript', label: 'Transcript' },
+    { id: 'captions', label: 'Captions' },
+    { id: 'hooks', label: 'Hooks' },
     { id: 'moments', label: 'Moments' },
     { id: 'silences', label: 'Silences' },
     { id: 'scenes', label: 'Scenes' },
@@ -15,7 +21,19 @@
   type Tab = (typeof TABS)[number]['id'];
   const ANALYSED: Partial<Record<Tab, AnalysisKind>> = { moments: 'moments', silences: 'silence', scenes: 'scenes' };
 
-  let tab = $state<Tab>('moments');
+  let tab = $state<Tab>('transcript');
+  const TRANSCRIBED: Tab[] = ['transcript', 'hooks'];
+
+  /** Open a tab from outside (the T key), moving focus to it. */
+  export function show(id: Tab) {
+    tab = id;
+    tabEls[TABS.findIndex((t) => t.id === id)]?.focus();
+  }
+
+  // Hear a stretch of the file in the source viewer (used by the filler list's Listen buttons).
+  function listen(m: Media, start: number, end: number) {
+    editor.openMoment(m, Math.max(0, start - 0.5), end + 0.5);
+  }
   let tabEls: HTMLButtonElement[] = $state([]);
   let chosen = $state<string | null>(null);
 
@@ -118,7 +136,25 @@
   </div>
 
   <div class="body" id="clip-panel-body" role="tabpanel" aria-labelledby="clip-tab-{tab}">
-    {#if kind}
+    {#if TRANSCRIBED.includes(tab)}
+      {#if !analysable.length}
+        <p class="hint">Import a video or audio file to transcribe it.</p>
+      {:else if media}
+        <label
+          >File
+          <select value={media.id} onchange={(e) => (chosen = (e.currentTarget as HTMLSelectElement).value)}>
+            {#each analysable as m (m.id)}<option value={m.id}>{m.name}</option>{/each}
+          </select>
+        </label>
+        {#if tab === 'transcript'}
+          <TranscriptPanel {editor} {media} onlisten={listen} />
+        {:else}
+          <HooksPanel {editor} {media} ontranscript={() => show('transcript')} />
+        {/if}
+      {/if}
+    {:else if tab === 'captions'}
+      <CaptionsPanel {editor} />
+    {:else if kind}
       {#if !analysable.length}
         <p class="hint">Import a video or audio file to analyse it.</p>
       {:else}
@@ -374,13 +410,17 @@
     font-size: 0.85rem;
   }
   .tabs {
+    /* A scrolling strip would otherwise shrink to nothing when the body below is tall. */
+    flex: none;
     display: flex;
-    flex-wrap: wrap;
     gap: 2px;
     padding: 6px 8px 0;
+    overflow-x: auto;
+    scrollbar-width: thin;
     border-bottom: 1px solid var(--line);
   }
   [role='tab'] {
+    flex: none;
     padding: 5px 7px;
     font: inherit;
     font-size: 0.78rem;
@@ -403,16 +443,16 @@
     overflow-y: auto;
     padding: 10px 12px 14px;
   }
-  h2 {
+  .body :global(h2) {
     margin: 0;
     font-size: 0.92rem;
   }
-  .sub {
+  .body :global(.sub) {
     font-weight: 500;
     font-size: 0.78rem;
     color: var(--muted);
   }
-  label {
+  .body :global(label) {
     display: flex;
     flex-direction: column;
     gap: 3px;
@@ -420,7 +460,7 @@
     font-size: 0.78rem;
     min-width: 0;
   }
-  label.check {
+  .body :global(label.check) {
     flex: 1;
     flex-direction: row;
     align-items: center;
@@ -428,9 +468,9 @@
     font-weight: 500;
     font-variant-numeric: tabular-nums;
   }
-  input[type='number'],
-  input[type='text'],
-  select {
+  .body :global(input[type='number']),
+  .body :global(input[type='text']),
+  .body :global(select) {
     width: 100%;
     min-width: 0;
     box-sizing: border-box;
@@ -442,40 +482,40 @@
     border: 1px solid var(--line);
     border-radius: 5px;
   }
-  .row2,
-  .row3 {
+  .body :global(.row2),
+  .body :global(.row3) {
     display: grid;
     gap: 6px;
   }
-  .row2 {
+  .body :global(.row2) {
     grid-template-columns: 1fr 1fr;
   }
-  .row3 {
+  .body :global(.row3) {
     grid-template-columns: 1fr 1fr 1fr;
   }
-  .actions {
+  .body :global(.actions) {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: 6px;
   }
-  progress {
+  .body :global(progress) {
     flex: 1;
     min-width: 0;
     accent-color: var(--accent);
   }
-  .hint,
-  .meta {
+  .body :global(.hint),
+  .body :global(.meta) {
     margin: 0;
     font-size: 0.76rem;
     color: var(--muted);
   }
-  .bad {
+  .body :global(.bad) {
     margin: 0;
     font-size: 0.8rem;
     color: var(--bad);
   }
-  .list {
+  .body :global(.list) {
     display: flex;
     flex-direction: column;
     gap: 4px;
@@ -483,7 +523,7 @@
     padding: 0;
     list-style: none;
   }
-  .list > li {
+  .body :global(.list > li) {
     display: flex;
     align-items: center;
     gap: 6px;
@@ -491,15 +531,15 @@
     padding: 4px 0;
     border-bottom: 1px solid var(--line);
   }
-  .list.chips {
+  .body :global(.list.chips) {
     flex-direction: row;
     flex-wrap: wrap;
   }
-  .list.chips > li {
+  .body :global(.list.chips > li) {
     border: 0;
     padding: 0 4px 0 0;
   }
-  .list > li.moment {
+  .body :global(.list > li.moment) {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr);
     align-items: center;
@@ -515,7 +555,7 @@
   .subclip {
     flex-wrap: wrap;
   }
-  .score {
+  .body :global(.score) {
     flex: none;
     width: 2.2em;
     padding: 3px 0;
@@ -526,7 +566,7 @@
     background: var(--accent);
     border-radius: 5px;
   }
-  .go {
+  .body :global(.go) {
     display: flex;
     gap: 4px;
     margin-left: auto;
@@ -537,7 +577,7 @@
   .marker input {
     flex: 1;
   }
-  .link {
+  .body :global(.link) {
     padding: 0;
     font: inherit;
     font-weight: 600;
@@ -548,13 +588,13 @@
     border: 0;
     cursor: pointer;
   }
-  .link:hover {
+  .body :global(.link:hover) {
     text-decoration: underline;
   }
   .tc {
     flex: none;
   }
-  .x {
+  .body :global(.x) {
     flex: none;
     width: 24px;
     height: 24px;
@@ -572,7 +612,7 @@
     width: 4.6em;
     border-left: 6px solid var(--swatch);
   }
-  .small {
+  .body :global(.small) {
     padding: 4px 10px;
     font-size: 0.8rem;
   }

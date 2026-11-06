@@ -337,6 +337,116 @@
   },
   {
    "kind": "imports",
+   "source": "module:naturalvoice.captions",
+   "target": "module:naturalvoice.editor"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.captions",
+   "target": "module:naturalvoice.transcript"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.captions",
+   "target": "symbol:naturalvoice.captions._ends_sentence"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.captions",
+   "target": "symbol:naturalvoice.captions._hex"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.captions",
+   "target": "symbol:naturalvoice.captions._stamp"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.captions",
+   "target": "symbol:naturalvoice.captions.active_word"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.captions",
+   "target": "symbol:naturalvoice.captions.band"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.captions",
+   "target": "symbol:naturalvoice.captions.caption_track"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.captions",
+   "target": "symbol:naturalvoice.captions.check_export"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.captions",
+   "target": "symbol:naturalvoice.captions.display"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.captions",
+   "target": "symbol:naturalvoice.captions.draw_state"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.captions",
+   "target": "symbol:naturalvoice.captions.font_file"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.captions",
+   "target": "symbol:naturalvoice.captions.fonts_for"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.captions",
+   "target": "symbol:naturalvoice.captions.page_at"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.captions",
+   "target": "symbol:naturalvoice.captions.pages"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.captions",
+   "target": "symbol:naturalvoice.captions.pop_step"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.captions",
+   "target": "symbol:naturalvoice.captions.r3"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.captions",
+   "target": "symbol:naturalvoice.captions.render_frames"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.captions",
+   "target": "symbol:naturalvoice.captions.srt"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.captions",
+   "target": "symbol:naturalvoice.captions.timeline_words"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.captions",
+   "target": "symbol:naturalvoice.captions.transcripts_for"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.captions",
+   "target": "symbol:naturalvoice.captions.wrap"
+  },
+  {
+   "kind": "imports",
    "source": "module:naturalvoice.cli",
    "target": "module:naturalvoice.access"
   },
@@ -608,6 +718,11 @@
   {
    "kind": "imports",
    "source": "module:naturalvoice.editor",
+   "target": "module:naturalvoice.captions"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.editor",
    "target": "module:naturalvoice.sample_library"
   },
   {
@@ -619,6 +734,11 @@
    "kind": "defines",
    "source": "module:naturalvoice.editor",
    "target": "symbol:naturalvoice.editor.Cancelled"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.editor",
+   "target": "symbol:naturalvoice.editor.Captions"
   },
   {
    "kind": "defines",
@@ -669,6 +789,16 @@
    "kind": "defines",
    "source": "module:naturalvoice.editor",
    "target": "symbol:naturalvoice.editor._analyse"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.editor",
+   "target": "symbol:naturalvoice.editor._caption_frames"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.editor",
+   "target": "symbol:naturalvoice.editor._encode"
   },
   {
    "kind": "defines",
@@ -908,12 +1038,27 @@
   {
    "kind": "imports",
    "source": "module:naturalvoice.editor_api",
+   "target": "module:naturalvoice.captions"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.editor_api",
    "target": "module:naturalvoice.editor"
   },
   {
    "kind": "imports",
    "source": "module:naturalvoice.editor_api",
+   "target": "module:naturalvoice.llm"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.editor_api",
    "target": "module:naturalvoice.server"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.editor_api",
+   "target": "module:naturalvoice.transcript"
   },
   {
    "kind": "defines",
@@ -933,7 +1078,22 @@
   {
    "kind": "defines",
    "source": "module:naturalvoice.editor_api",
+   "target": "symbol:naturalvoice.editor_api.HookRequest"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.editor_api",
    "target": "symbol:naturalvoice.editor_api.Ingest"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.editor_api",
+   "target": "symbol:naturalvoice.editor_api.TranscribeRequest"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.editor_api",
+   "target": "symbol:naturalvoice.editor_api.TranscriptEdit"
   },
   {
    "kind": "defines",
@@ -958,6 +1118,11 @@
   {
    "kind": "defines",
    "source": "module:naturalvoice.editor_api",
+   "target": "symbol:naturalvoice.editor_api._forget_transcriptions"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.editor_api",
    "target": "symbol:naturalvoice.editor_api._job"
   },
   {
@@ -978,6 +1143,21 @@
   {
    "kind": "defines",
    "source": "module:naturalvoice.editor_api",
+   "target": "symbol:naturalvoice.editor_api._report_transcription"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.editor_api",
+   "target": "symbol:naturalvoice.editor_api._transcribing"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.editor_api",
+   "target": "symbol:naturalvoice.editor_api._transcription"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.editor_api",
    "target": "symbol:naturalvoice.editor_api.analysis_cancel"
   },
   {
@@ -989,6 +1169,11 @@
    "kind": "defines",
    "source": "module:naturalvoice.editor_api",
    "target": "symbol:naturalvoice.editor_api.analysis_status"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.editor_api",
+   "target": "symbol:naturalvoice.editor_api.caption_font"
   },
   {
    "kind": "defines",
@@ -1009,6 +1194,11 @@
    "kind": "defines",
    "source": "module:naturalvoice.editor_api",
    "target": "symbol:naturalvoice.editor_api.export_status"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.editor_api",
+   "target": "symbol:naturalvoice.editor_api.hooks_find"
   },
   {
    "kind": "defines",
@@ -1074,6 +1264,41 @@
    "kind": "defines",
    "source": "module:naturalvoice.editor_api",
    "target": "symbol:naturalvoice.editor_api.sequence_save"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.editor_api",
+   "target": "symbol:naturalvoice.editor_api.sequence_srt"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.editor_api",
+   "target": "symbol:naturalvoice.editor_api.transcribe_status"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.editor_api",
+   "target": "symbol:naturalvoice.editor_api.transcript_cancel"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.editor_api",
+   "target": "symbol:naturalvoice.editor_api.transcript_get"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.editor_api",
+   "target": "symbol:naturalvoice.editor_api.transcript_job"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.editor_api",
+   "target": "symbol:naturalvoice.editor_api.transcript_save"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.editor_api",
+   "target": "symbol:naturalvoice.editor_api.transcript_start"
   },
   {
    "kind": "imports",
@@ -2632,6 +2857,151 @@
   },
   {
    "kind": "imports",
+   "source": "module:naturalvoice.transcript",
+   "target": "module:naturalvoice.audio"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.transcript",
+   "target": "module:naturalvoice.editor"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.transcript",
+   "target": "module:naturalvoice.llm"
+  },
+  {
+   "kind": "imports",
+   "source": "module:naturalvoice.transcript",
+   "target": "module:naturalvoice.sample_library"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.transcript",
+   "target": "symbol:naturalvoice.transcript.EditedTranscript"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.transcript",
+   "target": "symbol:naturalvoice.transcript.NotInstalled"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.transcript",
+   "target": "symbol:naturalvoice.transcript._carve"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.transcript",
+   "target": "symbol:naturalvoice.transcript._decode"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.transcript",
+   "target": "symbol:naturalvoice.transcript._levels_path"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.transcript",
+   "target": "symbol:naturalvoice.transcript._norm"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.transcript",
+   "target": "symbol:naturalvoice.transcript._number"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.transcript",
+   "target": "symbol:naturalvoice.transcript._pace_fit"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.transcript",
+   "target": "symbol:naturalvoice.transcript._path"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.transcript",
+   "target": "symbol:naturalvoice.transcript._run_worker"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.transcript",
+   "target": "symbol:naturalvoice.transcript.clean_text"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.transcript",
+   "target": "symbol:naturalvoice.transcript.filler_candidates"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.transcript",
+   "target": "symbol:naturalvoice.transcript.hook_candidates"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.transcript",
+   "target": "symbol:naturalvoice.transcript.installed"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.transcript",
+   "target": "symbol:naturalvoice.transcript.long_pauses"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.transcript",
+   "target": "symbol:naturalvoice.transcript.opening_signals"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.transcript",
+   "target": "symbol:naturalvoice.transcript.rank_with_llm"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.transcript",
+   "target": "symbol:naturalvoice.transcript.read_levels"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.transcript",
+   "target": "symbol:naturalvoice.transcript.read_transcript"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.transcript",
+   "target": "symbol:naturalvoice.transcript.save_transcript"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.transcript",
+   "target": "symbol:naturalvoice.transcript.sentences"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.transcript",
+   "target": "symbol:naturalvoice.transcript.transcribe"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.transcript",
+   "target": "symbol:naturalvoice.transcript.validate_words"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.transcript",
+   "target": "symbol:naturalvoice.transcript.worker_command"
+  },
+  {
+   "kind": "defines",
+   "source": "module:naturalvoice.transcript",
+   "target": "symbol:naturalvoice.transcript.worker_deadline"
+  },
+  {
+   "kind": "imports",
    "source": "module:naturalvoice.tts",
    "target": "module:naturalvoice.clone"
   },
@@ -3267,6 +3637,26 @@
   },
   {
    "kind": "calls",
+   "source": "symbol:naturalvoice.captions.check_export",
+   "target": "symbol:naturalvoice.editor.EditorError"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.captions.check_export",
+   "target": "symbol:naturalvoice.editor.export_range"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.captions.render_frames",
+   "target": "symbol:naturalvoice.editor.Cancelled"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.captions.render_frames",
+   "target": "symbol:naturalvoice.editor.EditorError"
+  },
+  {
+   "kind": "calls",
    "source": "symbol:naturalvoice.cli.clean_file",
    "target": "symbol:naturalvoice.analyze.report"
   },
@@ -3507,6 +3897,26 @@
   },
   {
    "kind": "calls",
+   "source": "symbol:naturalvoice.editor._caption_frames",
+   "target": "symbol:naturalvoice.captions.pages"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.editor._caption_frames",
+   "target": "symbol:naturalvoice.captions.render_frames"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.editor._caption_frames",
+   "target": "symbol:naturalvoice.captions.timeline_words"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.editor._caption_frames",
+   "target": "symbol:naturalvoice.captions.transcripts_for"
+  },
+  {
+   "kind": "calls",
    "source": "symbol:naturalvoice.editor.build_command",
    "target": "symbol:naturalvoice.audio._ffmpeg"
   },
@@ -3572,6 +3982,16 @@
   },
   {
    "kind": "serves",
+   "source": "symbol:naturalvoice.editor_api.caption_font",
+   "target": "route:GET /api/editor/caption-fonts/{key}"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.editor_api.caption_font",
+   "target": "symbol:naturalvoice.captions.font_file"
+  },
+  {
+   "kind": "serves",
    "source": "symbol:naturalvoice.editor_api.export_cancel",
    "target": "route:POST /api/editor/exports/{key}/cancel"
   },
@@ -3584,6 +4004,11 @@
    "kind": "serves",
    "source": "symbol:naturalvoice.editor_api.export_start",
    "target": "route:POST /api/editor/exports"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.editor_api.export_start",
+   "target": "symbol:naturalvoice.captions.check_export"
   },
   {
    "kind": "calls",
@@ -3609,6 +4034,36 @@
    "kind": "serves",
    "source": "symbol:naturalvoice.editor_api.export_status",
    "target": "route:GET /api/editor/exports/{key}"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.editor_api.hooks_find",
+   "target": "route:POST /api/editor/media/{media_id}/hooks"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.editor_api.hooks_find",
+   "target": "symbol:naturalvoice.llm.config"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.editor_api.hooks_find",
+   "target": "symbol:naturalvoice.transcript.hook_candidates"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.editor_api.hooks_find",
+   "target": "symbol:naturalvoice.transcript.rank_with_llm"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.editor_api.hooks_find",
+   "target": "symbol:naturalvoice.transcript.read_levels"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.editor_api.hooks_find",
+   "target": "symbol:naturalvoice.transcript.read_transcript"
   },
   {
    "kind": "serves",
@@ -3749,6 +4204,106 @@
    "kind": "calls",
    "source": "symbol:naturalvoice.editor_api.sequence_save",
    "target": "symbol:naturalvoice.editor.save_sequence"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.editor_api.sequence_srt",
+   "target": "route:POST /api/editor/sequences/captions.srt"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.editor_api.sequence_srt",
+   "target": "symbol:naturalvoice.captions.pages"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.editor_api.sequence_srt",
+   "target": "symbol:naturalvoice.captions.srt"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.editor_api.sequence_srt",
+   "target": "symbol:naturalvoice.captions.timeline_words"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.editor_api.sequence_srt",
+   "target": "symbol:naturalvoice.captions.transcripts_for"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.editor_api.transcribe_status",
+   "target": "route:GET /api/editor/transcribe/status"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.editor_api.transcribe_status",
+   "target": "symbol:naturalvoice.llm.config"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.editor_api.transcribe_status",
+   "target": "symbol:naturalvoice.transcript.installed"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.editor_api.transcript_cancel",
+   "target": "route:POST /api/editor/media/{media_id}/transcript/job/{key}/cancel"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.editor_api.transcript_get",
+   "target": "route:GET /api/editor/media/{media_id}/transcript"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.editor_api.transcript_get",
+   "target": "symbol:naturalvoice.editor.analysis_cached"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.editor_api.transcript_get",
+   "target": "symbol:naturalvoice.transcript.filler_candidates"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.editor_api.transcript_get",
+   "target": "symbol:naturalvoice.transcript.read_transcript"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.editor_api.transcript_job",
+   "target": "route:GET /api/editor/media/{media_id}/transcript/job/{key}"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.editor_api.transcript_save",
+   "target": "route:PUT /api/editor/media/{media_id}/transcript"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.editor_api.transcript_save",
+   "target": "symbol:naturalvoice.transcript.save_transcript"
+  },
+  {
+   "kind": "serves",
+   "source": "symbol:naturalvoice.editor_api.transcript_start",
+   "target": "route:POST /api/editor/media/{media_id}/transcript"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.editor_api.transcript_start",
+   "target": "symbol:naturalvoice.transcript.installed"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.editor_api.transcript_start",
+   "target": "symbol:naturalvoice.transcript.read_transcript"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.editor_api.transcript_start",
+   "target": "symbol:naturalvoice.transcript.transcribe"
   },
   {
    "kind": "calls",
@@ -4567,6 +5122,101 @@
   },
   {
    "kind": "calls",
+   "source": "symbol:naturalvoice.transcript._decode",
+   "target": "symbol:naturalvoice.audio._ffmpeg"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.transcript._decode",
+   "target": "symbol:naturalvoice.editor.Cancelled"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.transcript._decode",
+   "target": "symbol:naturalvoice.editor.EditorError"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.transcript._levels_path",
+   "target": "symbol:naturalvoice.editor.media_dir"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.transcript._number",
+   "target": "symbol:naturalvoice.editor.EditorError"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.transcript._path",
+   "target": "symbol:naturalvoice.editor.media_dir"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.transcript._run_worker",
+   "target": "symbol:naturalvoice.editor.Cancelled"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.transcript._run_worker",
+   "target": "symbol:naturalvoice.editor.EditorError"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.transcript.clean_text",
+   "target": "symbol:naturalvoice.editor.EditorError"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.transcript.hook_candidates",
+   "target": "symbol:naturalvoice.editor.EditorError"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.transcript.rank_with_llm",
+   "target": "symbol:naturalvoice.llm.chat"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.transcript.read_transcript",
+   "target": "symbol:naturalvoice.editor.media_record"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.transcript.save_transcript",
+   "target": "symbol:naturalvoice.editor.EditorError"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.transcript.save_transcript",
+   "target": "symbol:naturalvoice.editor.media_record"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.transcript.transcribe",
+   "target": "symbol:naturalvoice.editor.EditorError"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.transcript.transcribe",
+   "target": "symbol:naturalvoice.editor.loudness_and_pauses"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.transcript.transcribe",
+   "target": "symbol:naturalvoice.editor.media_dir"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.transcript.transcribe",
+   "target": "symbol:naturalvoice.editor.media_record"
+  },
+  {
+   "kind": "calls",
+   "source": "symbol:naturalvoice.transcript.validate_words",
+   "target": "symbol:naturalvoice.editor.EditorError"
+  },
+  {
+   "kind": "calls",
    "source": "symbol:naturalvoice.tts.speak",
    "target": "symbol:naturalvoice.clone.speak"
   },
@@ -4918,6 +5568,11 @@
   {
    "kind": "requests",
    "source": "web:lib/editor/api.ts",
+   "target": "route:GET /api/editor/caption-fonts/{key}"
+  },
+  {
+   "kind": "requests",
+   "source": "web:lib/editor/api.ts",
    "target": "route:GET /api/editor/exports/{key}"
   },
   {
@@ -4958,12 +5613,27 @@
   {
    "kind": "requests",
    "source": "web:lib/editor/api.ts",
+   "target": "route:GET /api/editor/media/{media_id}/transcript"
+  },
+  {
+   "kind": "requests",
+   "source": "web:lib/editor/api.ts",
+   "target": "route:GET /api/editor/media/{media_id}/transcript/job/{key}"
+  },
+  {
+   "kind": "requests",
+   "source": "web:lib/editor/api.ts",
    "target": "route:GET /api/editor/sequences"
   },
   {
    "kind": "requests",
    "source": "web:lib/editor/api.ts",
    "target": "route:GET /api/editor/sequences/{sequence_id}"
+  },
+  {
+   "kind": "requests",
+   "source": "web:lib/editor/api.ts",
+   "target": "route:GET /api/editor/transcribe/status"
   },
   {
    "kind": "requests",
@@ -4993,7 +5663,32 @@
   {
    "kind": "requests",
    "source": "web:lib/editor/api.ts",
+   "target": "route:POST /api/editor/media/{media_id}/hooks"
+  },
+  {
+   "kind": "requests",
+   "source": "web:lib/editor/api.ts",
+   "target": "route:POST /api/editor/media/{media_id}/transcript"
+  },
+  {
+   "kind": "requests",
+   "source": "web:lib/editor/api.ts",
+   "target": "route:POST /api/editor/media/{media_id}/transcript/job/{key}/cancel"
+  },
+  {
+   "kind": "requests",
+   "source": "web:lib/editor/api.ts",
    "target": "route:POST /api/editor/sequences"
+  },
+  {
+   "kind": "requests",
+   "source": "web:lib/editor/api.ts",
+   "target": "route:POST /api/editor/sequences/captions.srt"
+  },
+  {
+   "kind": "requests",
+   "source": "web:lib/editor/api.ts",
+   "target": "route:PUT /api/editor/media/{media_id}/transcript"
   },
   {
    "kind": "requests",
@@ -5454,6 +6149,12 @@
    "line": 1
   },
   {
+   "file": "src/naturalvoice/captions.py",
+   "id": "module:naturalvoice.captions",
+   "kind": "module",
+   "line": 1
+  },
+  {
    "file": "src/naturalvoice/cli.py",
    "id": "module:naturalvoice.cli",
    "kind": "module",
@@ -5580,6 +6281,12 @@
    "line": 1
   },
   {
+   "file": "src/naturalvoice/transcript.py",
+   "id": "module:naturalvoice.transcript",
+   "kind": "module",
+   "line": 1
+  },
+  {
    "file": "src/naturalvoice/tts.py",
    "id": "module:naturalvoice.tts",
    "kind": "module",
@@ -5631,13 +6338,13 @@
    "file": "src/naturalvoice/editor_api.py",
    "id": "route:DELETE /api/editor/media/{media_id}",
    "kind": "route",
-   "line": 182
+   "line": 186
   },
   {
    "file": "src/naturalvoice/editor_api.py",
    "id": "route:DELETE /api/editor/sequences/{sequence_id}",
    "kind": "route",
-   "line": 323
+   "line": 508
   },
   {
    "file": "src/naturalvoice/llm_api.py",
@@ -5701,69 +6408,93 @@
   },
   {
    "file": "src/naturalvoice/editor_api.py",
+   "id": "route:GET /api/editor/caption-fonts/{key}",
+   "kind": "route",
+   "line": 458
+  },
+  {
+   "file": "src/naturalvoice/editor_api.py",
    "id": "route:GET /api/editor/exports/{key}",
    "kind": "route",
-   "line": 454
+   "line": 640
   },
   {
    "file": "src/naturalvoice/editor_api.py",
    "id": "route:GET /api/editor/exports/{key}/file",
    "kind": "route",
-   "line": 466
+   "line": 652
   },
   {
    "file": "src/naturalvoice/editor_api.py",
    "id": "route:GET /api/editor/media",
    "kind": "route",
-   "line": 99
+   "line": 103
   },
   {
    "file": "src/naturalvoice/editor_api.py",
    "id": "route:GET /api/editor/media/{media_id}",
    "kind": "route",
-   "line": 149
+   "line": 153
   },
   {
    "file": "src/naturalvoice/editor_api.py",
    "id": "route:GET /api/editor/media/{media_id}/analysis/{key}",
    "kind": "route",
-   "line": 283
+   "line": 289
   },
   {
    "file": "src/naturalvoice/editor_api.py",
    "id": "route:GET /api/editor/media/{media_id}/peaks",
    "kind": "route",
-   "line": 173
+   "line": 177
   },
   {
    "file": "src/naturalvoice/editor_api.py",
    "id": "route:GET /api/editor/media/{media_id}/proxy",
    "kind": "route",
-   "line": 154
+   "line": 158
   },
   {
    "file": "src/naturalvoice/editor_api.py",
    "id": "route:GET /api/editor/media/{media_id}/thumbs",
    "kind": "route",
-   "line": 164
+   "line": 168
+  },
+  {
+   "file": "src/naturalvoice/editor_api.py",
+   "id": "route:GET /api/editor/media/{media_id}/transcript",
+   "kind": "route",
+   "line": 409
+  },
+  {
+   "file": "src/naturalvoice/editor_api.py",
+   "id": "route:GET /api/editor/media/{media_id}/transcript/job/{key}",
+   "kind": "route",
+   "line": 397
   },
   {
    "file": "src/naturalvoice/editor_api.py",
    "id": "route:GET /api/editor/sequences",
    "kind": "route",
-   "line": 297
+   "line": 482
   },
   {
    "file": "src/naturalvoice/editor_api.py",
    "id": "route:GET /api/editor/sequences/{sequence_id}",
    "kind": "route",
-   "line": 307
+   "line": 492
   },
   {
    "file": "src/naturalvoice/editor_api.py",
    "id": "route:GET /api/editor/sequences/{sequence_id}/premiere.xml",
    "kind": "route",
-   "line": 336
+   "line": 521
+  },
+  {
+   "file": "src/naturalvoice/editor_api.py",
+   "id": "route:GET /api/editor/transcribe/status",
+   "kind": "route",
+   "line": 348
   },
   {
    "file": "src/naturalvoice/server.py",
@@ -5985,37 +6716,61 @@
    "file": "src/naturalvoice/editor_api.py",
    "id": "route:POST /api/editor/exports",
    "kind": "route",
-   "line": 395
+   "line": 580
   },
   {
    "file": "src/naturalvoice/editor_api.py",
    "id": "route:POST /api/editor/exports/{key}/cancel",
    "kind": "route",
-   "line": 459
+   "line": 645
   },
   {
    "file": "src/naturalvoice/editor_api.py",
    "id": "route:POST /api/editor/media",
    "kind": "route",
-   "line": 106
+   "line": 110
   },
   {
    "file": "src/naturalvoice/editor_api.py",
    "id": "route:POST /api/editor/media/{media_id}/analysis",
    "kind": "route",
-   "line": 235
+   "line": 241
   },
   {
    "file": "src/naturalvoice/editor_api.py",
    "id": "route:POST /api/editor/media/{media_id}/analysis/{key}/cancel",
    "kind": "route",
-   "line": 288
+   "line": 294
+  },
+  {
+   "file": "src/naturalvoice/editor_api.py",
+   "id": "route:POST /api/editor/media/{media_id}/hooks",
+   "kind": "route",
+   "line": 435
+  },
+  {
+   "file": "src/naturalvoice/editor_api.py",
+   "id": "route:POST /api/editor/media/{media_id}/transcript",
+   "kind": "route",
+   "line": 354
+  },
+  {
+   "file": "src/naturalvoice/editor_api.py",
+   "id": "route:POST /api/editor/media/{media_id}/transcript/job/{key}/cancel",
+   "kind": "route",
+   "line": 402
   },
   {
    "file": "src/naturalvoice/editor_api.py",
    "id": "route:POST /api/editor/sequences",
    "kind": "route",
-   "line": 302
+   "line": 487
+  },
+  {
+   "file": "src/naturalvoice/editor_api.py",
+   "id": "route:POST /api/editor/sequences/captions.srt",
+   "kind": "route",
+   "line": 466
   },
   {
    "file": "src/naturalvoice/rewrite_api.py",
@@ -6217,9 +6972,15 @@
   },
   {
    "file": "src/naturalvoice/editor_api.py",
+   "id": "route:PUT /api/editor/media/{media_id}/transcript",
+   "kind": "route",
+   "line": 424
+  },
+  {
+   "file": "src/naturalvoice/editor_api.py",
    "id": "route:PUT /api/editor/sequences/{sequence_id}",
    "kind": "route",
-   "line": 315
+   "line": 500
   },
   {
    "file": "src/naturalvoice/llm_api.py",
@@ -6570,6 +7331,126 @@
    "line": 249
   },
   {
+   "file": "src/naturalvoice/captions.py",
+   "id": "symbol:naturalvoice.captions._ends_sentence",
+   "kind": "function",
+   "line": 110
+  },
+  {
+   "file": "src/naturalvoice/captions.py",
+   "id": "symbol:naturalvoice.captions._hex",
+   "kind": "function",
+   "line": 182
+  },
+  {
+   "file": "src/naturalvoice/captions.py",
+   "id": "symbol:naturalvoice.captions._stamp",
+   "kind": "function",
+   "line": 314
+  },
+  {
+   "file": "src/naturalvoice/captions.py",
+   "id": "symbol:naturalvoice.captions.active_word",
+   "kind": "function",
+   "line": 142
+  },
+  {
+   "file": "src/naturalvoice/captions.py",
+   "id": "symbol:naturalvoice.captions.band",
+   "kind": "function",
+   "line": 157
+  },
+  {
+   "file": "src/naturalvoice/captions.py",
+   "id": "symbol:naturalvoice.captions.caption_track",
+   "kind": "function",
+   "line": 84
+  },
+  {
+   "file": "src/naturalvoice/captions.py",
+   "id": "symbol:naturalvoice.captions.check_export",
+   "kind": "function",
+   "line": 305
+  },
+  {
+   "file": "src/naturalvoice/captions.py",
+   "id": "symbol:naturalvoice.captions.display",
+   "kind": "function",
+   "line": 165
+  },
+  {
+   "file": "src/naturalvoice/captions.py",
+   "id": "symbol:naturalvoice.captions.draw_state",
+   "kind": "function",
+   "line": 186
+  },
+  {
+   "file": "src/naturalvoice/captions.py",
+   "id": "symbol:naturalvoice.captions.font_file",
+   "kind": "function",
+   "line": 62
+  },
+  {
+   "file": "src/naturalvoice/captions.py",
+   "id": "symbol:naturalvoice.captions.fonts_for",
+   "kind": "function",
+   "line": 247
+  },
+  {
+   "file": "src/naturalvoice/captions.py",
+   "id": "symbol:naturalvoice.captions.page_at",
+   "kind": "function",
+   "line": 135
+  },
+  {
+   "file": "src/naturalvoice/captions.py",
+   "id": "symbol:naturalvoice.captions.pages",
+   "kind": "function",
+   "line": 114
+  },
+  {
+   "file": "src/naturalvoice/captions.py",
+   "id": "symbol:naturalvoice.captions.pop_step",
+   "kind": "function",
+   "line": 150
+  },
+  {
+   "file": "src/naturalvoice/captions.py",
+   "id": "symbol:naturalvoice.captions.r3",
+   "kind": "function",
+   "line": 57
+  },
+  {
+   "file": "src/naturalvoice/captions.py",
+   "id": "symbol:naturalvoice.captions.render_frames",
+   "kind": "function",
+   "line": 259
+  },
+  {
+   "file": "src/naturalvoice/captions.py",
+   "id": "symbol:naturalvoice.captions.srt",
+   "kind": "function",
+   "line": 319
+  },
+  {
+   "file": "src/naturalvoice/captions.py",
+   "id": "symbol:naturalvoice.captions.timeline_words",
+   "kind": "function",
+   "line": 96
+  },
+  {
+   "file": "src/naturalvoice/captions.py",
+   "id": "symbol:naturalvoice.captions.transcripts_for",
+   "kind": "function",
+   "line": 71
+  },
+  {
+   "file": "src/naturalvoice/captions.py",
+   "id": "symbol:naturalvoice.captions.wrap",
+   "kind": "function",
+   "line": 169
+  },
+  {
    "file": "src/naturalvoice/cli.py",
    "id": "symbol:naturalvoice.cli._settings",
    "kind": "function",
@@ -6787,6 +7668,12 @@
   },
   {
    "file": "src/naturalvoice/editor.py",
+   "id": "symbol:naturalvoice.editor.Captions",
+   "kind": "class",
+   "line": 157
+  },
+  {
+   "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.Clip",
    "kind": "class",
    "line": 98
@@ -6801,7 +7688,7 @@
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.Layer",
    "kind": "class",
-   "line": 501
+   "line": 528
   },
   {
    "file": "src/naturalvoice/editor.py",
@@ -6813,7 +7700,7 @@
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.Sequence",
    "kind": "class",
-   "line": 152
+   "line": 176
   },
   {
    "file": "src/naturalvoice/editor.py",
@@ -6837,121 +7724,133 @@
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor._analysable",
    "kind": "function",
-   "line": 1025
+   "line": 1097
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor._analyse",
    "kind": "function",
-   "line": 976
+   "line": 1048
+  },
+  {
+   "file": "src/naturalvoice/editor.py",
+   "id": "symbol:naturalvoice.editor._caption_frames",
+   "kind": "function",
+   "line": 795
+  },
+  {
+   "file": "src/naturalvoice/editor.py",
+   "id": "symbol:naturalvoice.editor._encode",
+   "kind": "function",
+   "line": 810
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor._filter_lines",
    "kind": "function",
-   "line": 934
+   "line": 1006
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor._frames",
    "kind": "function",
-   "line": 774
+   "line": 846
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor._n",
    "kind": "function",
-   "line": 610
+   "line": 637
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor._rate",
    "kind": "function",
-   "line": 778
+   "line": 850
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor._run",
    "kind": "function",
-   "line": 294
+   "line": 321
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.analyse",
    "kind": "function",
-   "line": 1217
+   "line": 1289
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.analysis_cached",
    "kind": "function",
-   "line": 1208
+   "line": 1280
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.analysis_key",
    "kind": "function",
-   "line": 1203
+   "line": 1275
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.atempo",
    "kind": "function",
-   "line": 588
+   "line": 615
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.build_command",
    "kind": "function",
-   "line": 614
+   "line": 641
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.check_subclips",
    "kind": "function",
-   "line": 468
+   "line": 495
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.delete_media",
    "kind": "function",
-   "line": 438
+   "line": 465
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.delete_sequence",
    "kind": "function",
-   "line": 492
+   "line": 519
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.detect_scenes",
    "kind": "function",
-   "line": 1052
+   "line": 1124
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.detect_silence",
    "kind": "function",
-   "line": 1036
+   "line": 1108
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.export_range",
    "kind": "function",
-   "line": 601
+   "line": 628
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.find_moments",
    "kind": "function",
-   "line": 1178
+   "line": 1250
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.handles",
    "kind": "function",
-   "line": 524
+   "line": 551
   },
   {
    "file": "src/naturalvoice/editor.py",
@@ -6963,25 +7862,25 @@
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.kind_for",
    "kind": "function",
-   "line": 251
+   "line": 278
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.list_media",
    "kind": "function",
-   "line": 239
+   "line": 266
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.list_sequences",
    "kind": "function",
-   "line": 448
+   "line": 475
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.loudness_and_pauses",
    "kind": "function",
-   "line": 1067
+   "line": 1139
   },
   {
    "file": "src/naturalvoice/editor.py",
@@ -6993,91 +7892,91 @@
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.media_for",
    "kind": "function",
-   "line": 716
+   "line": 761
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.media_record",
    "kind": "function",
-   "line": 232
+   "line": 259
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.new_media",
    "kind": "function",
-   "line": 262
+   "line": 289
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.parse_loudness",
    "kind": "function",
-   "line": 966
+   "line": 1038
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.parse_scenes",
    "kind": "function",
-   "line": 958
+   "line": 1030
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.parse_silence",
    "kind": "function",
-   "line": 944
+   "line": 1016
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.peaks",
    "kind": "function",
-   "line": 300
+   "line": 327
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.placement",
    "kind": "function",
-   "line": 577
+   "line": 604
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.plan",
    "kind": "function",
-   "line": 541
+   "line": 568
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.premiere_xml",
    "kind": "function",
-   "line": 783
+   "line": 855
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.probe",
    "kind": "function",
-   "line": 201
+   "line": 228
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.process_media",
    "kind": "function",
-   "line": 338
+   "line": 365
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.proxy_file",
    "kind": "function",
-   "line": 421
+   "line": 448
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.read_sequence",
    "kind": "function",
-   "line": 461
+   "line": 488
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.render",
    "kind": "function",
-   "line": 731
+   "line": 776
   },
   {
    "file": "src/naturalvoice/editor.py",
@@ -7089,19 +7988,19 @@
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.save_media",
    "kind": "function",
-   "line": 290
+   "line": 317
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.save_sequence",
    "kind": "function",
-   "line": 482
+   "line": 509
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.score_moments",
    "kind": "function",
-   "line": 1080
+   "line": 1152
   },
   {
    "file": "src/naturalvoice/editor.py",
@@ -7113,211 +8012,307 @@
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.thumbnail_plan",
    "kind": "function",
-   "line": 333
+   "line": 360
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.transition_half",
    "kind": "function",
-   "line": 532
+   "line": 559
   },
   {
    "file": "src/naturalvoice/editor.py",
    "id": "symbol:naturalvoice.editor.users_of",
    "kind": "function",
-   "line": 431
+   "line": 458
   },
   {
    "file": "src/naturalvoice/editor_api.py",
    "id": "symbol:naturalvoice.editor_api.AnalysisRequest",
    "kind": "class",
-   "line": 197
+   "line": 203
   },
   {
    "file": "src/naturalvoice/editor_api.py",
    "id": "symbol:naturalvoice.editor_api.ExportRange",
    "kind": "class",
-   "line": 349
+   "line": 534
   },
   {
    "file": "src/naturalvoice/editor_api.py",
    "id": "symbol:naturalvoice.editor_api.ExportRequest",
    "kind": "class",
-   "line": 363
+   "line": 548
+  },
+  {
+   "file": "src/naturalvoice/editor_api.py",
+   "id": "symbol:naturalvoice.editor_api.HookRequest",
+   "kind": "class",
+   "line": 311
   },
   {
    "file": "src/naturalvoice/editor_api.py",
    "id": "symbol:naturalvoice.editor_api.Ingest",
    "kind": "class",
-   "line": 30
+   "line": 33
+  },
+  {
+   "file": "src/naturalvoice/editor_api.py",
+   "id": "symbol:naturalvoice.editor_api.TranscribeRequest",
+   "kind": "class",
+   "line": 302
+  },
+  {
+   "file": "src/naturalvoice/editor_api.py",
+   "id": "symbol:naturalvoice.editor_api.TranscriptEdit",
+   "kind": "class",
+   "line": 306
   },
   {
    "file": "src/naturalvoice/editor_api.py",
    "id": "symbol:naturalvoice.editor_api._analysis",
    "kind": "function",
-   "line": 227
+   "line": 233
   },
   {
    "file": "src/naturalvoice/editor_api.py",
    "id": "symbol:naturalvoice.editor_api._bad",
    "kind": "function",
-   "line": 93
+   "line": 97
   },
   {
    "file": "src/naturalvoice/editor_api.py",
    "id": "symbol:naturalvoice.editor_api._filename",
    "kind": "function",
-   "line": 331
+   "line": 516
   },
   {
    "file": "src/naturalvoice/editor_api.py",
    "id": "symbol:naturalvoice.editor_api._forget_analyses",
    "kind": "function",
-   "line": 220
+   "line": 226
+  },
+  {
+   "file": "src/naturalvoice/editor_api.py",
+   "id": "symbol:naturalvoice.editor_api._forget_transcriptions",
+   "kind": "function",
+   "line": 328
   },
   {
    "file": "src/naturalvoice/editor_api.py",
    "id": "symbol:naturalvoice.editor_api._job",
    "kind": "function",
-   "line": 446
+   "line": 632
   },
   {
    "file": "src/naturalvoice/editor_api.py",
    "id": "symbol:naturalvoice.editor_api._media",
    "kind": "function",
-   "line": 141
+   "line": 145
   },
   {
    "file": "src/naturalvoice/editor_api.py",
    "id": "symbol:naturalvoice.editor_api._prune",
    "kind": "function",
-   "line": 383
+   "line": 568
   },
   {
    "file": "src/naturalvoice/editor_api.py",
    "id": "symbol:naturalvoice.editor_api._public",
    "kind": "function",
-   "line": 390
+   "line": 575
   },
   {
    "file": "src/naturalvoice/editor_api.py",
-   "id": "symbol:naturalvoice.editor_api.analysis_cancel",
-   "kind": "function",
-   "line": 288
-  },
-  {
-   "file": "src/naturalvoice/editor_api.py",
-   "id": "symbol:naturalvoice.editor_api.analysis_start",
-   "kind": "function",
-   "line": 235
-  },
-  {
-   "file": "src/naturalvoice/editor_api.py",
-   "id": "symbol:naturalvoice.editor_api.analysis_status",
-   "kind": "function",
-   "line": 283
-  },
-  {
-   "file": "src/naturalvoice/editor_api.py",
-   "id": "symbol:naturalvoice.editor_api.export_cancel",
-   "kind": "function",
-   "line": 459
-  },
-  {
-   "file": "src/naturalvoice/editor_api.py",
-   "id": "symbol:naturalvoice.editor_api.export_file",
-   "kind": "function",
-   "line": 466
-  },
-  {
-   "file": "src/naturalvoice/editor_api.py",
-   "id": "symbol:naturalvoice.editor_api.export_start",
-   "kind": "function",
-   "line": 395
-  },
-  {
-   "file": "src/naturalvoice/editor_api.py",
-   "id": "symbol:naturalvoice.editor_api.export_status",
-   "kind": "function",
-   "line": 454
-  },
-  {
-   "file": "src/naturalvoice/editor_api.py",
-   "id": "symbol:naturalvoice.editor_api.media_delete",
-   "kind": "function",
-   "line": 182
-  },
-  {
-   "file": "src/naturalvoice/editor_api.py",
-   "id": "symbol:naturalvoice.editor_api.media_get",
-   "kind": "function",
-   "line": 149
-  },
-  {
-   "file": "src/naturalvoice/editor_api.py",
-   "id": "symbol:naturalvoice.editor_api.media_list",
-   "kind": "function",
-   "line": 99
-  },
-  {
-   "file": "src/naturalvoice/editor_api.py",
-   "id": "symbol:naturalvoice.editor_api.media_peaks",
-   "kind": "function",
-   "line": 173
-  },
-  {
-   "file": "src/naturalvoice/editor_api.py",
-   "id": "symbol:naturalvoice.editor_api.media_proxy",
-   "kind": "function",
-   "line": 154
-  },
-  {
-   "file": "src/naturalvoice/editor_api.py",
-   "id": "symbol:naturalvoice.editor_api.media_thumbs",
-   "kind": "function",
-   "line": 164
-  },
-  {
-   "file": "src/naturalvoice/editor_api.py",
-   "id": "symbol:naturalvoice.editor_api.media_upload",
-   "kind": "function",
-   "line": 106
-  },
-  {
-   "file": "src/naturalvoice/editor_api.py",
-   "id": "symbol:naturalvoice.editor_api.sequence_create",
-   "kind": "function",
-   "line": 302
-  },
-  {
-   "file": "src/naturalvoice/editor_api.py",
-   "id": "symbol:naturalvoice.editor_api.sequence_delete",
-   "kind": "function",
-   "line": 323
-  },
-  {
-   "file": "src/naturalvoice/editor_api.py",
-   "id": "symbol:naturalvoice.editor_api.sequence_get",
-   "kind": "function",
-   "line": 307
-  },
-  {
-   "file": "src/naturalvoice/editor_api.py",
-   "id": "symbol:naturalvoice.editor_api.sequence_list",
-   "kind": "function",
-   "line": 297
-  },
-  {
-   "file": "src/naturalvoice/editor_api.py",
-   "id": "symbol:naturalvoice.editor_api.sequence_premiere",
+   "id": "symbol:naturalvoice.editor_api._report_transcription",
    "kind": "function",
    "line": 336
   },
   {
    "file": "src/naturalvoice/editor_api.py",
+   "id": "symbol:naturalvoice.editor_api._transcribing",
+   "kind": "function",
+   "line": 324
+  },
+  {
+   "file": "src/naturalvoice/editor_api.py",
+   "id": "symbol:naturalvoice.editor_api._transcription",
+   "kind": "function",
+   "line": 340
+  },
+  {
+   "file": "src/naturalvoice/editor_api.py",
+   "id": "symbol:naturalvoice.editor_api.analysis_cancel",
+   "kind": "function",
+   "line": 294
+  },
+  {
+   "file": "src/naturalvoice/editor_api.py",
+   "id": "symbol:naturalvoice.editor_api.analysis_start",
+   "kind": "function",
+   "line": 241
+  },
+  {
+   "file": "src/naturalvoice/editor_api.py",
+   "id": "symbol:naturalvoice.editor_api.analysis_status",
+   "kind": "function",
+   "line": 289
+  },
+  {
+   "file": "src/naturalvoice/editor_api.py",
+   "id": "symbol:naturalvoice.editor_api.caption_font",
+   "kind": "function",
+   "line": 458
+  },
+  {
+   "file": "src/naturalvoice/editor_api.py",
+   "id": "symbol:naturalvoice.editor_api.export_cancel",
+   "kind": "function",
+   "line": 645
+  },
+  {
+   "file": "src/naturalvoice/editor_api.py",
+   "id": "symbol:naturalvoice.editor_api.export_file",
+   "kind": "function",
+   "line": 652
+  },
+  {
+   "file": "src/naturalvoice/editor_api.py",
+   "id": "symbol:naturalvoice.editor_api.export_start",
+   "kind": "function",
+   "line": 580
+  },
+  {
+   "file": "src/naturalvoice/editor_api.py",
+   "id": "symbol:naturalvoice.editor_api.export_status",
+   "kind": "function",
+   "line": 640
+  },
+  {
+   "file": "src/naturalvoice/editor_api.py",
+   "id": "symbol:naturalvoice.editor_api.hooks_find",
+   "kind": "function",
+   "line": 435
+  },
+  {
+   "file": "src/naturalvoice/editor_api.py",
+   "id": "symbol:naturalvoice.editor_api.media_delete",
+   "kind": "function",
+   "line": 186
+  },
+  {
+   "file": "src/naturalvoice/editor_api.py",
+   "id": "symbol:naturalvoice.editor_api.media_get",
+   "kind": "function",
+   "line": 153
+  },
+  {
+   "file": "src/naturalvoice/editor_api.py",
+   "id": "symbol:naturalvoice.editor_api.media_list",
+   "kind": "function",
+   "line": 103
+  },
+  {
+   "file": "src/naturalvoice/editor_api.py",
+   "id": "symbol:naturalvoice.editor_api.media_peaks",
+   "kind": "function",
+   "line": 177
+  },
+  {
+   "file": "src/naturalvoice/editor_api.py",
+   "id": "symbol:naturalvoice.editor_api.media_proxy",
+   "kind": "function",
+   "line": 158
+  },
+  {
+   "file": "src/naturalvoice/editor_api.py",
+   "id": "symbol:naturalvoice.editor_api.media_thumbs",
+   "kind": "function",
+   "line": 168
+  },
+  {
+   "file": "src/naturalvoice/editor_api.py",
+   "id": "symbol:naturalvoice.editor_api.media_upload",
+   "kind": "function",
+   "line": 110
+  },
+  {
+   "file": "src/naturalvoice/editor_api.py",
+   "id": "symbol:naturalvoice.editor_api.sequence_create",
+   "kind": "function",
+   "line": 487
+  },
+  {
+   "file": "src/naturalvoice/editor_api.py",
+   "id": "symbol:naturalvoice.editor_api.sequence_delete",
+   "kind": "function",
+   "line": 508
+  },
+  {
+   "file": "src/naturalvoice/editor_api.py",
+   "id": "symbol:naturalvoice.editor_api.sequence_get",
+   "kind": "function",
+   "line": 492
+  },
+  {
+   "file": "src/naturalvoice/editor_api.py",
+   "id": "symbol:naturalvoice.editor_api.sequence_list",
+   "kind": "function",
+   "line": 482
+  },
+  {
+   "file": "src/naturalvoice/editor_api.py",
+   "id": "symbol:naturalvoice.editor_api.sequence_premiere",
+   "kind": "function",
+   "line": 521
+  },
+  {
+   "file": "src/naturalvoice/editor_api.py",
    "id": "symbol:naturalvoice.editor_api.sequence_save",
    "kind": "function",
-   "line": 315
+   "line": 500
+  },
+  {
+   "file": "src/naturalvoice/editor_api.py",
+   "id": "symbol:naturalvoice.editor_api.sequence_srt",
+   "kind": "function",
+   "line": 466
+  },
+  {
+   "file": "src/naturalvoice/editor_api.py",
+   "id": "symbol:naturalvoice.editor_api.transcribe_status",
+   "kind": "function",
+   "line": 348
+  },
+  {
+   "file": "src/naturalvoice/editor_api.py",
+   "id": "symbol:naturalvoice.editor_api.transcript_cancel",
+   "kind": "function",
+   "line": 402
+  },
+  {
+   "file": "src/naturalvoice/editor_api.py",
+   "id": "symbol:naturalvoice.editor_api.transcript_get",
+   "kind": "function",
+   "line": 409
+  },
+  {
+   "file": "src/naturalvoice/editor_api.py",
+   "id": "symbol:naturalvoice.editor_api.transcript_job",
+   "kind": "function",
+   "line": 397
+  },
+  {
+   "file": "src/naturalvoice/editor_api.py",
+   "id": "symbol:naturalvoice.editor_api.transcript_save",
+   "kind": "function",
+   "line": 424
+  },
+  {
+   "file": "src/naturalvoice/editor_api.py",
+   "id": "symbol:naturalvoice.editor_api.transcript_start",
+   "kind": "function",
+   "line": 354
   },
   {
    "file": "src/naturalvoice/enhance.py",
@@ -8910,6 +9905,156 @@
    "line": 356
   },
   {
+   "file": "src/naturalvoice/transcript.py",
+   "id": "symbol:naturalvoice.transcript.EditedTranscript",
+   "kind": "class",
+   "line": 45
+  },
+  {
+   "file": "src/naturalvoice/transcript.py",
+   "id": "symbol:naturalvoice.transcript.NotInstalled",
+   "kind": "class",
+   "line": 41
+  },
+  {
+   "file": "src/naturalvoice/transcript.py",
+   "id": "symbol:naturalvoice.transcript._carve",
+   "kind": "function",
+   "line": 261
+  },
+  {
+   "file": "src/naturalvoice/transcript.py",
+   "id": "symbol:naturalvoice.transcript._decode",
+   "kind": "function",
+   "line": 137
+  },
+  {
+   "file": "src/naturalvoice/transcript.py",
+   "id": "symbol:naturalvoice.transcript._levels_path",
+   "kind": "function",
+   "line": 61
+  },
+  {
+   "file": "src/naturalvoice/transcript.py",
+   "id": "symbol:naturalvoice.transcript._norm",
+   "kind": "function",
+   "line": 257
+  },
+  {
+   "file": "src/naturalvoice/transcript.py",
+   "id": "symbol:naturalvoice.transcript._number",
+   "kind": "function",
+   "line": 65
+  },
+  {
+   "file": "src/naturalvoice/transcript.py",
+   "id": "symbol:naturalvoice.transcript._pace_fit",
+   "kind": "function",
+   "line": 346
+  },
+  {
+   "file": "src/naturalvoice/transcript.py",
+   "id": "symbol:naturalvoice.transcript._path",
+   "kind": "function",
+   "line": 57
+  },
+  {
+   "file": "src/naturalvoice/transcript.py",
+   "id": "symbol:naturalvoice.transcript._run_worker",
+   "kind": "function",
+   "line": 160
+  },
+  {
+   "file": "src/naturalvoice/transcript.py",
+   "id": "symbol:naturalvoice.transcript.clean_text",
+   "kind": "function",
+   "line": 71
+  },
+  {
+   "file": "src/naturalvoice/transcript.py",
+   "id": "symbol:naturalvoice.transcript.filler_candidates",
+   "kind": "function",
+   "line": 271
+  },
+  {
+   "file": "src/naturalvoice/transcript.py",
+   "id": "symbol:naturalvoice.transcript.hook_candidates",
+   "kind": "function",
+   "line": 353
+  },
+  {
+   "file": "src/naturalvoice/transcript.py",
+   "id": "symbol:naturalvoice.transcript.installed",
+   "kind": "function",
+   "line": 53
+  },
+  {
+   "file": "src/naturalvoice/transcript.py",
+   "id": "symbol:naturalvoice.transcript.long_pauses",
+   "kind": "function",
+   "line": 292
+  },
+  {
+   "file": "src/naturalvoice/transcript.py",
+   "id": "symbol:naturalvoice.transcript.opening_signals",
+   "kind": "function",
+   "line": 326
+  },
+  {
+   "file": "src/naturalvoice/transcript.py",
+   "id": "symbol:naturalvoice.transcript.rank_with_llm",
+   "kind": "function",
+   "line": 465
+  },
+  {
+   "file": "src/naturalvoice/transcript.py",
+   "id": "symbol:naturalvoice.transcript.read_levels",
+   "kind": "function",
+   "line": 127
+  },
+  {
+   "file": "src/naturalvoice/transcript.py",
+   "id": "symbol:naturalvoice.transcript.read_transcript",
+   "kind": "function",
+   "line": 101
+  },
+  {
+   "file": "src/naturalvoice/transcript.py",
+   "id": "symbol:naturalvoice.transcript.save_transcript",
+   "kind": "function",
+   "line": 110
+  },
+  {
+   "file": "src/naturalvoice/transcript.py",
+   "id": "symbol:naturalvoice.transcript.sentences",
+   "kind": "function",
+   "line": 313
+  },
+  {
+   "file": "src/naturalvoice/transcript.py",
+   "id": "symbol:naturalvoice.transcript.transcribe",
+   "kind": "function",
+   "line": 218
+  },
+  {
+   "file": "src/naturalvoice/transcript.py",
+   "id": "symbol:naturalvoice.transcript.validate_words",
+   "kind": "function",
+   "line": 82
+  },
+  {
+   "file": "src/naturalvoice/transcript.py",
+   "id": "symbol:naturalvoice.transcript.worker_command",
+   "kind": "function",
+   "line": 49
+  },
+  {
+   "file": "src/naturalvoice/transcript.py",
+   "id": "symbol:naturalvoice.transcript.worker_deadline",
+   "kind": "function",
+   "line": 155
+  },
+  {
    "file": "src/naturalvoice/tts.py",
    "id": "symbol:naturalvoice.tts._kokoro",
    "kind": "function",
@@ -9480,6 +10625,12 @@
    "line": 1
   },
   {
+   "file": "frontend/src/lib/editor/captions.ts",
+   "id": "web:lib/editor/captions.ts",
+   "kind": "script",
+   "line": 1
+  },
+  {
    "file": "frontend/src/lib/editor/editor.svelte.ts",
    "id": "web:lib/editor/editor.svelte.ts",
    "kind": "script",
@@ -9606,6 +10757,12 @@
    "line": 1
   },
   {
+   "file": "frontend/src/routes/editor/CaptionsPanel.svelte",
+   "id": "web:routes/editor/CaptionsPanel.svelte",
+   "kind": "page",
+   "line": 1
+  },
+  {
    "file": "frontend/src/routes/editor/ClipPanel.svelte",
    "id": "web:routes/editor/ClipPanel.svelte",
    "kind": "page",
@@ -9614,6 +10771,12 @@
   {
    "file": "frontend/src/routes/editor/ExportDialog.svelte",
    "id": "web:routes/editor/ExportDialog.svelte",
+   "kind": "page",
+   "line": 1
+  },
+  {
+   "file": "frontend/src/routes/editor/HooksPanel.svelte",
+   "id": "web:routes/editor/HooksPanel.svelte",
    "kind": "page",
    "line": 1
   },
@@ -9656,6 +10819,12 @@
   {
    "file": "frontend/src/routes/editor/Timeline.svelte",
    "id": "web:routes/editor/Timeline.svelte",
+   "kind": "page",
+   "line": 1
+  },
+  {
+   "file": "frontend/src/routes/editor/TranscriptPanel.svelte",
+   "id": "web:routes/editor/TranscriptPanel.svelte",
    "kind": "page",
    "line": 1
   },

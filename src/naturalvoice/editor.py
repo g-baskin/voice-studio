@@ -149,6 +149,30 @@ class Subclip(BaseModel):
         return self
 
 
+CaptionStyle = Literal["pop", "karaoke", "bold", "clean"]
+CaptionFont = Literal["sans-bold", "impact", "rounded", "system"]
+_HEX = r"^#[0-9a-fA-F]{6}$"
+
+
+class Captions(BaseModel):
+    """Word-by-word captions drawn from the transcripts of one track's clips."""
+
+    enabled: bool = True
+    # None follows the first audio track that has clips.
+    track: str | None = Field(None, pattern=_SHORT_ID)
+    style: CaptionStyle = "pop"
+    font: CaptionFont = "sans-bold"
+    size: float = Field(0.06, ge=0.03, le=0.15)
+    y: float = Field(0.72, ge=0.1, le=0.95)
+    words_per_page: int = Field(3, ge=1, le=8)
+    max_chars: int = Field(24, ge=8, le=40)
+    uppercase: bool = True
+    color: str = Field("#ffffff", pattern=_HEX)
+    highlight: str = Field("#ffd400", pattern=_HEX)
+    stroke: float = Field(0.12, ge=0, le=0.3)
+    animate: bool = True
+
+
 class Sequence(BaseModel):
     version: Literal[1] = 1
     name: str = Field(min_length=1, max_length=80)
@@ -163,6 +187,7 @@ class Sequence(BaseModel):
     clips: list[Clip] = Field(default_factory=list, max_length=2000)
     markers: list[Marker] = Field(default_factory=list, max_length=200)
     subclips: list[Subclip] = Field(default_factory=list, max_length=500)
+    captions: Captions | None = None
 
     @model_validator(mode="after")
     def _consistent(self) -> Sequence:
@@ -190,6 +215,8 @@ class Sequence(BaseModel):
                     raise ValueError(f"Clips overlap on {track.name}.")
         if self.range_in is not None and self.range_out is not None and self.range_out <= self.range_in:
             raise ValueError("The out point must come after the in point.")
+        if self.captions and self.captions.track is not None and self.captions.track not in tracks:
+            raise ValueError("Captions refer to a missing track.")
         return self
 
     @property
@@ -612,9 +639,17 @@ def _n(value: float) -> str:
 
 
 def build_command(
-    seq: Sequence, media: dict[str, dict], out: Path, in_out: bool = False, quality: str = "standard"
+    seq: Sequence,
+    media: dict[str, dict],
+    out: Path,
+    in_out: bool = False,
+    quality: str = "standard",
+    captions_frames: Path | None = None,
 ) -> tuple[list[str], str, float]:
-    """The ffmpeg arguments, the filter graph and the output length for one export."""
+    """The ffmpeg arguments, the filter graph and the output length for one export.
+
+    `captions_frames` is a folder holding frames/%07d.png (one caption strip per output frame).
+    """
     start, stop = export_range(seq, in_out)
     total = stop - start
     if total < 1 / seq.fps:
@@ -674,6 +709,16 @@ def build_command(
     for i, (label, x, y) in enumerate(pictures):
         graph.append(f"[{last}][{label}]overlay=x={x}:y={y}:eof_action=pass:format=auto[o{i}]")
         last = f"o{i}"
+    if seq.captions is not None and captions_frames is not None:
+        from .captions import band
+
+        k = len(layers) + 2
+        top, _ = band(seq.captions, W, H)
+        pattern = str(captions_frames / "frames" / "%07d.png")
+        args += ["-framerate", rate, "-start_number", "0", *INPUT_GUARD, "-f", "image2", "-i", pattern]
+        graph.append(f"[{k}:v]format=rgba,setpts=PTS-STARTPTS[cap]")
+        graph.append(f"[{last}][cap]overlay=x=0:y={top}:eof_action=pass:format=auto[captioned]")
+        last = "captioned"
     graph.append(f"[{last}]format=yuv420p[vout]")
 
     def mix(labels: list[str], name: str) -> str:
@@ -737,7 +782,34 @@ def render(
     cancel: threading.Event,
 ) -> Path:
     out.parent.mkdir(parents=True, exist_ok=True)
-    args, graph, total = build_command(seq, media_for(seq), out, in_out, quality)
+    media = media_for(seq)
+    strips = out.with_name(out.stem + ".captions")
+    try:
+        burn = _caption_frames(seq, in_out, strips, cancel)
+        args, graph, total = build_command(seq, media, out, in_out, quality, strips if burn else None)
+        return _encode(args, graph, total, out, progress, cancel)
+    finally:
+        shutil.rmtree(strips, ignore_errors=True)
+
+
+def _caption_frames(seq: Sequence, in_out: bool, folder: Path, cancel: threading.Event) -> bool:
+    """Draw the caption strips for an export; False when captions are off or there are no words to show."""
+    if seq.captions is None or not seq.captions.enabled:
+        return False
+    from . import captions
+
+    words = captions.timeline_words(seq, captions.transcripts_for(seq))
+    if not words:
+        return False
+    start, stop = export_range(seq, in_out)
+    found = captions.pages(words, seq.captions.words_per_page, seq.captions.max_chars)
+    captions.render_frames(seq, found, start, stop, folder, cancel)
+    return True
+
+
+def _encode(
+    args: list[str], graph: str, total: float, out: Path, progress: Callable[[float], None], cancel: threading.Event
+) -> Path:
     out.with_suffix(".graph.txt").write_text(graph, encoding="utf-8")
     proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     assert proc.stdout is not None and proc.stderr is not None

@@ -74,6 +74,32 @@ export type Subclip = {
   color: MarkerColor;
 };
 
+export const CAPTION_STYLES = ['pop', 'karaoke', 'bold', 'clean'] as const;
+export type CaptionStyle = (typeof CAPTION_STYLES)[number];
+export const CAPTION_FONTS = ['sans-bold', 'impact', 'rounded', 'system'] as const;
+export type CaptionFont = (typeof CAPTION_FONTS)[number];
+
+/** Word-by-word captions drawn from the transcripts of one track's clips. */
+export type Captions = {
+  enabled: boolean;
+  /** null follows the first audio track that has clips. */
+  track: string | null;
+  style: CaptionStyle;
+  font: CaptionFont;
+  /** Text height as a share of the frame height (0.03-0.15). */
+  size: number;
+  /** Vertical centre of the caption band as a share of the frame height (0.1-0.95). */
+  y: number;
+  words_per_page: number;
+  max_chars: number;
+  uppercase: boolean;
+  color: string;
+  highlight: string;
+  /** Outline width as a share of the text size (0-0.3). */
+  stroke: number;
+  animate: boolean;
+};
+
 export type Sequence = {
   version: 1;
   name: string;
@@ -88,6 +114,7 @@ export type Sequence = {
   clips: Clip[];
   markers: Marker[];
   subclips: Subclip[];
+  captions?: Captions | null;
 };
 
 export type SequenceSummary = { id: string; name: string; updated: number };
@@ -142,3 +169,30 @@ export type Analysis = {
   created: number;
   result: AnalysisResult | null;
 };
+
+/** One recognised word on its source media's clock: [start, end, text]. */
+export type Word = [number, number, string];
+
+export type Transcript = {
+  version: number;
+  model: string;
+  duration: number;
+  edited: boolean;
+  words: Word[];
+};
+
+export type TranscriptJob = {
+  id: string;
+  media: string;
+  status: 'running' | 'done' | 'error' | 'cancelled';
+  progress: number;
+  error: string | null;
+  created: number;
+};
+
+/** `ai` names the connected AI for hook ranking, or null. */
+export type TranscribeStatus = { installed: boolean; model: string; setup: string; ai: string | null };
+
+export type FillerCandidate = { kind: 'word'; index: number } | { kind: 'gap'; t0: number; t1: number };
+
+export type HookCandidate = { id: number; start: number; end: number; score: number; text: string; reasons: string[] };

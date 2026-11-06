@@ -17,22 +17,22 @@ served there.
 
 | Nodes | Count |
 |---|---|
-| class | 56 |
-| function | 478 |
-| module | 36 |
-| page | 29 |
+| class | 62 |
+| function | 536 |
+| module | 38 |
+| page | 32 |
 | process | 3 |
-| route | 102 |
-| script | 25 |
+| route | 111 |
+| script | 26 |
 
 | Edges | Count |
 |---|---|
-| calls | 245 |
-| defines | 534 |
-| imports | 92 |
-| requests | 99 |
+| calls | 292 |
+| defines | 598 |
+| imports | 102 |
+| requests | 108 |
 | runs | 3 |
-| serves | 102 |
+| serves | 111 |
 | spawns | 3 |
 
 ## Modules, engine processes and web assets
@@ -53,6 +53,8 @@ flowchart LR
   bench --> humanize
   bench --> quality
   bench --> tts
+  captions --> editor
+  captions --> transcript
   cli --> access
   cli --> analyze
   cli --> audio
@@ -72,10 +74,14 @@ flowchart LR
   clone_api --> server
   clone_api --> voices
   editor --> audio
+  editor --> captions
   editor --> sample_library
   editor --> voices
+  editor_api --> captions
   editor_api --> editor
+  editor_api --> llm
   editor_api --> server
+  editor_api --> transcript
   enhance --> quality
   enhance --> tts
   humanize --> enhance
@@ -122,6 +128,10 @@ flowchart LR
   studio_api --> audio
   studio_api --> server
   studio_api --> studio
+  transcript --> audio
+  transcript --> editor
+  transcript --> llm
+  transcript --> sample_library
   tts --> clone
   tts --> humanize
   tts --> voices

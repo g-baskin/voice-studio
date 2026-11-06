@@ -72,6 +72,15 @@ scripts/setup_media_engine.sh
 Building and previewing reference versions also needs the cloning engine above. See
 [docs/sample-collections.md](docs/sample-collections.md).
 
+**Optional: Editor transcripts and captions** (about 661 MB speech model, English, CC-BY-4.0 by NVIDIA; uses the
+media engine environment above):
+
+```sh
+scripts/setup_speech_model.sh
+```
+
+See [docs/editor-shorts.md](docs/editor-shorts.md).
+
 ## Connect an AI for script writing (optional)
 
 Studio's **Write a script for me** and **Rewrite for speech** work without any AI: a built-in outline writer and
@@ -208,6 +217,8 @@ The AGPL covers this project's own code. Third-party models and libraries keep t
 | GTCRN (AI cleanup) | MIT |
 | CAM++ speaker model (3D-Speaker) | Apache-2.0 |
 | Microsoft DNSMOS scoring models | CC BY 4.0 (from the DNS-Challenge repository) |
+| NVIDIA Parakeet TDT 0.6B v2 speech model (sherpa-onnx int8 export, Editor transcripts) | CC BY 4.0 |
+| Pillow (caption drawing) | MIT-CMU (HPND) |
 | Pedalboard (audio effects) | GPL-3.0, which GPL-3.0 section 13 allows combining with AGPL-3.0 |
 | Other Python libraries (FastAPI, NumPy, SciPy, ONNX Runtime, OpenAI SDK, pyroomacoustics...) | MIT, BSD or Apache-2.0 (see `uv.lock`) |
 

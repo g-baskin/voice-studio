@@ -19,6 +19,7 @@
   let preview: Preview | undefined = $state();
   let source: SourceMonitor | undefined = $state();
   let timeline: Timeline | undefined = $state();
+  let clipPanel: ClipPanel | undefined = $state();
   let exporter: ExportDialog | undefined = $state();
   let help: HTMLDialogElement | undefined = $state();
   let importer: HTMLInputElement | undefined = $state();
@@ -296,6 +297,20 @@
         { label: 'Edit mode', checked: !clipMode, run: () => setMode('edit') },
         { label: 'Clip mode', checked: clipMode, run: () => setMode('clip') },
         'separator',
+        {
+          label: 'Transcript',
+          shortcut: 'T',
+          disabled: !clipMode,
+          run: () => clipPanel?.show('transcript'),
+        },
+        {
+          label: 'Captions',
+          shortcut: '⇧C',
+          disabled: !clipMode,
+          checked: !!editor.seq.captions?.enabled,
+          run: () => editor.toggleCaptions(),
+        },
+        'separator',
         { label: 'Zoom in', shortcut: '=', run: () => timeline?.setZoom(editor.zoom * 1.5) },
         { label: 'Zoom out', shortcut: '-', run: () => timeline?.setZoom(editor.zoom / 1.5) },
         { label: 'Zoom to fit', shortcut: '\\', run: () => timeline?.zoomToFit() },
@@ -465,8 +480,13 @@
       case 'v':
         on(() => (editor.tool = 'select'));
         break;
+      // In Clip mode Shift+C toggles captions; elsewhere C with or without Shift picks the razor, as before.
       case 'c':
-        on(() => (editor.tool = 'razor'));
+        if (clipMode && e.shiftKey) on(() => editor.toggleCaptions());
+        else on(() => (editor.tool = 'razor'));
+        break;
+      case 't':
+        if (clipMode && !e.shiftKey) on(() => clipPanel?.show('transcript'));
         break;
       case 'y':
         on(() => (editor.tool = 'slip'));
@@ -520,6 +540,8 @@
     ['B / N / U', 'Ripple, roll or slide tool'],
     ['⌥⇧← →', 'Slip the focused clip’s content one frame'],
     ['S', 'Snapping on or off'],
+    ['T', 'Clip mode: open the Transcript tab'],
+    ['⇧C', 'Clip mode: captions on or off'],
     [`${mod}K`, 'Split at the playhead (selected clips, or every track)'],
     [`${mod}D`, 'Cross dissolve into the selected clip'],
     ['Delete / ⇧Delete', 'Delete, or ripple delete (close the gap)'],
@@ -617,7 +639,7 @@
     {/if}
     <Preview bind:this={preview} {editor} onplay={() => source?.pause()} />
     {#if editor.mode === 'clip'}
-      <ClipPanel {editor} />
+      <ClipPanel bind:this={clipPanel} {editor} />
     {:else}
       <Inspector {editor} />
     {/if}

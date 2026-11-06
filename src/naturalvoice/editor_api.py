@@ -1,4 +1,4 @@
-"""HTTP API for the Editor page: media bin, sequences, video export and Premiere XML."""
+"""HTTP API for the Editor page: media bin, sequences, transcripts and captions, video export and Premiere XML."""
 
 from __future__ import annotations
 
@@ -17,7 +17,10 @@ from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import FileResponse, Response
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from . import captions as cap
 from . import editor as ed
+from . import llm
+from . import transcript as tr
 
 router = APIRouter(prefix="/api/editor")
 EXPORTS = Path(tempfile.gettempdir()) / "naturalvoice-editor"
@@ -88,6 +91,7 @@ class Ingest:
 ingest = Ingest()
 exports: dict[str, dict] = {}
 analyses: dict[str, dict] = {}
+transcriptions: dict[str, dict] = {}
 
 
 def _bad(exc: ed.EditorError, status: int = 400) -> HTTPException:
@@ -186,6 +190,8 @@ def media_delete(media_id: str) -> Response:
     # A running analysis would write its result back into the removed folder.
     if any(j["media"] == media_id and j["status"] == "running" for j in analyses.values()):
         raise HTTPException(409, "That file is being analysed. Cancel or wait, then remove it.")
+    if _transcribing(media_id):
+        raise HTTPException(409, "That file is being transcribed. Cancel or wait, then remove it.")
     try:
         ed.delete_media(media_id)
     except ed.EditorError as exc:
@@ -290,6 +296,185 @@ def analysis_cancel(media_id: str, key: str) -> dict:
     if "cancel" in job:
         job["cancel"].set()
     return _public(job)
+
+
+# --------------------------------------------------------------------------- transcripts and hooks
+class TranscribeRequest(BaseModel):
+    overwrite: bool = False
+
+
+class TranscriptEdit(BaseModel):
+    # Each item is checked strictly by transcript.validate_words.
+    words: list = Field(max_length=tr.MAX_WORDS)
+
+
+class HookRequest(BaseModel):
+    min_len: float = Field(15.0, ge=5, le=600)
+    max_len: float = Field(90.0, ge=5, le=600)
+    count: int = Field(10, ge=1, le=20)
+    use_ai: bool = False
+
+    @model_validator(mode="after")
+    def _lengths(self) -> HookRequest:
+        if self.max_len < self.min_len:
+            raise ValueError("The longest hook must be at least as long as the shortest.")
+        return self
+
+
+def _transcribing(media_id: str) -> bool:
+    return any(j["media"] == media_id and j["status"] == "running" for j in transcriptions.values())
+
+
+def _forget_transcriptions() -> None:
+    done = sorted(
+        (k for k, j in transcriptions.items() if j["status"] != "running"), key=lambda k: transcriptions[k]["created"]
+    )
+    for key in done[: max(0, len(done) - KEEP_ANALYSES)]:
+        transcriptions.pop(key, None)
+
+
+def _report_transcription(key: str, fraction: float) -> None:
+    transcriptions[key].update(progress=round(fraction, 3))
+
+
+def _transcription(media_id: str, key: str) -> dict:
+    job = transcriptions.get(key)
+    if job is None or job["media"] != media_id:
+        raise HTTPException(404, "That transcription has expired. Run it again.")
+    return job
+
+
+@router.get("/transcribe/status")
+def transcribe_status() -> dict:
+    ai = llm.config()
+    return {"installed": tr.installed(), "model": tr.MODEL_ID, "setup": tr.SETUP, "ai": ai["label"] if ai else None}
+
+
+@router.post("/media/{media_id}/transcript", status_code=202)
+def transcript_start(media_id: str, body: TranscribeRequest) -> dict:
+    from .server import processing
+
+    record = _media(media_id)
+    if record["status"] != "ready":
+        raise HTTPException(409, "That file is not ready yet. Wait for it to finish preparing.")
+    if record["kind"] == "image" or not record.get("duration") or not record.get("has_audio"):
+        raise HTTPException(400, "Only video and audio with sound can be transcribed.")
+    if not tr.installed():
+        raise HTTPException(503, "The speech model is not installed. " + tr.SETUP)
+    old = tr.read_transcript(media_id)
+    if old and old.get("edited") and not body.overwrite:
+        raise HTTPException(409, "This transcript has your edits. Confirm to replace it.")
+    if _transcribing(media_id):
+        raise HTTPException(409, "That file is already being transcribed.")
+    if not processing.acquire(blocking=False):
+        raise HTTPException(429, "Another export or file is processing. Wait for it to finish, then retry.")
+    _forget_transcriptions()
+    key = uuid.uuid4().hex
+    cancel = threading.Event()
+    transcriptions[key] = {"id": key, "media": media_id, "status": "running", "progress": 0.0, "error": None}
+    transcriptions[key] |= {"created": time.time(), "cancel": cancel}
+
+    def run() -> None:
+        final: dict = {}
+        try:
+            tr.transcribe(media_id, lambda f: _report_transcription(key, f), cancel, overwrite=body.overwrite)
+            final = {"status": "done", "progress": 1.0}
+        except ed.Cancelled:
+            final = {"status": "cancelled"}
+        except ed.EditorError as exc:
+            final = {"status": "error", "error": str(exc)}
+        except Exception:
+            final = {"status": "error", "error": "The transcription stopped unexpectedly."}
+        finally:
+            processing.release()
+            transcriptions[key].update(final)
+
+    threading.Thread(target=run, name=f"editor-transcript-{key[:8]}", daemon=True).start()
+    return _public(transcriptions[key])
+
+
+@router.get("/media/{media_id}/transcript/job/{key}")
+def transcript_job(media_id: str, key: str) -> dict:
+    return _public(_transcription(media_id, key))
+
+
+@router.post("/media/{media_id}/transcript/job/{key}/cancel")
+def transcript_cancel(media_id: str, key: str) -> dict:
+    job = _transcription(media_id, key)
+    job["cancel"].set()
+    return _public(job)
+
+
+@router.get("/media/{media_id}/transcript")
+def transcript_get(media_id: str, extra: bool = False) -> dict | None:
+    _media(media_id)
+    data = tr.read_transcript(media_id)
+    if data is None:  # not yet transcribed: a normal state, not an error
+        return None
+    silence = ed.analysis_cached(media_id, "silence", tr.SILENCE_PARAMS)
+    if silence:
+        ranges = [(float(a), float(b)) for a, b in silence["ranges"]]
+        fillers = tr.filler_candidates(data["words"], ranges, extra)
+    else:  # sounding gaps need the silence analysis; until it runs, list filler words only
+        fillers = [f for f in tr.filler_candidates(data["words"], [], extra) if f["kind"] == "word"]
+    return data | {"fillers": fillers, "silence": tr.SILENCE_PARAMS if silence is None else None}
+
+
+@router.put("/media/{media_id}/transcript")
+def transcript_save(media_id: str, body: TranscriptEdit) -> dict:
+    _media(media_id)
+    if _transcribing(media_id):
+        raise HTTPException(409, "That file is being transcribed. Wait, then save your edits.")
+    try:
+        return tr.save_transcript(media_id, body.words)
+    except ed.EditorError as exc:
+        raise _bad(exc) from None
+
+
+@router.post("/media/{media_id}/hooks")
+def hooks_find(media_id: str, body: HookRequest) -> dict:
+    _media(media_id)
+    data = tr.read_transcript(media_id)
+    if data is None:
+        raise HTTPException(404, "Transcribe this media first.")
+    loudness, pauses = tr.read_levels(media_id)
+    try:
+        hooks = tr.hook_candidates(data["words"], loudness, pauses, body.min_len, body.max_len, body.count)
+    except ed.EditorError as exc:
+        raise _bad(exc) from None
+    ranked_by = "structure"
+    if body.use_ai and hooks:
+        if llm.config() is None:
+            raise HTTPException(400, "No AI is connected. Set one up in Settings first.")
+        try:
+            hooks, used = tr.rank_with_llm(hooks)
+        except RuntimeError as exc:
+            raise HTTPException(502, str(exc)) from None
+        ranked_by = "ai" if used else "structure"
+    return {"hooks": hooks, "ranked_by": ranked_by}
+
+
+@router.get("/caption-fonts/{key}")
+def caption_font(key: str) -> FileResponse:
+    path = cap.font_file(key) if key in cap.FONTS else None
+    if path is None:
+        raise HTTPException(404, "That caption font is not installed.")
+    return FileResponse(path, media_type="font/ttf", headers={"Cache-Control": "max-age=86400"})
+
+
+@router.post("/sequences/captions.srt")
+def sequence_srt(sequence: ed.Sequence) -> Response:
+    try:
+        words = cap.timeline_words(sequence, cap.transcripts_for(sequence))
+    except ed.EditorError as exc:
+        raise _bad(exc) from None
+    if not words:
+        raise HTTPException(400, "There are no transcript words on the caption track.")
+    opts = sequence.captions or ed.Captions.model_validate({})
+    text = cap.srt(cap.pages(words, opts.words_per_page, opts.max_chars))
+    name = _filename(sequence.name, ".srt")
+    headers = {"Content-Disposition": f'attachment; filename="{name}"', "X-Content-Type-Options": "nosniff"}
+    return Response(text, media_type="text/plain; charset=utf-8", headers=headers)
 
 
 # --------------------------------------------------------------------------- sequences
@@ -401,6 +586,7 @@ def export_start(body: ExportRequest) -> dict:
         for n, (seq, in_out, _) in enumerate(parts, 1):
             try:
                 ed.build_command(seq, media, EXPORTS / "check.mp4", in_out)
+                cap.check_export(seq, in_out)
             except ed.EditorError as exc:
                 raise ed.EditorError(f"Range {n}: {exc}" if body.ranges else str(exc)) from None
     except ed.EditorError as exc:

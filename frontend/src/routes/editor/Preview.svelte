@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import type { Editor } from '#lib/editor/editor.svelte.ts';
+  import { pageAt, pageText } from '#lib/editor/captions.ts';
   import { Player, type TrimSide } from '#lib/editor/player.ts';
   import { editPoints, FORMATS, timecode, toFrame } from '#lib/editor/timeline.ts';
   import ReframeOverlay from './ReframeOverlay.svelte';
@@ -64,11 +65,34 @@
     player.destroy();
   });
 
-  // Paused: redraw whenever the playhead, the edit or the trim view changes.
+  // Captions are drawn only once their font is ready, so the preview never flashes a fallback face.
+  const captionFamily = $derived(editor.seq.captions?.enabled ? editor.fonts[editor.seq.captions.font] : undefined);
+  const captionNow = $derived(
+    editor.seq.captions?.enabled ? pageText(pageAt(editor.captionPages, editor.playhead)) : '',
+  );
+
+  $effect(() => {
+    void editor.seq.captions?.enabled;
+    void editor.seq.captions?.font;
+    void editor.seq.captions?.track;
+    void editor.seq.clips;
+    editor.prepareCaptions();
+  });
+
+  $effect(() => {
+    const caps = editor.seq.captions;
+    player.captions =
+      caps?.enabled && captionFamily ? { caps, pages: editor.captionPages, family: captionFamily } : null;
+  });
+
+  // Paused: redraw whenever the playhead, the edit, the captions or the trim view changes.
   $effect(() => {
     void editor.playhead;
     void editor.layers;
     void editor.trimView;
+    void editor.captionPages;
+    void captionFamily;
+    void JSON.stringify(editor.seq.captions);
     if (!editor.playing) still();
   });
 
@@ -82,7 +106,8 @@
     // A frame's timestamp can predate startedAt; reversing from the very end would then step past it and stop.
     const t = from + (rate * Math.max(0, now - startedAt)) / 1000;
     const end = editor.duration;
-    if (t >= end || (rate < 0 && t <= 0)) {
+    // Stop only at the edge playback is heading for: reversing starts exactly at the end.
+    if ((rate > 0 && t >= end) || (rate < 0 && t <= 0)) {
       editor.playhead = Math.min(end, Math.max(0, t));
       pause();
       return;
@@ -186,6 +211,8 @@
   <div class="stage">
     <canvas bind:this={canvas} aria-label="Preview of the sequence at {timecode(editor.playhead, editor.seq.fps)}"
     ></canvas>
+    <!-- The caption on screen, for screen readers on request (not announced as it changes). -->
+    <p id="caption-now" class="visually-hidden" aria-live="off">{captionNow}</p>
     {#if editor.trimView && !editor.playing}
       <div class="trim-labels" aria-live="polite">
         <span>Outgoing {editor.trimView.left ? timecode(editor.trimView.left.time, editor.seq.fps) : '—'}</span>
@@ -255,6 +282,15 @@
 </section>
 
 <style>
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
   .monitor {
     display: flex;
     flex-direction: column;
