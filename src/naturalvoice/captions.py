@@ -192,20 +192,24 @@ def draw_state(
     draw = ImageDraw.Draw(image)
     texts = [display(str(w[2]), caps) for w in page["words"]]
     base_px = max(8, math.floor(caps.size * height + 0.5))
+    peak = POP_SCALES[0] if caps.style == "pop" else 1.0
     for factor in SHRINK:
         px = max(8, math.floor(base_px * factor + 0.5))
         font = font_for(px)
-        space = font.getlength(" ")
+        stroke = math.floor(caps.stroke * px + 0.5)
+        # Outlines sit outside the glyphs, so the gap keeps a full space between them.
+        space = font.getlength(" ") + 2 * stroke
         widths = [font.getlength(t) for t in texts]
-        lines = wrap(widths, space, WRAP * width)
+        # Wrap as if every word were popped, so lines stay put while the highlight moves.
+        lines = wrap([w * peak for w in widths], space, WRAP * width)
         if len(lines) <= MAX_LINES:
             break
+    slots = [w * peak if i == active else w for i, w in enumerate(widths)]
     line_h = px * LINE
     first = (tall - len(lines) * line_h) / 2
-    stroke = math.floor(caps.stroke * px + 0.5)
     pad = BOX_PAD * px
     if caps.style == "clean":
-        wide = max(sum(widths[i] for i in line) + space * (len(line) - 1) for line in lines)
+        wide = max(sum(slots[i] for i in line) + space * (len(line) - 1) for line in lines)
         box = (
             (width - wide) / 2 - pad,
             first - pad / 2,
@@ -214,11 +218,11 @@ def draw_state(
         )
         draw.rounded_rectangle(box, radius=pad, fill=CLEAN_BACK)
     for row, line in enumerate(lines):
-        total = sum(widths[i] for i in line) + space * (len(line) - 1)
+        total = sum(slots[i] for i in line) + space * (len(line) - 1)
         x = (width - total) / 2
         centre_y = first + line_h * (row + 0.5)
         for i in line:
-            centre_x = x + widths[i] / 2
+            centre_x = x + slots[i] / 2
             colour, scale, boxed = caps.color, 1.0, False
             if caps.style == "pop" and i == active:
                 colour, scale = caps.highlight, POP_SCALES[step]
@@ -240,7 +244,7 @@ def draw_state(
                 stroke_width=0 if boxed else stroke,
                 stroke_fill=(0, 0, 0, 255),
             )
-            x += widths[i] + space
+            x += slots[i] + space
     return image
 
 

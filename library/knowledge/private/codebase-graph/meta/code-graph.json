@@ -7346,7 +7346,7 @@
    "file": "src/naturalvoice/captions.py",
    "id": "symbol:naturalvoice.captions._stamp",
    "kind": "function",
-   "line": 314
+   "line": 318
   },
   {
    "file": "src/naturalvoice/captions.py",
@@ -7370,7 +7370,7 @@
    "file": "src/naturalvoice/captions.py",
    "id": "symbol:naturalvoice.captions.check_export",
    "kind": "function",
-   "line": 305
+   "line": 309
   },
   {
    "file": "src/naturalvoice/captions.py",
@@ -7394,7 +7394,7 @@
    "file": "src/naturalvoice/captions.py",
    "id": "symbol:naturalvoice.captions.fonts_for",
    "kind": "function",
-   "line": 247
+   "line": 251
   },
   {
    "file": "src/naturalvoice/captions.py",
@@ -7424,13 +7424,13 @@
    "file": "src/naturalvoice/captions.py",
    "id": "symbol:naturalvoice.captions.render_frames",
    "kind": "function",
-   "line": 259
+   "line": 263
   },
   {
    "file": "src/naturalvoice/captions.py",
    "id": "symbol:naturalvoice.captions.srt",
    "kind": "function",
-   "line": 319
+   "line": 323
   },
   {
    "file": "src/naturalvoice/captions.py",
